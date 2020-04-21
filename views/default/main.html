@@ -1,0 +1,102 @@
+{{extend 'mdp_layoutw3.html'}}
+
+ 
+  <!-- Header -->
+  <header class="w3-container w3-white">
+    <h5><b><i class="fa fa-dashboard"></i> My Dashboard</b></h5>
+  </header>
+  
+  <div class="w3-row-padding w3-margin-bottom">
+    <div class="w3-quarter">
+      <div class="w3-container w3-red w3-padding-8"  style="height:185px">
+        <div class="w3-clear" >
+          <h3>Members   : {{=total}}</h3>
+         
+          
+          
+          <h5>New Registrations(7 days): {{=newregistrations}}</h5>
+          <h5>Old Registrations:  {{=pastregistrations}}</h5>
+          <h5>Completed :  {{=completed}}</h5>
+          <h5>Enrolled  :  {{=enrolled}}</h5>
+          
+        </div>
+      </div>
+    </div>
+
+    <div class="w3-quarter" >
+      <div class="w3-container w3-blue w3-padding-8" style="height:185px">
+        <div class="w3-clear" >
+          <h3>Companys   : {{=companies}}</h3>
+          <h3>Plans      : {{=plans}}</h3>
+        
+        </div>
+      </div>
+    </div>
+  
+    <div class="w3-quarter">
+      <div class="w3-container w3-teal w3-padding-8"  style="height:185px">
+        <div class="w3-clear">
+          <h3>Providers   : {{=providers}}</h3>
+        </div>
+      </div>
+    </div>
+      
+    <div class="w3-quarter">
+      <div class="w3-container w3-orange w3-text-white w3-padding-8" style="height:185px">
+        <div class="w3-clear">
+          <h3>Renewals</h3>
+          <h5>30 days or less: {{=renewals30}}</h3>
+          <h5>60 days or less: {{=renewals60}}</h3>
+          <h5>90 days or less: {{=renewals90}}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+<div class="w3-accordion w3-light-grey">
+
+ <button onclick="showlist('registered')" class="w3-btn-block  w3-left-align  w3-blue-grey w3-border-black" style="height:40px;"><h5>Registered Members</h5></button>
+ 
+  <div id="registered" class="w3-accordion-content w3-container ">
+     
+       {{=formregistered}}
+
+  </div>
+
+ <button onclick="showlist('completed')" class="w3-btn-block  w3-left-align  w3-blue-grey w3-border-black" style="height:40px;" >
+    <h5>Completed Members</h5>
+  </button>
+  <div id="completed" class="w3-accordion-content w3-container">
+     
+        {{=formcompleted}}
+
+  </div>
+    <button onclick="showlist('enrolled')" class="w3-btn-block w3-left-align  w3-blue-grey w3-border-black" style="height:40px;">
+    <h5>Enrolled Members</h5>
+  </button>
+  <div id="enrolled" class="w3-accordion-content w3-container">
+     
+        {{=formenrolled}}
+
+  </div>
+
+</div>
+  
+
+ <!-- FOOTER SECTION START-->
+<footer class="w3-container w3-blue" style="text-align:right;color:white" >
+   <a  href="http://www.mydentalplan.in" target="_blank" style="color:white"> &copy;2015 mydentalplan.in </a>
+</footer> 
+<!-- FOOTER SECTION END  -->
+
+  <!-- End page content -->
+
+    
+
+<!--</div>-->
+
+
+
+
+
+

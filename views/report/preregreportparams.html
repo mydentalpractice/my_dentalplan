@@ -1,0 +1,35 @@
+{{extend 'mdp_layoutw3.html'}}
+
+{{=form.custom.begin}}
+<header class="w3-container w3-dark-grey ">
+   <h4>{{=formheader}}</h4>
+</header>
+
+     </br>
+    <div class="form-group">
+    <label for="comment">Priority:</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<input  id="all"   type="radio" name="priority" value="all" checked>All</input>
+      
+        &nbsp;&nbsp;&nbsp;&nbsp;
+    
+	<input  id="emergency"   type="radio" name="priority" value="emergency" >Emergency</input>
+      
+       &nbsp;&nbsp;&nbsp;&nbsp;
+	<input  id="high"   type="radio" name="priority" value="high">High</input>
+       &nbsp;&nbsp;&nbsp;&nbsp;
+        <input  id="medium"   type="radio" name="priority" value="medium" >Medium</input>
+      
+      
+       &nbsp;&nbsp;&nbsp;&nbsp;
+        <input  id="low"   type="radio" name="priority" value="low">Low</input>
+      
+  </div>
+
+{{=form.custom.submit}}
+{{=form.custom.end}}
+
+
+
+
+
+

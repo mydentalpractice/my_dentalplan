@@ -1,0 +1,103 @@
+{{extend 'layout1.html'}}
+
+
+<div>
+<h6>{{=A(T('<< Back'),_href=URL('member','update_webdependant_0',args=[dependantid,webmemberid]))}}</h6>
+
+{{=formA.custom.begin}}
+   
+    <table>
+     <caption style="text-align:left"><h4>{{=formheader}}</h4></caption>
+       <tr>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Photo</th>
+            </td>
+            <td>
+                    {{=formA.custom.widget.image}}
+                     <input class="form_details_button", type="submit", value="Refresh", id="dependantsumbit" formaction={{=URL('member','update_webdependant_0',args=[dependantid,webmemberid])}}></input>
+            </td>
+         </tr> 
+    </table>
+    <br/>
+    
+    <div type="hidden" style="display:none;">
+    <table>
+        <caption style="text-align:left"><h4>Dependant of  {{=fname}}&nbsp;{{=lname}}&nbsp;</h4></caption>
+        <tr>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Dependant Order</th>
+            </td>
+            <td>
+                                 {{=formA.custom.widget.memberorder}}
+            </td>
+         </tr> 
+         
+        <tr>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >First Name</th>
+            </td>
+            <td>
+                                 {{=formA.custom.widget.fname}}
+            </td>
+         </tr> 
+        <tr>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Middle Name</th>
+            </td>
+            <td>
+                                 {{=formA.custom.widget.mname}}
+            </td>
+         </tr> 
+         
+        <tr>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Last Name</th>
+            </td>
+            <td>
+                                 {{=formA.custom.widget.lname}}
+            </td>
+         </tr>            
+        <tr>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >DOB</th>
+            </td>
+            <td>
+                    {{=formA.custom.widget.depdob}}
+                                
+            </td>
+         </tr>            
+        <tr>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Gender</th>
+            </td>
+            <td>
+                                 {{=formA.custom.widget.gender}}
+            </td>
+         </tr>            
+
+        <tr>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Relation</th>
+            </td>
+            <td>
+                                 {{=formA.custom.widget.relation}}
+            </td>
+         </tr>            
+        <tr>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Patient</th>
+            </td>
+            <td>
+                                 {{=formA.custom.widget.webmember}}
+            </td>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" ></th>
+            </td>
+            <td>
+            </td>
+         </tr>            
+    <div>
+{{=formA.custom.end}}
+</div>
+
+

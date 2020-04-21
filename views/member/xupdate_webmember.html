@@ -1,0 +1,262 @@
+{{extend 'layout1.html'}}
+
+<form  method="post" name="frmMember" id="frmMember">
+
+<div>
+<h6>{{=A(T('<< Home'),_href=URL('default','index'))}}</h6>
+<h4 class="head-line">{{=formheader}}</h4>
+
+{{=formA.custom.begin}}
+   
+    <table>
+     <caption style="text-align:left"><h5>Passport size Photo</h5></caption>
+       <tr>
+            <td>
+                {{if ((rows[0].image != "")  &  (rows[0].image != None)):  }}
+                   <img src="{{=URL('my_dentalplan', 'member', 'download', args=rows[0].image )}}" style="width:150px" />
+                   
+                {{else:}}
+                       No Image&nbsp;       
+                {{pass}}
+                
+                    
+            </td>
+         </tr> 
+       <tr>
+         
+            <td>
+                <button class="form_details_button" onclick="window.location='/my_dentalplan/member/member_picture/{{=webmemberid}}/';return false">Select your Photo</button>&nbsp;&nbsp;
+            </td>
+         </tr> 
+    </table>
+    <br/>
+    
+    <table>
+       
+        <tr>
+            <td>
+                Company
+            </td>
+            <td>
+                    {{=formA.custom.widget.company}}
+            
+            </td>
+            <td>
+                
+            </td>
+            <td>
+            </td>
+         </tr> 
+         
+
+
+        <tr>
+            <td>
+                Member ID
+            </td>
+            <td>
+                    {{=formA.custom.widget.webmember}}
+            
+            </td>
+            <td>
+                Photo
+            </td>
+            <td>
+                    {{=formA.custom.widget.image}}
+                    
+            </td>
+         </tr> 
+         
+        <tr>
+            <td>
+                First Name
+            </td>
+            <td>
+                                 {{=formA.custom.widget.fname}}
+            </td>
+            <td>
+                DOB
+            </td>
+            <td>
+                    {{=formA.custom.widget.webdob}}
+                                
+            </td>
+         </tr>            
+
+        <tr>
+            <td>
+                Middle Name
+            </td>
+            <td>
+                                 {{=formA.custom.widget.mname}}
+            </td>
+            <td>
+                Gender
+            </td>
+            <td>
+                                 {{=formA.custom.widget.gender}}
+            </td>
+         </tr>            
+        <tr>
+            <td>
+                Last Name
+            </td>
+            <td>
+                                 {{=formA.custom.widget.lname}}
+            </td>
+            <td>
+                Option 1
+            </td>
+            <td>
+                                 {{=formA.custom.widget.pin1}}
+            
+            </td>
+         </tr>            
+
+         <tr>
+            <td>
+                Address 1
+            </td>
+            <td>
+                                 {{=formA.custom.widget.address1}}
+            </td>
+            <td>
+                Option 2
+            </td>
+            <td>
+                                 {{=formA.custom.widget.pin2}}
+                                
+            </td>
+         </tr>            
+
+         <tr>
+            <td>
+                Address 2
+            </td>
+            <td>
+                                 {{=formA.custom.widget.address2}}
+            </td>
+            <td>
+                Option 3
+            </td>
+            <td>
+                                 {{=formA.custom.widget.pin3}}
+            </td>
+         </tr>            
+         
+         <tr>
+            <td>
+                Address 3
+            </td>
+            <td>
+                                 {{=formA.custom.widget.address3}}
+            </td>
+            <td>
+                Status
+            </td>
+            <td>
+                                 {{=formA.custom.widget.status}}
+            </td>
+         </tr>            
+         <tr>
+            <td>
+                City
+            </td>
+            <td>
+                                 {{=formA.custom.widget.city}}
+            </td>
+            <td>
+                Web Enrollment Date
+            </td>
+            <td>
+                                 {{=formA.custom.widget.webenrolldate}}
+            </td>
+         </tr>            
+         
+         <tr>
+            <td>
+                State
+            </td>
+            <td>
+                                 {{=formA.custom.widget.st}}
+            </td>
+            <td>
+                Web Enrollment Complete Date
+            </td>
+            <td>
+                                 {{=formA.custom.widget.webenrollcompletedate}}
+            </td>
+         </tr>            
+
+         <tr>
+            <td>
+                PIN
+            </td>
+            <td>
+                                 {{=formA.custom.widget.pin}}
+            </td>
+            <td>
+                
+            </td>
+            <td>
+            
+            </td>
+         </tr>            
+         <tr>
+            <td>
+                Telephone(Off)
+            </td>
+            <td>
+                                 {{=formA.custom.widget.telephone}}
+            </td>
+            <td>
+                Cell
+            </td>
+            <td>
+                                 {{=formA.custom.widget.cell}}
+            </td>
+         </tr>            
+         <tr>
+            <td>
+                Email
+            </td>
+            <td>
+                                 {{=formA.custom.widget.email}}
+            </td>
+            <td>
+                Web Key
+            </td>
+            <td>
+              {{=formA.custom.widget.webkey}}
+            </td>
+         </tr>            
+        
+         
+        
+<tr>
+            <td colspan="4">
+                <table>
+                    <caption style="text-align:left"><h4>Dependants</h4></caption>
+                <tr>
+                <td>
+                <button class="form_details_button"   onclick="window.location='/my_dentalplan/member/create_webdependant/{{=webmemberid}}//my_dentalplan/member/list_webmember///';return false">Add Dependant</button> 
+                </td>
+                </tr>
+                <tr>
+                <td>
+                {{=formB}}
+                </td>
+                </tr>    
+                </table>
+            </td>
+         </tr>            
+    
+    </table>
+    {{=formA.custom.submit}}
+    <button class="form_details_button" onclick="window.location='/my_dentalplan/default/index';return false">Cancel</button>&nbsp;&nbsp;
+
+{{=formA.custom.end}}
+</div>
+
+
+

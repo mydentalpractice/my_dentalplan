@@ -1,0 +1,26 @@
+{{extend 'layoutenroll2.html'}}
+
+<script>
+function providerlist()
+{
+   
+    window.location.replace("/my_dentalplan/provider/list_provider")
+
+
+}
+
+</script>
+
+<div>
+     
+    <h3>Provider Welcome Kit</h3><br/>
+    
+    {{if(ret == True):}}
+    <h5>Welcome Kit successfully sent to {{=providername}} email address!</h5>
+    {{else:}}
+    <h5>Error in sending Welcome Kit to {{=providername}} email address!</h5>
+    {{pass}}
+
+    <input  type="button" class="form_details_button" onclick="javascript: providerlist()" value="Return to Provider List">
+
+</div>

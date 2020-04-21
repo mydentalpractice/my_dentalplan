@@ -1,0 +1,213 @@
+{{extend 'layout.html'}}
+
+
+
+<div>
+<h6>{{=A(T('<< Home'),_href=URL('default','index'))}}&nbsp;&nbsp;&nbsp;&nbsp;{{=A(T('<< Back'),_href=URL('provider','list_provider'))}}</h6>
+<h4 class="head-line">{{=formheader}}</h4>
+{{=formA.custom.begin}}
+
+<table>
+    <table>
+        
+        <tr>
+            <td>
+                Provider Code
+            </td>
+            <td>
+                                 {{=formA.custom.widget.provider}}
+            </td>
+           <td>
+               Web Enrollment Key
+            </td>
+            <td>
+                                 {{=formA.custom.widget.sitekey}}
+                                 
+            </td>
+         </tr> 
+         
+        <tr>
+            <td>
+                Provider Name
+            </td>
+            <td>
+                                 {{=formA.custom.widget.providername}}
+            </td>
+            <td>
+                Capitation Guarantee
+            </td>
+            <td>
+                    {{=formA.custom.widget.captguarantee}}
+                                
+            </td>
+         </tr>            
+
+        <tr>
+            <td>
+               Practice Name
+            </td>
+            <td>
+                                 {{=formA.custom.widget.practicename}}
+            </td>
+            <td>
+               Schedule Guarantee
+            </td>
+            <td>
+                                 {{=formA.custom.widget.schedulecapitation}}
+            </td>
+         </tr>            
+
+         <tr>
+            <td>
+               Address 1
+            </td>
+            <td>
+                                 {{=formA.custom.widget.address1}}
+            </td>
+            <td>
+               Capitation MTD
+            </td>
+            <td>
+                                 {{=formA.custom.widget.captiationmtd}}
+                                
+            </td>
+         </tr>            
+
+         <tr>
+            <td>
+               Address 2
+            </td>
+            <td>
+                                 {{=formA.custom.widget.address2}}
+            </td>
+            <td>
+               Capitation YTD
+            </td>
+            <td>
+                                 {{=formA.custom.widget.capitationytd}}
+            </td>
+         </tr>            
+         
+         <tr>
+            <td>
+               Address 3
+            </td>
+            <td>
+                                 {{=formA.custom.widget.address3}}
+            </td>
+            <td>
+               Assigned Members
+            </td>
+            <td>
+                                 {{=formA.custom.widget.assignedpatientmembers}}
+            </td>
+         </tr>            
+         <tr>
+            <td>
+               City
+            </td>
+            <td>
+                                 {{=formA.custom.widget.city}}
+            </td>
+            <td>
+               Enrolled Date
+            </td>
+            <td>
+                                 {{=formA.custom.widget.enrolleddate}}
+                                
+            </td>
+         </tr>            
+         
+         <tr>
+            <td>
+               State
+            </td>
+            <td>
+                                 {{=formA.custom.widget.st}}
+            </td>
+            <td>
+               Tax ID
+            </td>
+            <td>
+                                 {{=formA.custom.widget.taxid}}
+            </td>
+         </tr>            
+
+         <tr>
+            <td>
+               PIN
+            </td>
+            <td>
+                                 {{=formA.custom.widget.pin}}
+            </td>
+            <td>
+               Cell#
+            </td>
+            <td>
+                                 {{=formA.custom.widget.cell}}
+            </td>
+         </tr>            
+         <tr>
+            <td>
+               Telephone(Off)
+            </td>
+            <td>
+                                 {{=formA.custom.widget.telephone}}
+            </td>
+            <td>
+               Fax
+            </td>
+            <td>
+                                 {{=formA.custom.widget.fax}}
+            </td>
+         </tr>            
+         <tr>
+            <td>
+               Email
+            </td>
+            <td>
+                                 {{=formA.custom.widget.email}}
+            </td>
+        
+         </tr>            
+                   
+         <tr>
+            <td>
+               Languages Spoken
+            </td>
+            <td >
+                                 {{=formA.custom.widget.languagesspoken}}
+            </td>
+         
+        
+            <td>
+               Specialization
+            </td>
+            <td >
+                                 {{=formA.custom.widget.specialization}}
+            </td>
+         </tr>           
+     <tr>
+    <td>
+        <table>
+        <tr>
+        <td>
+        {{=formB}}
+        </td>
+        </tr>    
+        </table>
+    </td>
+    </tr>
+    </table>
+
+<button class="form_details_button" onclick="window.location='/my_dentalplan/provider/list_provider//';return false">Return</button>&nbsp;&nbsp;
+
+{{=formA.custom.end}}
+</div>
+
+
+
+
+
+
+

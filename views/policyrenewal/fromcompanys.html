@@ -1,0 +1,7 @@
+    <label>From Company</label><br/>
+    <select class="w3-input w3-border" id="fromcompanys" onchange="changeFromCompany()">
+	<option value='0'>--Select--</option>
+	{{ for fromcompany in fromcompanys: }}
+	    <option value={{=fromcompany.id}}>{{=fromcompany.name}} ({{=fromcompany.company}})</option>
+	{{pass}}
+    </select>    

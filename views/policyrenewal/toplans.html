@@ -1,0 +1,7 @@
+ <label>To Plan</label><br/>
+<select class="w3-input w3-border" id="toplans" onchange="changeToPlan()">
+    <option value='0'>--Select--</option>
+    {{for toplan in toplans:}}
+	<option value='{{=toplan.id}}'>{{=toplan.name}} ({{=toplan.hmoplancode}})</option>
+    {{pass}}
+</select>    

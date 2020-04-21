@@ -1,0 +1,215 @@
+<!--[if HTML5]><![endif]-->
+<!DOCTYPE html>
+<html lang="en">
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if lt IE 7]><html class="ie ie6 ie-lte9 ie-lte8 ie-lte7 no-js" lang="{{=T.accepted_language or 'en'}}"> <![endif]-->
+<!--[if IE 7]><html class="ie ie7 ie-lte9 ie-lte8 ie-lte7 no-js" lang="{{=T.accepted_language or 'en'}}"> <![endif]-->
+<!--[if IE 8]><html class="ie ie8 ie-lte9 ie-lte8 no-js" lang="{{=T.accepted_language or 'en'}}"> <![endif]-->
+<!--[if IE 9]><html class="ie9 ie-lte9 no-js" lang="{{=T.accepted_language or 'en'}}"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html class="no-js" lang="{{=T.accepted_language or 'en'}}"> <!--<![endif]-->
+<head>
+
+
+<title>{{=response.title or request.application}}</title>
+  <meta charset="utf-8" />
+
+  <!-- http://dev.w3.org/html5/markup/meta.name.html -->
+  <meta name="application-name" content="{{=request.application}}" />
+
+  <!-- Speaking of Google, don't forget to set your site up:
+       http://google.com/webmasters -->
+  <meta name="google-site-verification" content="" />
+
+  <!--  Mobile Viewport Fix
+        j.mp/mobileviewport & davidbcalhoun.com/2010/viewport-metatag
+        device-width: Occupy full width of the screen in its current orientation
+        initial-scale = 1.0 retains dimensions instead of zooming out if page height > device height
+        user-scalable = yes allows the user to zoom in -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="shortcut icon" href="{{=URL('static','images/favicon.ico')}}" type="image/x-icon">
+  <link rel="apple-touch-icon" href="{{=URL('static','images/favicon.png')}}">
+
+
+  {{
+  response.files.insert(0,URL('static','css/w3.css'))
+  response.files.insert(1,URL('static','css/web2py.css'))
+  response.files.insert(2,URL('static','css/web2py_bootstrap.css'))
+  response.files.insert(3,URL('static','css/bootstrap.min.css'))
+  response.files.insert(4,URL('static','css/bootstrap-responsive.min.css'))
+  response.files.insert(5,URL('static','css/ionicons.css'))
+  response.files.insert(6,URL('static','css/font-awesome.css'))
+  response.files.insert(7,URL('static','css/style.css'))
+  response.files.insert(8,URL('static','css/mydental.css'))
+  
+  }}
+
+  {{include 'web2py_ajax.html'}}
+
+  
+  <!-- uncomment here to load jquery-ui
+  <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.css" type="text/css" media="all" />
+  <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js" type="text/javascript"></script>
+       uncomment to load jquery-ui -->
+  <noscript><link href="{{=URL('static', 'css/web2py_bootstrap_nojs.css')}}" rel="stylesheet" type="text/css" /></noscript>
+  {{block head}}{{end}}
+</head>
+
+<body class="w3-container">
+{{if((response.flash != None) & (response.flash != '')):}}
+            <div class="flash" style="align:center;color:white;background:black;height:100px">{{=response.flash or ''}}</div>
+{{pass}}
+<!-- Sidenav/menu -->
+<nav class="w3-sidenav w3-collapse w3-white w3-animate-left" style="z-index:3;width:200px;margin-left:50px;"><br>
+  <div class="w3-container w3-row">
+    <div class="w3-col s10">
+      <span>Welcome, <p><strong>{{=username}}</strong></p></span><br>
+    </div>
+  </div>
+
+  <hr>
+    
+  <a href="#" class="w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu">
+  <i class="fa fa-remove fa-fw"></i><b style="font-size:18px">Close Menu</b></a>
+  <a href="{{=URL('default', 'index')}}" class="w3-padding"><i class="fa fa-home fa-fw"></i><b style="font-size:18px">Home</b></a>
+  <a href="{{=returnurl}}" class="w3-padding"><i class="fa fa-reply fa-fw"></i><b  style="font-size:18px">Back</b></a>
+  <br/>
+  <a href="{{=URL('member', 'list_webmember', vars=dict(page=1))}}" class="w3-padding"><i class="fa fa-users fa-fw"></i> <b style="font-size:18px">Enrollment Status</b></a>
+  <a href="{{=URL('member', 'new_webmember')}}" class="w3-padding"><i class="fa fa-users fa-fw"></i> <b style="font-size:18px">New Member</b></a>
+  <a href="{{= URL('member', 'list_member')}}" class="w3-padding"><i class="fa fa-users fa-fw"></i> <b style="font-size:18px">Member List</b></a>
+  <a href="{{= URL('member', 'export_members')}}" class="w3-padding"><i class="fa fa-users fa-fw"></i> <b style="font-size:18px">Export Members</b></a>
+  <a href="{{= URL('default', 'preregisterlookup')}}" class="w3-padding"><i class="fa fa-users fa-fw"></i> <b style="font-size:18px">Pre-Register Update</b></a>
+  <a href="{{= URL('dentalcasesheet', 'list_dentalcasesheet')}}" class="w3-padding"><i class="fa fa-users fa-fw"></i> <b style="font-size:18px">Dental Case Sheet</b></a>
+  </br>
+  <a href="{{= URL('default', 'logout')}}" class="w3-padding"><i class="fa fa-sign-out fa-fw"></i><b style="font-size:18px">Logout</b></a>
+</nav>
+
+<div class="w3-main" style="margin-left:300px;margin-top:10px;">
+<ul class="w3-navbar w3-white ">
+  <li><a href="{{= URL('company', 'list_company')}}" ><b style="font-size:18px">Company</b></a></li>
+  <li><a href="{{=URL('plan', 'list_plan')}}" ></i><b style="font-size:18px">Plan</b></a></li>
+  <li><a href="{{=URL('plan', 'list_procedurepriceplan')}}" ></i><b style="font-size:18px">Procedure Price Plan</b></a></li>
+  <li><a href="{{=URL('provider', 'list_provider')}}" ></i><b style="font-size:18px">Provider</b></a></li>
+  <li><a href="{{=URL('agent', 'list_agent')}}" ></i><b style="font-size:18px">Agent</b></a></li>
+  <li><a href="{{=URL('procedure', 'list_procedure')}}" ></i><b style="font-size:18px">Procedure</b></a></li>
+  <li><a href="{{=URL('company', 'list_groupregion')}}" ></i><b style="font-size:18px">Region</b></a></li>
+  <li><a href="{{=URL('doctor', 'list_roles')}}" ></i><b style="font-size:18px">Roles</b></a></li>
+  <li><a href="{{=URL('doctor', 'list_specialities')}}" ></i><b style="font-size:18px">Specialities</b></a></li>
+  <li class="w3-dropdown-hover">
+    <a href="#"><b style="font-size:18px">Renewal</b><i class="fa fa-caret-down"></i></a>
+    <div class="w3-dropdown-content w3-white w3-card-4">
+      <a href="{{=URL('policyrenewal', 'process_renewals')}}"><b style="font-size:18px">Process Renewals</b></a>
+      <a href="{{=URL('policyrenewal', 'list_renewals')}}"><b style="font-size:18px">List Renewal</b></a>
+      <a href="{{=URL('policyrenewal', 'list_upgraded_members_param')}}"><b style="font-size:18px">List Upgrades</b></a>
+      <a href="{{=URL('policyrenewal', 'list_member')}}"><b style="font-size:18px">Member Policy Upgrade</b></a>
+      <a href="{{=URL('policyrenewal', 'group_renewal')}}"><b style="font-size:18px">Group Renewal</b></a>
+      <a href="{{=URL('policyrenewal', 'group_upgrade')}}"><b style="font-size:18px">Group Upgrade</b></a>
+    </div>
+  </li>
+  <li class="w3-dropdown-hover">
+    <a href="#"><b style="font-size:18px">Reports</b><i class="fa fa-caret-down"></i></a>
+    <div class="w3-dropdown-content w3-white w3-card-4">
+      <a href="{{= URL('report', 'providercapitationreportparam')}}"><b style="font-size:18px">Proivder Capitation</b></a>
+      <a href="{{=URL('report', 'enrollmentstatusreportparams')}}"><b style="font-size:18px">Enrollment Status Report</b></a>
+      <a href="{{=URL('report', 'enrollmentreportparam')}}"><b style="font-size:18px">Enrollment Report</b></a>
+      <a href="{{=URL('report', 'assignedmembersreportparam')}}"><b style="font-size:18px">Assigned Members</b></a>
+      <a href="{{=URL('report', 'paymenttxlogreportparams')}}"><b style="font-size:18px">Payment Transaction Report</b></a>
+      <a href="{{=URL('report', 'memberreportparams')}}"><b style="font-size:18px">Member Report</b></a>
+      <a href="{{=URL('report', 'preregreportparams')}}"><b style="font-size:18px">Pre-Register Report</b></a>
+      <a href="{{=URL('report', 'paymentreportparams')}}"><b style="font-size:18px">Payment Report</b></a>
+      <a href="{{=URL('report', 'providerrevenuereportparams')}}"><b style="font-size:18px">Provider Revenue Report</b></a>
+      <a href="{{=URL('report', 'memberdatareportparams')}}"><b style="font-size:18px">Member Data Report</b></a>
+      <a href="{{=URL('report', 'memberpaymentreportparams')}}"><b style="font-size:18px">Member Payment Report</b></a>
+      <a href="{{=URL('report', 'relgrprovreportparams')}}"><b style="font-size:18px">Religare Provider Report</b></a>
+      <a href="{{=URL('member', 'export_members')}}"><b style="font-size:18px">Export Members</b></a>
+    </div>
+  </li>
+  <li class="w3-dropdown-hover">
+    <a href="#"><b style="font-size:18px">Utility</b><i class="fa fa-caret-down"></i></a>
+    <div class="w3-dropdown-content w3-white w3-card-4">
+      <a href="{{=URL('utility', 'list_member')}}"><b style="font-size:18px">Send SMS</b></a>
+      <a href="{{=URL('utility', 'list_webmember')}}"><b style="font-size:18px">Send SMS (Pre-Enroll)</b></a>
+      <a href="{{=URL('default', 'urlproperties')}}"><b style="font-size:18px">Properties</b></a>
+      <a href="{{=URL('report', 'migratedata')}}"><b style="font-size:18px">Migrate Data</b></a>
+      <a href="{{=URL('report', 'fixpremiumdates')}}"><b style="font-size:18px">Fix Premium Date</b></a>
+      <a href="{{=URL('member', 'import_member_csv')}}"><b style="font-size:18px">Import Sabre Employees</b></a>
+      <a href="{{=URL('utility', 'importprocedurepriceplan')}}"><b style="font-size:18px">Import Procedure Price Plan</b></a>
+      <a href="{{=URL('utility', 'importplanrates')}}"><b style="font-size:18px">Import Plan Rates</b></a>
+      <a href="{{=URL('utility', 'importmember')}}"><b style="font-size:18px">Import Members</b></a>
+      <a href="{{=URL('utility', 'importprovider')}}"><b style="font-size:18px">Import Providers</b></a>
+      <a href="{{=URL('utility', 'importrlgprovider')}}"><b style="font-size:18px">Import Religare Providers</b></a>
+      <a href="{{=URL('utility', 'importproviderregionplan')}}"><b style="font-size:18px">Import Provider Region Plan</b></a>
+    
+    </div>
+  </li> 
+  
+   <li class="w3-dropdown-hover">
+    <a href="#"><b style="font-size:18px">Religare</b><i class="fa fa-caret-down"></i></a>
+    <div class="w3-dropdown-content w3-white w3-card-4">
+      <a href="{{=URL('religare', 'generate_rlgvoucher')}}"><b style="font-size:18px">Generate Religare Vouchers</b></a>
+      <a href="{{=URL('religare', 'list_rlgvoucher')}}"><b style="font-size:18px">List Religare Vouchers</b></a>
+      <a href="{{=URL('religare', 'import_rlgvoucher')}}"><b style="font-size:18px">Import Religare Vouchers</b></a>
+    </div>
+  </li>
+  
+  <li class="w3-dropdown-hover">
+    <a href="#"><b style="font-size:18px">About</b><i class="fa fa-caret-down"></i></a>
+    <div class="w3-dropdown-content w3-white w3-card-4">
+      <a href="{{=URL('default', 'index')}}"><b style="font-size:18px">About Us</b></a>
+    </div>
+  </li>
+</ul>
+
+
+  <div class="w3-container w3-blue w3-padding-4" style="z-index:4" >
+  <button class="w3-btn w3-hide-large w3-padding-0 w3-hover-text-grey" onclick="w3_open();"><i class="fa fa-bars"></i>  Menu</button>
+    <img src="{{=URL('static','images/logo.png')}}" alt=""></img><span class="w3-closebtn">{{=A(IMG(_src=URL('static','images/logout.jpg'), _alt="Logout"), _title=T("Logout"),_class='button',_href=URL("default","logout"))}}</span>
+  </div>
+  <div class="w3-container w3-padding-4">
+  <section id="main" class="main row">
+
+       {{block center}}
+       {{include}}
+       {{end}}
+
+      
+  </section>
+</div>
+</body>
+
+
+    
+<script src="{{=URL('static','js/share.js',vars=dict(static=URL('static','images')))}}"></script>
+<script src="{{=URL('static','js/modernizr.custom.js')}}"></script>
+<script language="javascript" src="../static/js/jQuery.js"></script>
+<script language="javascript" src="../static/js/web2py.js"></script>
+<script language="javascript" src="../static/js/web2py.js"></script>
+<script language="javascript" src="{{=URL('static','js/mydental.js')}}"></script>
+
+<script>
+// Script to open and close sidenav
+function w3_open() {
+    document.getElementsByClassName("w3-sidenav")[0].style.display = "block";
+    document.getElementsByClassName("w3-overlay")[0].style.display = "block";
+}
+ 
+function w3_close() {
+    document.getElementsByClassName("w3-sidenav")[0].style.display = "none";
+    document.getElementsByClassName("w3-overlay")[0].style.display = "none";
+}
+
+function showlist(id) {
+    var x = document.getElementById(id);
+    if (x.className.indexOf("w3-show") == -1) {
+        x.className += " w3-show";
+        x.previousElementSibling.className += " w3-red";
+    } else {
+        x.className = x.className.replace(" w3-show", "");
+        x.previousElementSibling.className =
+        x.previousElementSibling.className.replace("w3-red", "");
+    }
+}
+</script>
+
+</html>
+

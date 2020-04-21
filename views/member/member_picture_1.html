@@ -1,0 +1,271 @@
+{{extend 'layout1.html'}}
+<script>
+   
+    $("#plans").change(function(){
+       var x = $('#plans').val();
+       var y = $('#plans :selected').text();
+       var z = $('#plans :selected').index();
+       
+     
+       
+       $("#webmember_hmoplan").val(x);
+       
+       $("#text1").text(x); 
+       $("#text2").text(y); 
+       $("#text3").text(z); 
+      
+    });
+});
+
+</script>
+
+<div>
+<h6>{{=A(T('<< Back'),_href=URL('member','update_webmember_1',vars=dict(page=page),args=[webmemberid]))}}</h6>
+
+{{=formA.custom.begin}}
+   
+    <table>
+     <caption style="text-align:left"><h4>{{=formheader}}</h4></caption>
+       <tr>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Photo</th>
+            </td>
+            <td>
+                    {{=formA.custom.widget.image}}
+                     <input class="form_details_button", type="submit", value="Refresh", id="agentsubmit" formaction={{=URL('member','member_picture_1',vars=dict(page=page),args=[webmemberid])}}></input>
+		     <button class="form_details_button" onclick="window.location='{{=URL('member','update_webmember_1',vars=dict(page=page),args=[webmemberid])}}';return false">Return</button>&nbsp;&nbsp;
+		     
+            </td>
+         </tr> 
+	 
+    </table>
+
+
+
+    <br/>
+    <div type="hidden" style="display:none">
+    <table>
+        <tr>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Company</th>
+            </td>
+            <td>
+                    {{=formA.custom.widget.company}}
+            
+            </td>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Dentist</th>
+            </td>
+            <td>
+                {{=formA.custom.widget.provider}}
+            </td>
+         </tr> 
+         
+        <tr>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Member ID</th>
+            </td>
+            <td>
+                    {{=formA.custom.widget.webmember}}
+            
+            </td>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Region</th>
+            </td>
+            <td>
+                                 {{=formA.custom.widget.groupregion}}
+            </td>
+         </tr> 
+        <tr>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Web Key</th>
+            </td>
+            <td>
+                    {{=formA.custom.widget.webkey}}
+            
+            </td>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Status</th>
+            </td>
+            <td>
+                                 {{=formA.custom.widget.status}}
+            </td>
+         </tr> 
+    </tr> 
+      <tr>
+       <td class="form_details">
+	   Plan
+       </td>
+     
+    <td class="form_details " >
+              <select id="plans">
+		  {{ for i in xrange(0, len(dsplans)): }}
+                  {{if (dsplans[i][0] == planid):}}
+                    <option selected="selected" value={{=dsplans[i][0]}}>{{=dsplans[i][1]}}</option>
+                  {{else:}}
+                  <option value={{=dsplans[i][0]}}>{{=dsplans[i][1]}}</option>
+                  {{pass}}
+                {{pass}}
+                </select>
+            </td>
+       
+    </tr>     
+	 
+	<tr>
+	   <td class="form_details">
+	   </td>
+	   
+	   <td class="form_details" >
+	     {{=formA.custom.widget.hmoplan}}    
+	    </td>
+	</tr>     
+         
+         <tr>
+            <td>
+                <br/>
+            </td>
+            <td>
+                <br/>
+            </td>
+         </tr>
+        <tr>
+            <td>
+                <th class="ElTextElement"  style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >First Name</th>
+            </td>
+            <td >
+                                 {{=formA.custom.widget.fname}}
+            </td>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >DOB</th>
+            </td>
+            <td>
+                    {{=formA.custom.widget.webdob}}
+                                
+            </td>
+         </tr>            
+
+        <tr>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Middle Name</th>
+            </td>
+            <td>
+                                 {{=formA.custom.widget.mname}}
+            </td>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Gender</th>
+            </td>
+            <td>
+                                 {{=formA.custom.widget.gender}}
+            </td>
+         </tr>            
+        <tr>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Last Name</th>
+            </td>
+            <td>
+                                 {{=formA.custom.widget.lname}}
+            </td>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Dentist 1(PIN)</th>
+            </td>
+            <td>
+                                 {{=formA.custom.widget.pin1}}
+            
+            </td>
+         </tr>            
+
+         <tr>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Address 1</th>
+            </td>
+            <td>
+                                 {{=formA.custom.widget.address1}}
+            </td>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Dentist 2(PIN)</th>
+            </td>
+            <td>
+                                 {{=formA.custom.widget.pin2}}
+                                
+            </td>
+         </tr>            
+
+         <tr>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Address 2</th>
+            </td>
+            <td>
+                                 {{=formA.custom.widget.address2}}
+            </td>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Dentist 3 (Pin)</th>
+            </td>
+            <td>
+                                 {{=formA.custom.widget.pin3}}
+            </td>
+         </tr>            
+         
+         <tr>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Address 3</th>
+            </td>
+            <td>
+                                 {{=formA.custom.widget.address3}}
+            </td>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Telephone(Off)</th>
+            </td>
+            <td>
+                                 {{=formA.custom.widget.telephone}}
+            </td>
+         </tr>            
+         <tr>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >City</th>
+            </td>
+            <td>
+                                 {{=formA.custom.widget.city}}
+            </td>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Cell</th>
+            </td>
+            <td>
+                                 {{=formA.custom.widget.cell}}
+            </td>
+         </tr>            
+         
+         <tr>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >State</th>
+            </td>
+            <td>
+                                 {{=formA.custom.widget.st}}
+            </td>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Email</th>
+            </td>
+            <td>
+                                 {{=formA.custom.widget.email}}
+            </td>         
+         </tr>            
+
+         <tr>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >PIN</th>
+            </td>
+            <td>
+                                 {{=formA.custom.widget.pin}}
+            </td>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" ></th>
+            </td>
+            <td>
+            </td>
+         </tr>            
+        
+    </table>
+    <div>
+{{=formA.custom.end}}
+</div>
+
+

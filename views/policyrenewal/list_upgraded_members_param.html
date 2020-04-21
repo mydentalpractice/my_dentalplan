@@ -1,0 +1,164 @@
+{{extend 'mdp_layoutw3.html'}}
+
+{{=formA.custom.begin}}
+<header class="w3-container w3-dark-grey ">
+   <h4>List of Members with Upgraded Policy</h4>
+</header>  
+
+<div class="w3-container w3-hide">
+{{=formA.custom.widget.groupregion}}
+{{=formA.custom.widget.frcompany}}
+{{=formA.custom.widget.tocompany}}
+{{=formA.custom.widget.frhmoplan}}
+{{=formA.custom.widget.tohmoplan}}
+</div>
+
+<div class="w3-row-padding  ">
+  <div id="premstartdt" class="w3-half" style='line-height:1.5;'>
+     <div>
+      <label>New Premium Start Date</label><br/>
+      {{=formA.custom.widget.newpremstartdt}}
+    </div>
+  </div>
+  
+  <div id="premenddt" class="w3-half" style='line-height:1.5;'>
+    <div>
+      <label>New Premium End Date</label><br/>  
+      {{=formA.custom.widget.newpremenddt}}
+    </div>
+  </div>
+  
+</div>
+
+
+<div class="w3-row-padding  ">
+  <div id="region" class="w3-full" style='line-height:1.5;'>
+    <label>Region</label><br/>
+    <select class="w3-input w3-border" id="regions" onchange="changeRegions()">
+	<option value='0'>--Select--</option>
+	{{ for region in regions: }}
+	    <option value={{=region.id}}>{{=region.region}} ({{=region.groupregion}})</option>
+	{{pass}}
+    </select>    
+  </div>
+</div>
+
+
+<div class="w3-row-padding  ">
+  <div id="fromCompany" class="w3-half" style='line-height:1.5;'>
+  <div id = "xfromcompanys">
+  </div>  
+  </div>
+  <div id="fromPlan" class="w3-half" style='line-height:1.5;'>
+  <div id = "xfromplans">
+  </div>  
+  </div>
+  
+</div>
+
+
+
+<div class="w3-row-padding  ">
+  <div id="toCompany" class="w3-half" style='line-height:1.5;'>
+  <div id = "xtocompanys">
+  </div>  
+  </div>
+    <div id="toPlan" class="w3-half" style='line-height:1.5;'>
+  <div id = "xtoplans">
+  </div>  
+  </div>
+</div>
+
+
+
+
+<div class="w3-row-padding  ">
+  <div id="member" class="w3-full" style='line-height:1.5;'>
+  <div id = "xmembers">
+  </div>  
+  </div>
+</div>
+
+{{=formA.custom.submit}}
+
+
+{{=formA.custom.end}}
+
+<script>
+
+function changeRegions(){
+    var regionopts = document.getElementById("regions");
+    var region = regionopts.options[regionopts.selectedIndex].value;
+    var x = document.getElementById("no_table_groupregion");
+	x.value = region;
+       
+    ajax('{{=URL('policyrenewal','fromcompanys')}}', ['groupregion'], 'xfromcompanys');
+};
+
+function changeFromCompany(){
+
+var fromcoopts = document.getElementById("fromcompanys");
+var fromco = fromcoopts.options[fromcoopts.selectedIndex].value;
+var x = document.getElementById("no_table_frcompany");
+x.value = fromco
+
+ajax('{{=URL('policyrenewal','fromplans')}}', ['groupregion','frcompany'], 'xfromplans');
+
+   
+};
+
+function changeFromPlan(){
+var fromplanopts = document.getElementById("fromplans");
+var fromplan = fromplanopts.options[fromplanopts.selectedIndex].value;
+var x = document.getElementById("no_table_frhmoplan");
+x.value = fromplan
+
+ajax('{{=URL('policyrenewal','tocompanys')}}', ['groupregion'], 'xtocompanys');
+
+
+};
+function changeToCompany(){
+
+var tocoopts = document.getElementById("tocompanys");
+var toco = tocoopts.options[tocoopts.selectedIndex].value;
+
+var x = document.getElementById("no_table_tocompany");
+x.value = toco;
+
+ajax('{{=URL('policyrenewal','toplans')}}', ['groupregion','tocompany'], 'xtoplans');
+
+};
+
+function changeToPlan(){
+
+var toplanopts = document.getElementById("toplans");
+
+var toplan = toplanopts.options[toplanopts.selectedIndex].value;
+
+var x = document.getElementById("no_table_tohmoplan");
+
+x.value = toplan
+
+
+
+
+};
+
+function xchangeToPlan(){
+alert("Change to Plan")
+var toplanopts = document.getElementById("toplans");
+alert(toplanopts)
+var toplan = toplanopts.options[toplanopts.selectedIndex].value;
+alert(toplan)
+var x = document.getElementById("no_table_tohmoplan");
+x.value = toplan
+
+alert("alax call")
+ajax('{{=URL('policyrenewal','member_upgrades')}}', ['groupregion','frcompany','frhmoplan','tocompany','tohmoplan'], 'xmembers');
+
+
+};
+
+
+
+</script>

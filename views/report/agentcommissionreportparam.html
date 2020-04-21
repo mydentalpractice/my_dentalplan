@@ -1,0 +1,16 @@
+{{extend 'layout.html'}}
+
+<table>
+<caption style="text-align:left"><h4>{{=formheader}}</h4></caption>
+<tr>
+<td>
+<h6>{{=A(T('<< Home'),_href=URL('my_dentalplan','default','index'))}}</h6>
+</td>
+</tr>
+<tr>
+<td>
+{{=form}}
+</td>
+</tr>
+
+</table>

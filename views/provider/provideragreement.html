@@ -1,0 +1,287 @@
+﻿
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <!-- Responsive meta -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- IE Compatibility meta -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <!-- Description meta -->
+        <meta name="description" content="...">
+        <!-- Author meta -->
+        <meta name="author" content="">
+
+        <!-- Page Title -->
+        <title>mdp provider agreement</title>
+        <!-- Favicon -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script type="text/javascript" src="https://ff.kis.v2.scr.kaspersky-labs.com/43846060-9960-564E-832E-34E310A943B2/main.js" charset="UTF-8"></script><script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+       
+{{
+  response.files.insert(0,URL('static','css/w3.css'))
+  response.files.insert(0,URL('static','css/web2py.css'))
+  response.files.insert(1,URL('static','css/web2py_bootstrap.css'))
+  
+  response.files.insert(2,URL('static','assets/css/bootstrap.min.css'))
+  response.files.insert(3,URL('static','assets/css/bootstrap-responsive.min.css'))
+
+  response.files.insert(4,URL('static','assets/css/ionicons.css'))
+  response.files.insert(5,URL('static','assets/css/font-awesome.css'))
+  response.files.insert(6,URL('static','assets/css/style.css'))
+  response.files.insert(6,URL('static','css/mydental.css'))
+  
+  }}
+  
+
+
+    </head>
+<style type="text/css"> 
+
+table tr td {    border: 1px solid grey;text-align: left;padding-left: 10px;}
+body{font-family: roboto;}
+.pb{padding-bottom:15px; }
+.lipb{padding-bottom:7px;}
+.form-control{border-bottom:1px dashed #909090 !important;  
+  border-top-style: none !important;
+  border-right-style:none  !important;
+  border-left-style:none !important;
+  box-shadow: inset 0 0px 0px rgba(0,0,0,.075) !important;
+  -webkit-box-shadow: inset 0 0px 0px rgba(0,0,0,.075) !important;
+   border-radius: 0px;
+  
+   }
+   .color{background-color: #f07e13 !important;
+          color:#fff !important;
+   }
+ .color:hover{background-color: #fff !important;
+          color:#f07e13 !important; border-color:#f07e13 !important; 
+   }
+.textarea{padding:0px}
+.text-center{text-align:center !important}
+td input{width: 100% !important;}
+td textarea{width: 100% !important;}
+
+</style>
+
+
+
+
+    <body>
+   
+    <div class="flash alert" style="align:center;color:white;background:black;">{{=session.flash or ''}}</div>
+{{=form.custom.begin}} 
+<!-- header --> 
+<div class="container-fluid">
+        <div class="container"><img src="https://mydentalplan.in/wp-content/uploads/2018/03/my_dental_plan_logo.png">
+
+        </div>
+      </div>
+      <div class="container"><h2 class="text-center">MY DENTAL PLAN HEALTHCARE PRIVATE LIMITED</h2>
+
+        </div>
+
+
+
+       
+       <div class="container-fluid">
+        <div class="row"><center><h3 class="pb">SERVICE PROVIDER AGREEMENT</h3></center>
+
+        </div>
+      </div>
+
+
+
+    <div class="container-fluid pb ">
+        <div class="row">
+          <div class="text-center"><strong>THIS SERVICE PROVIDER AGREEMENT</strong> is made and executed on this Dated {{=form.custom.widget.pa_date}}  at <span style="text-decoration:underline !important;">{{=form.custom.widget.pa_location}}</span> City</span></div>
+
+        </div>
+  </div>
+  <center>Between:</center>
+
+
+<!-- end header --> 
+
+
+
+
+<!-- section part 1--> 
+    <div class="container-fluid pb">
+        <div class="row">
+          <div class="text-center"></div>
+
+        </div>
+      </div>
+
+
+
+
+   <div class="container">
+            <div class="row">
+                
+                <div class="col-sm-12">
+                
+          <p class="text-justify"><strong>M/s MY DENTAL PLAN HEALTHCARE PRIVATE LIMITED </strong>(a company duly registered under the provisions of the Companies Act, 1956) having its Corporate office at #324, 7th Cross Road,
+           Defence Layout, Sahakar Nagar, Bengaluru, Karnataka 560092, INDIA (Hereinafter, referred to as <strong>The Company</strong> which expression shall include directors, share holders, agents, merchants, nominees, attorneys etc. of the company) of the One Part . </p>
+
+             
+                </div></div></div>
+            
+  
+
+
+<p><center><strong>AND</strong></center></p>
+
+
+
+   <div class="container" >
+            <div class="row">
+                
+                <div class="col-sm-12" style="text-align:center; ">
+                <form class="form-inline" action="/action_page.php"> <div class="form-group">
+                
+                  
+                  <table>
+                    <tr>
+                      <td>Dr. / Mr./ Mrs.</td>
+                      <td>{{=xpa_providername}}</td>
+                    </tr>
+                    <tr>
+                      <td>D.O.B</td>
+                      <td>{{=form.custom.widget.pa_dob}}</td>
+                    </tr>
+                     <tr>
+                      <td>S/o / D/o</td>
+                      <td>{{=form.custom.widget.pa_parent}}</td>
+                    </tr>
+                    <tr>
+                      <td>Resident of</td>
+                      <td>{{=form.custom.widget.pa_address}}</td>
+                    </tr>
+                    <tr>
+                      <td>PAN</td>
+                      <td>{{=form.custom.widget.pa_pan}}</td>
+                    </tr>
+                    <tr>
+                      <td>State Dental Council Registration number</td>
+                      <td>{{=form.custom.widget.pa_regno}}</td>
+                    </tr>
+                    <tr>
+                      <td>Clinic Name</td>
+                      <td>{{=form.custom.widget.pa_practicename}}</td>
+                    </tr>
+                    <tr>
+                      <td>Clinic Address</td>
+                      <td>{{=form.custom.widget.pa_practiceaddress}}</td>
+                    </tr>
+                    <tr>
+                      <td>Pin code</td>
+                      <td> {{=form.custom.widget.pa_practicepin}}</td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">(Hereinafter, referred  to as <strong>"Provider"</strong> Which expression shall include his/her, administrators, legal representatives, successors and permitted assigns);</td>
+                      
+                    </tr>
+
+
+
+                  </table>
+                  
+                  
+                  
+                 
+
+             
+                </div>
+              </form>
+            
+             </div>
+        </div>
+
+
+
+
+<!--end section  part 1--> 
+
+
+
+
+<!--section  part 3--> 
+
+   <div class="container">
+            <div class="row">
+                
+                <div class="col-sm-12">
+                  <h3 >Highlights of the Agreement</h3>
+                   
+                       <ol type="A">
+                      <li class="lipb">My Dental Plan has entered into a new exciting phase where multiple insurance companies who are designing insurance plans and sending patients
+to avail cashless &amp; reimbursement claims through our Provider network.</li>
+
+                      <li class="lipb">Provider Management Software (PMS) developed by M/s My Dental Plan Healthcare Pvt. Ltd. (MDP) will be given free to the provider to maintain the
+entire patient’s data / record and to do billings and online payment gateway to collect the amount for the treated procedures.</li>
+
+                      <li class="lipb" >For all Dental Insurance patients coming through MDP, Provider will first take prior Authorization from MDP through PMS. Accordingly the procedures
+approved can be performed as cashless and the payments will be settled from MDP with-in 30days of submission of the bills.</li>
+
+                      <li class="lipb">There is an introductory administration fee of 15%, (which is inclusive of transaction fees, service charges and GST) of the total amount charged for the procedures for all the allotted MDP patients.</li>
+
+                      <li class="lipb">The Provider has to collect all the payments only through on-line payment gateway provided by the MDP in the PMS and shall not receive any cash payments for MDP allotted patients. </li>
+
+                       <li class="lipb">Provider can use our online payment gateway in the PMS for payment collections for their clinic patients instead of their swiping machines, there will
+be no Administration fees or services charges, for those patients but only transaction fees of 2.5% will be deducted and payment will be made within 4 working days. </li>
+ <li class="lipb">Provider has to charge co-payments from the concerned patient for the treated procedures as per the co-payments of specified Dental plans as communicated by MDP from time to time or as per the co-payments reflected on PMS in the treatment billing system.</li>
+
+                     
+
+                    
+
+
+                    </ol>
+
+             
+                </div>
+            
+             </div>
+        </div>
+
+<!--end section  part 3--> 
+
+
+
+
+
+<center class="pb"><strong>HENCE both the parties hereto now hereby set and subscribe their respective hands and seals on this SERVICE PROVIDER AGREEMENT on this day, month and the year as mentioned.</strong></center>
+
+
+
+
+
+<div class="container pb">
+            <div class="row">
+                
+                <div class="col-sm-12"> <div class="col-sm-6"> <div class="checkbox">
+    <label>{{=form.custom.widget.pa_accepted}}<span style="font-size: 20px !important;"><a target="_blank" href="{{=URL('provider','MDP_service_provider_agreement')}}">I agree to the terms and conditions</a></span></label>
+  </div>
+
+
+</div> 
+</div> 
+ <div class="col-md-12" style="margin-bottom:30px">
+
+	      
+                <div class="col-sm-12 text-center"> <button type="submit" class="btn btn-Success color">Submit</button>
+
+
+ </div>
+            </div>
+</div>
+
+<div style="display:none">
+{{=form.custom.widget.submit}}
+</div>
+{{=form.custom.end}} 
+
+    </body>
+

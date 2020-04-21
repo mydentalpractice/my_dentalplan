@@ -1,0 +1,68 @@
+{{extend 'layout.html'}}
+<style type="text/css">
+table {border: 2px solid}
+td, tr {border: 0}
+</style>
+
+<h6>{{=A(T('<< Home'),_href=URL('default','index'))}}&nbsp;{{=A(T('<< Back'),_href=URL('member','list_member'))}}</h6>
+
+<div>
+
+    <table  >
+      <caption style="text-align:left"><h5>Member Card</h5></caption>
+
+    <tr>
+    <td>
+        {{if ((rows[0].patientmember.image != "")  &  (rows[0].patientmember.image != None)):  }}
+           <img src="{{=URL('my_dentalplan', 'member', 'download', args=rows[0].patientmember.image )}}" style="width:150px"/>
+           
+        {{else:}}
+               No Image&nbsp;       
+        {{pass}}
+
+    </td>    
+    <td>
+      <h5>Member:</h5>
+      {{=rows[0].patientmember.fname}}&nbsp;&nbsp;
+      {{if ((rows[0].patientmember.mname != "")  &  (rows[0].patientmember.mname != None)): }}{{=rows[0].patientmember.mname}}{{pass}}&nbsp;&nbsp;
+      {{=rows[0].patientmember.lname}}&nbsp;&nbsp;
+      <h6>Address:</h6>{{=rows[0].patientmember.address1}}&nbsp;&nbsp;{{=rows[0].patientmember.address2}}&nbsp;&nbsp;{{=rows[0].patientmember.address3}}<br/>
+      {{=rows[0].patientmember.city}}&nbsp;&nbsp;{{=rows[0].patientmember.st}}&nbsp;&nbsp;{{=rows[0].patientmember.pin}}
+      <h6>Cell/Email:</h6>{{=rows[0].patientmember.cell}}&nbsp;&nbsp;{{=rows[0].patientmember.email}}
+    </td>
+    <td>
+      <h6>MemberID:</h6>{{=rows[0].patientmember.patientmember}}
+      <h6>DOB / Gender:</h6>{{=rows[0].patientmember.dob}}&nbsp;&nbsp;{{=rows[0].patientmember.gender}}
+      <h6>Pan:</h6>{{=rows[0].patientmember.pan}}
+    </td>
+    </tr>
+    <tr>
+    <td>
+        &nbsp;
+    </td>
+    <td colspan="2">
+    <h6>Company / HMO :</h6>{{=rows[0].company.company}}&nbsp;&nbsp;{{=rows[0].company.name}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{=rows[0].hmoplan.hmoplancode}}&nbsp;&nbsp;{{=rows[0].hmoplan.name}}
+
+    </td>
+    </tr>
+    <tr>
+     <td>
+        &nbsp;
+    </td>
+    <td colspan="2">
+      {{if(len(deprows)>0):}}
+      <h5>Dependants:</h5>
+      {{for i in xrange(0, len(deprows)): }}
+       {{=deprows[i].fname}}&nbsp;&nbsp;{{=deprows[i].lname}}&nbsp;&nbsp;{{=deprows[i].depdob}}&nbsp;&nbsp;{{=deprows[i].relation}}</br>
+       
+      {{pass}}
+      {{pass}}
+    </td>
+    </tr>
+    
+    </table>
+
+    
+<button class="form_details_button" onclick="window.location='/my_dentalplan/member/list_member/';return false">Return</button>&nbsp;&nbsp;
+
+</div>

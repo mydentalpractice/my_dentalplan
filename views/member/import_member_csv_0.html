@@ -1,0 +1,110 @@
+{{extend 'layout.html'}}
+
+
+<!--<script>-->
+
+<!--function OnChange()-->
+<!--{-->
+
+    <!--var xx = document.getElementById('select1');-->
+    <!--int id = document.getElementById('select1').value;-->
+    <!--var txt = xx.options[xx.selectedIndex].text-->
+    
+
+    <!-- rows1 = db(db.company.is_active==True).select() -->
+    
+    <!--var companyname = =rows1[id].name-->
+
+    <!--document.getElementById("srt1").value = companyname-->
+    <!--document.getElementById("srt2").value = txt -->
+    <!--return true;-->
+<!--} -->
+
+<!--function myFunction() {-->
+    <!--var x, text;-->
+
+    <!--// Get the value of the input field with id="numb"-->
+    <!--x = document.getElementById("numb").value;-->
+
+    <!--// If x is Not a Number or less than one or greater than 10-->
+    <!--if (isNaN(x) || x < 1 || x > 10) {-->
+        <!--text = "Input not valid";-->
+    <!--} else {-->
+        <!--text = "Input OK";-->
+    <!--}-->
+    <!--document.getElementById("demo").innerHTML = text;-->
+<!--}-->
+
+<!--function getURL()-->
+
+<!--{-->
+
+    <!--var groupcode = document.getElementById("groupcode").value;-->
+    <!--var groupname = document.getElementById("groupname").value;-->
+    <!--var address1 = document.getElementById("address1").value;-->
+    <!--var pin = document.getElementById("pin").value;-->
+    <!--var url = "";-->
+    <!--var errortext = "";-->
+    
+    <!--if(groupcode == "") -->
+    <!--{-->
+        <!--errortext = "Group Code cannot be emppty";-->
+        
+    <!--}-->
+    <!--else if(groupname == "") -->
+    <!--{-->
+        <!--errortext = "Group Name cannot be emppty";-->
+        
+    <!--}-->
+    <!--else if(address1 == "") -->
+    <!--{-->
+        <!--errortext = "Address1  cannot be emppty";-->
+        
+    <!--}-->
+    <!--else if(pin == "") -->
+    <!--{-->
+        <!--errortext = "PIN cannot be emppty";-->
+        
+    <!--}-->
+    <!--else-->
+    <!--{-->
+        
+        <!--url = "http://127.0.0.1:8001/my_dentalplan/member/import_member_csv/0/"+encodeURIComponent(groupcode)+"/"+encodeURIComponent(groupname)+"/"+encodeURIComponent(address1)+"/"+encodeURIComponent(pin);-->
+        <!--window.location.href = url;-->
+    <!--}-->
+    
+    <!--document.getElementById("error").innerHTML = errortext;-->
+<!--}-->
+
+<!--</script>-->
+
+<div>
+<h6>{{=A(T('<< Home'),_href=URL('default','index'))}}</h6>
+<h5>Group(Company) Enrollment Status</h5>
+ <table>
+        
+  <tr>
+  <td>
+  <h6> Please select the Group(Company) </h6>
+  </td>
+  </tr>
+  <tr>
+  <td>
+    {{ rows = db(db.company.is_active==True).select() }}
+    {{if len(rows):}}
+    <ul>
+    {{ for r in rows: }}
+      <li>
+        <a href="/my_dentalplan/member/import_member_csv/{{=r.id}}/{{=r.company}}/{{=r.name}}">
+            {{=r.company}}    {{=r.name}}
+        </a>
+      </li>
+    {{pass}}
+    </ul>
+    {{pass}}
+    </td>
+    </tr>
+    </table>
+    </div>
+    <p id="error" style="color:red"></p>
+  

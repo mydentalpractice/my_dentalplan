@@ -1,0 +1,237 @@
+{{extend 'mdp_layoutw3.html'}}
+
+
+<header class="w3-container w3-dark-grey ">
+   <h4>{{=formheader}}</h4>
+</header>
+
+{{=formA.custom.begin}}
+
+
+<h5>Provider Details</h5>
+<table>
+<tr>
+<td class="form_details">
+  Provider Code
+</td>
+<td class="form_details">
+  {{=formA.custom.widget.provider}}
+</td>
+</tr>
+<tr>
+<td class="form_details">
+ Provider Name
+</td>
+<td class="form_details">
+ {{=formA.custom.widget.providername}}
+</td>
+</tr>
+<tr>
+<td class="form_details">
+Practice Name
+</td>
+<td class="form_details">
+{{=formA.custom.widget.practicename}}
+</td>
+</tr>
+
+<tr>
+<td class="form_details">
+Web Enrollment Key
+</td>
+<td class="form_details">
+{{=formA.custom.widget.sitekey}}
+</td>
+</tr>
+<tr>
+<td class="form_details">
+Region
+</td>
+<td class="form_details">
+{{=formA.custom.widget.groupregion}}
+</td>
+</tr>
+<tr>
+<td class="form_details">
+Assigned Members
+</td>
+<td class="form_details">
+{{=formA.custom.widget.assignedpatientmembers}}
+</td>
+</tr>
+<tr>
+<td class="form_details">
+Speciality
+</td>
+<td class="form_details">
+{{=formA.custom.widget.speciality}}
+</td>
+</tr>
+
+<tr>
+<td class="form_details">
+Speciality Description
+</td>
+<td class="form_details">
+{{=formA.custom.widget.specialization}}
+</td>
+</tr>
+
+</table>
+</br>
+
+<h5>Contact Details</h5>
+<table>
+<tr>
+<td class="form_details">
+Address 1
+</td>
+<td class="form_details">
+{{=formA.custom.widget.address1}}
+</td>
+</tr>
+<tr>
+<td class="form_details">
+Address 2
+</td>
+<td class="form_details">
+{{=formA.custom.widget.address2}}
+</td>
+</tr>
+<tr>
+
+<td class="form_details">
+Address 3
+</td>
+<td class="form_details">
+{{=formA.custom.widget.address3}}
+</td>
+</tr>
+<tr>
+<td class="form_details">
+City
+</td>
+<td class="form_details">
+{{=formA.custom.widget.city}}
+</td>
+</tr>
+<tr>
+
+<td class="form_details">
+State
+</td>
+<td class="form_details">
+{{=formA.custom.widget.st}}
+</td>
+</tr>
+<tr>
+
+<td class="form_details">
+PIN
+</td>
+<td class="form_details">
+{{=formA.custom.widget.pin}}
+</td>
+</tr>
+<tr>
+
+<td class="form_details">
+Cell
+</td>
+<td class="form_details">
+{{=formA.custom.widget.cell}}
+</td
+</tr>
+<tr>
+
+<td class="form_details">
+Telephone
+</td>
+<td class="form_details">
+{{=formA.custom.widget.telephone}}
+</td>
+</tr>
+<tr>
+
+<td class="form_details">
+Fax
+</td>
+<td class="form_details">
+{{=formA.custom.widget.fax}}
+</td>
+</tr>
+<tr>
+
+<td class="form_details">
+Email
+</td>
+<td class="form_details">
+{{=formA.custom.widget.email}}
+</td>
+</tr>
+
+<tr>
+<td class="form_details">
+Group SMS
+</td>
+<td class="form_details">
+{{=formA.custom.widget.groupsms}}
+</td>
+</tr>
+<tr>
+<td class="form_details">
+Group Email
+</td>
+<td class="form_details">
+{{=formA.custom.widget.groupemail}}
+</td>
+</tr>
+
+</table>
+<br/>
+
+
+{{=formA.custom.submit}}
+<button class="form_details_button" onclick="window.location='{{=URL('provider','list_provider',vars=dict(page=page))}}';return false">Return</button>&nbsp;&nbsp;
+{{=formA.custom.end}}
+</div>
+
+<div style="display:none">
+{{=formA.custom.widget.languagesspoken}}
+{{=formA.custom.widget.capitationytd}}
+{{=formA.custom.widget.captiationmtd}}
+{{=formA.custom.widget.schedulecapitation}}
+{{=formA.custom.widget.captguarantee}}
+{{=formA.custom.widget.enrolleddate}}
+{{=formA.custom.widget.registration}}
+{{=formA.custom.widget.registered}}
+{{=formA.custom.widget.title}}
+{{=formA.custom.widget.p_address1}}
+{{=formA.custom.widget.p_address2}}
+{{=formA.custom.widget.p_address3}}
+{{=formA.custom.widget.p_city}}
+{{=formA.custom.widget.p_st}}
+{{=formA.custom.widget.p_pin}}
+{{=formA.custom.widget.pa_providername}}
+{{=formA.custom.widget.pa_parent}}
+{{=formA.custom.widget.pa_address}}
+{{=formA.custom.widget.pa_pan}}
+{{=formA.custom.widget.pa_regno}}
+{{=formA.custom.widget.pa_dob}}
+{{=formA.custom.widget.pa_date}}
+{{=formA.custom.widget.pa_accepted}}
+{{=formA.custom.widget.pa_approved}}
+{{=formA.custom.widget.pa_approvedon}}
+{{=formA.custom.widget.pa_approvedby}}
+{{=formA.custom.widget.pa_day}}
+{{=formA.custom.widget.pa_month}}
+{{=formA.custom.widget.pa_location}}
+{{=formA.custom.widget.taxid}}
+</div>
+
+
+
+
+
+
+

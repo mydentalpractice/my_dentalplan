@@ -1,0 +1,270 @@
+{{extend 'mdp_layoutw3.html'}}
+
+<script>
+
+$(document).ready(function(){
+    $("#company_hmoplan").change(function(){
+       <!--$("#planname").val($("#company_hmoplan").val());-->
+       <!--$("#planname").val($("#company_hmoplan").text());-->
+     
+    });
+});
+</script>
+
+
+
+<header class="w3-container w3-dark-grey ">
+   <h4>{{=formheader}}</h4>
+</header>  
+{{=formA.custom.begin}}
+
+<div class="w3-container w3-hide">
+{{=formA.custom.widget.enrolleddate}}
+{{=formA.custom.widget.renewaldate}}
+{{=formA.custom.widget.terminationdate}}
+</div> 
+   
+    <table>
+        
+        <tr>
+            <td class="form_details">
+                Group Code
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.company}}
+            </td>
+            <td class="form_details">
+                Agent
+            </td>
+            <td class="form_details">
+                    {{=formA.custom.widget.agent}}
+            </td>
+         </tr> 
+         
+        <tr>
+            <td class="form_details">
+                Group Name
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.name}}
+         
+         </tr>            
+
+        <tr>
+            <td class="form_details">
+                HR Contact Name
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.contact}}
+            </td>
+            <td class="form_details">
+                Commission
+            </td>
+            <td class="form_details">
+                         {{=formA.custom.widget.commission}}
+            </td>
+         </tr>            
+
+        <tr>
+            <td class="form_details">
+                HR Contact Number
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.telephone}}
+            </td>
+            <td class="form_details"  type="hidden" style="display:none;">
+                Plan Code
+            </td>
+            <td class="form_details"  type="hidden" style="display:none;">
+                    {{=formA.custom.widget.hmoplan}}
+            </td>
+         </tr> 
+         
+         <tr>
+            <td class="form_details">
+                Address 1
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.address1}}
+            </td>
+            <td class="form_details">
+                
+            </td>
+            <td class="form_details">
+                                
+            </td>
+         </tr>            
+
+         <tr>
+            <td class="form_details">
+                Address 2
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.address2}}
+            </td>
+            <td class="form_details">
+                Cap Cycle
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.capcycle}}
+            </td>
+         </tr>            
+         
+         <tr>
+            <td class="form_details">
+                Address 3
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.address3}}
+            </td>
+            <td class="form_details">
+                Prem Cycle
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.premcycle}}
+            </td>
+         </tr>            
+         <tr>
+            <td class="form_details">
+                City
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.city}}
+            </td>
+            <td class="form_details">
+                Admin Fee
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.adminfee}}
+            </td>
+         </tr>            
+         
+         <tr>
+            <td class="form_details">
+                State
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.st}}
+            </td>
+            <td class="form_details">
+                Min. Subscribers
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.minsubscribers}}
+            </td>
+         </tr>            
+
+         <tr>
+            <td class="form_details">
+                PIN
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.pin}}
+            </td>
+            <td class="form_details">
+                Max Subscribers
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.maxsubscribers}}
+            </td>
+         </tr>            
+         <tr>
+            <td class="form_details">
+                Subscriber Age (Min)
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.minsubsage}}
+            </td>
+            <td class="form_details">
+                Subscriber Age (Max)
+            </td>
+            <td class="form_details">
+                                 
+                                 {{=formA.custom.widget.maxsubsage}}
+                                 
+            </td>            
+         </tr>            
+         
+         <tr>
+            <td class="form_details">
+                Dependant Age (Min)
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.mindependantage}}
+            </td>
+              <td class="form_details">
+                Dependant Age (Max)
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.maxdependantage}}
+            </td>
+            
+         </tr>            
+         
+         <tr>
+         
+            <td class="form_details">
+                <h4 style="color:red">Group Key<h4>
+            </td>
+            <td class="form_details"  >
+                                 {{=formA.custom.widget.groupkey}}
+            </td>
+                     <td class="form_details">
+                Dependant Mode
+            </td>
+            <td class="form_details">
+                                {{=formA.custom.widget.dependantmode}}
+            </td>
+                     <td class="form_details">
+                Authorization Required
+            </td>
+            <td class="form_details">
+                                {{=formA.custom.widget.authorizationrequired}}
+            </td>
+            
+</tr>
+         <tr>
+      <td class="form_details">
+                <h4 style="color:red">Payment Types<h4>
+            </td>
+            <td class="form_details">
+                Online{{=formA.custom.widget.onlinepayment}}
+            </td>
+          
+            
+            <td class="form_details">
+                Cashless  {{=formA.custom.widget.cashlesspayment}}
+            </td>
+            <td class="form_details">
+                               
+            </td>
+            <td class="form_details">
+                Cash  {{=formA.custom.widget.cashpayment}}
+            </td>
+           
+            <td class="form_details">
+                Cheque{{=formA.custom.widget.chequepayment}}
+            </td>
+          
+         </tr>   
+
+<tr>
+
+            <td class="form_details">
+                Notes
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.notes}}
+            </td>
+         </tr>            
+    
+    </table>
+    {{=formA.custom.submit}}
+   
+<button class="form_details_button" onclick="window.location='{{=URL('company','list_company')}}';return false">Cancel</button>&nbsp;&nbsp;
+
+{{=formA.custom.end}}
+</div>
+
+
+

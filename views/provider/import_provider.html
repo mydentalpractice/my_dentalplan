@@ -1,0 +1,34 @@
+{{extend 'layout.html'}}
+
+
+
+<div id="import" >
+  <h6>{{=A(T('<< Home'),_href=URL('default','index'))}}</h6>
+  <table>
+      <caption style="text-align:left"><h4>Import Providers</h4></caption>
+      
+   
+   <tr>
+   <td>
+    
+     
+        
+    {{=FORM(
+
+       TABLE(
+              
+        TR(TD('Import File:'),TD(INPUT(_type='file',_name='csvfile')),TD(INPUT(_type='submit',_class='form_details_button',_value='Upload'))), 
+        TR(TD( INPUT(_type='hidden',_value='provider',_name='table')),TD(),TD())
+       )
+       )
+    }}
+   </td>
+   </tr>
+   <tr>
+   <td COLSPAN="3">
+         <button class="form_details_button" onclick="window.location='/my_dentalplan/default/index';return false">Cancel</button>&nbsp;&nbsp;
+   </td>
+    </tr>
+   </table>
+</div>
+

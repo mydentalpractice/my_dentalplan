@@ -1,0 +1,465 @@
+{{extend 'mdp_layoutw3.html'}}
+
+<body onload="totalcalculation()">
+
+
+<header class="w3-container w3-dark-grey ">
+   <h4>{{=formheader}}</h4>
+</header>
+
+
+{{=formA.custom.begin}}
+<h5 class="head-line">Details</h5>
+
+<table>
+ <tr>
+       <td class="form_details ">
+	   Member ID
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.patientmember}}
+	</td>
+    </tr>
+ <tr>
+       <td class="form_details ">
+	   Group Ref.
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.groupref}}
+	</td>
+    </tr>  
+  
+ <tr>
+       <td >
+	   Company
+       </td>
+       <td >
+	{{=formA.custom.widget.company}}
+	</td>
+    </tr>  
+  
+ <tr>
+       <td class="form_details ">
+	   Plan
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.hmoplan}}
+	</td>
+    </tr>  
+  
+ <tr>
+       <td class="form_details ">
+	   New Start Date
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.premstartdt}}
+	</td>
+    </tr>  
+  <tr>
+       <td class="form_details ">
+	   New End Date
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.premenddt}}
+	</td>
+    </tr>  
+  
+</table>
+
+</br>
+
+<table id="memberpayment">
+        <tr>
+            <th class="form_details" >First</th>
+            <th class="form_details" >Last</th>
+            <th class="form_details" >Relation</th>    
+            <th class="form_details" >DOB</th>    
+            <th class="form_details" >Payment</th>    
+            <th class="form_details" >Company Pays</th>    
+            <th class="form_details">Member Pays</th>    
+        </tr>
+         
+        
+        {{totpremium = 0}}
+        {{totcompanypays = 0}}
+        {{totyoupay = 0}}
+        
+        {{for i in xrange(0,len(ds)):}}
+        <tr>
+             
+            <td class="form_details" >{{=ds[i][1]}}</td>
+            <td class="form_details" >{{=ds[i][2]}}</td>
+            <td class="form_details" >{{=ds[i][0]}}</td>
+            <td class="form_details" >{{=ds[i][3]}}</td>
+            <td class="form_details" onchange="premiumcalculation()" ><input type="text" name="premium" value={{=ds[i][4]}} /></td>
+            <td class="form_details" onchange="premiumcalculation()"><input type="text" name="companypays" value={{=ds[i][5]}} /></td>
+            <td class="form_details" onchange="premiumcalculation()"><input type="text" name="youpay" value={{=ds[i][6]}} /></td>
+            
+            {{totpremium = totpremium + int(ds[i][4])}} 
+        
+            {{totcompanypays = totcompanypays + int(ds[i][5])}} 
+            {{totyoupay = totpremium - totcompanypays}}
+         </tr>            
+        {{pass}}
+
+    </table>
+    
+<br/>
+
+
+
+<table>
+    <tr>
+    <td>
+    <input  id="rdpaybycc"   type="radio" name="paymentgrp" value="paybycc"> Pay Online</input>
+    </td>
+    <td>
+    <input  id="rdpaybycash" type="radio" name="paymentgrp" value="paybycash"> Pay By Cash</input>
+    </td>
+    <td>
+    <input  id="rdpaybyco"   type="radio" name="paymentgrp" value="paybycomp"> Paid By Company</input>
+    </td>
+    <td>
+    <input  id="rdnone"   type="radio" name="paymentgrp" value="none"> No Payment</input>
+    </td>
+    </tr>
+    </table>
+<br/>    
+<div id="all"> 
+    <h5 class="head-line">Total Payments</h5>
+    <table id="totalpayment">
+    <tr>
+    <td>Payment:</td>
+    <td></td>
+    
+    <td><input type="text" class="form_details" name="totpremium" id="totpremium" onchange="totalcalculation()" value={{=totpremium}} /></td>
+    </tr>
+    <tr><td >Company Pays: </td>    <td>&nbsp;&nbsp;</td>
+    <td ><input type="text"  name="totcompanypays" id="totcompanypays"  onchange="totalcalculation()" value={{=totcompanypays}} /></td></tr>
+
+    <tr>
+    <td >Member Pays(A):</td>    
+    <td></td>
+    <td><input type="text" class="form_details" name="totyoupay" id="totyoupay"  onchange="totalcalculation()" value={{=totyoupay}} /></td>
+    </tr>
+    
+    <tr>
+    <td class="form_details">GST @18%(B):</td>    
+    <td></td>
+    <td><input type="text"  class="form_details" name="servicetax" id="servicetax" onchange="totalcalculation()" value={{=round(totyoupay * servicetax / 100,2)}} /></td>
+    </tr>
+    <tr>
+    <td>Swipe Charges(C):</td>    
+    <td></td>
+    <td><input type="text" class="form_details"  name="swipecharge" id="swipecharge" onchange="totalcalculation()" value={{=round(totyoupay * swipecharge/ 100,2)}} /></td>
+    </tr>
+    <tr>
+    <td >Total Member Pays (A+B+C):</td>    
+    <td>&nbsp;&nbsp;</td>
+    <td ><input type="text" class="form_details" name="total" id="total" onblur="totalcalculation()" value="" /></td>
+    </tr>
+    
+    <tr>
+    <td >Payment Details:</td>    
+    <td></td>
+    <td ><textarea name="paymentdetails" rows="5" cols="50" placeholder="Enter Payment Details"></textarea></td>
+    </tr>
+     
+    </table>
+
+</div>
+
+<div id="creditcard">
+<input  id="cancel"    type="button" class="form_details_button" onclick="window.location='{{=URL('policyrenewal','list_renewals',vars=dict(page=page))}}';return false" value="Cancel">    
+<input  id="paybycc" type="submit" class="form_details_button" value="Email Renewal Policy Link">    
+</div>
+<div id="cash"> 
+
+<input  id="cancel"    type="button" class="form_details_button" onclick="window.location='{{=URL('policyrenewal','list_renewals',vars=dict(page=page))}}';return false" value="Cancel">    
+<input  id="paybycash" type="submit" class="form_details_button" value="Renew Member's Policy">
+</div>
+<div id="company"> 
+
+<input  id="cancel"    type="button" class="form_details_button" onclick="window.location='{{=URL('policyrenewal','list_renewals',vars=dict(page=page))}}';return false" value="Cancel">    
+<input  id="paybyco"   type="submit" class="form_details_button" value="Renew Member's Policy">
+</div>
+<div id="none"> 
+<input  id="cancel"    type="button" class="form_details_button" onclick="window.location='{{=URL('policyrenewal','list_renewals',vars=dict(page=page))}}';return false" value="Cancel">    
+<input  id="paybyco"   type="submit" class="form_details_button" value="Renew Member's Policy">
+</div>
+
+
+{{=formA.custom.end}}
+</div>
+</br>
+<script>
+
+$(document).ready(function(){
+    
+    $("#all").hide();
+    $("#creditcard").hide();
+    $("#cash").hide();
+    $("#company").hide();
+    $("#none").show();
+    $("#rdnone" ).prop( "checked", true );
+    
+     swpch1 = parseFloat(document.getElementById('totyoupay').value * {{=swipecharge}}/100)
+     swpch = swpch1.toFixed(2)
+
+     tax1 = parseFloat(document.getElementById('totyoupay').value * {{=servicetax}}/100)
+     tax = tax1.toFixed(2)
+
+     
+     $("*[type='radio']").click(function(){
+	    $("#all").show();
+            if($(this).attr('value') == 'paybycc')
+	    {
+	        $("#swipecharge").val(swpch)
+	        $("#servicetax").val(tax)
+		$("#creditcard").show();
+		$("#cash").hide();
+		$("#company").hide();
+		$("#none").hide();
+		totalcalculation();
+	    }
+            if($(this).attr('value') == 'paybycash')
+	    {
+	        $("#swipecharge").val("0");
+	        $("#servicetax").val(tax);
+		$("#creditcard").hide();
+		$("#cash").show();
+		$("#company").hide();
+		$("#none").hide();
+		totalcalculation();
+		
+	    }
+            if($(this).attr('value') == 'paybycomp')
+	    {
+	        $("#swipecharge").val("0");
+	        $("#servicetax").val(tax);
+		$("#creditcard").hide();
+		$("#cash").hide();
+		$("#company").show();
+		$("#none").hide();
+		totalcalculation();
+		
+	    }
+            if($(this).attr('value') == 'none')
+	    {
+		$("#swipecharge").val("0");
+	        $("#servicetax").val(tax);
+		$("#all").hide();
+		$("#creditcard").hide();
+		$("#cash").hide();
+		$("#company").hide();
+		$("#none").show();
+		totalcalculation();
+	    }
+     });
+});
+
+  
+function premiumcalculation()
+{
+    
+    var premium = 0
+    var company = 0
+    var youpay  = 0
+    
+    var totpremium = 0
+    var totcompany = 0
+    var totyoupay  = 0
+    var servicetaxes = 0
+    var swipecharges = 0
+    var total = 0
+    
+    //gets table
+    var oTable  = document.getElementById('memberpayment');
+    <!--var oTable1 = document.getElementById('totalpayment');-->
+    
+    <!--// rows of summary table-->
+    <!--var rows1 = oTable1.getElementsByTagName( 'tr' );-->
+    <!--var td0 = rows1[0].getElementsByTagName( 'td' );-->
+    <!--var td1 = rows1[0].getElementsByTagName( 'td' );-->
+    <!--var td2 = rows1[0].getElementsByTagName( 'td' );-->
+    <!--var td3 = rows1[0].getElementsByTagName( 'td' );-->
+    <!--var td4 = rows1[0].getElementsByTagName( 'td' );-->
+    <!--var td5 = rows1[0].getElementsByTagName( 'td' );-->
+    <!--var td6 = rows1[0].getElementsByTagName( 'td' );-->
+   
+    <!--var totpremiuminput = td0[2].getElementsByTagName( 'input' );-->
+    <!--var totcompanyinput = td1[2].getElementsByTagName( 'input' );-->
+    <!--var totyoupayinput  = td2[2].getElementsByTagName( 'input' );-->
+    
+    
+    
+    //gets rows of table, the header is 0th row.
+    var rows = oTable.getElementsByTagName( 'tr' );
+    
+    for (i = 1; i < rows.length; i++){
+
+       //there are 6 columns : First three are not be conisdered.
+       //4th column is premium, 5th columns = company 6th column = youpay
+       var td =  rows[i].getElementsByTagName( 'td' );
+       
+       var preminput = td[4].getElementsByTagName( 'input' );
+       var compinput = td[5].getElementsByTagName( 'input' );
+       var youpayinput = td[6].getElementsByTagName( 'input' );
+      
+       premium = premium + parseFloat(preminput[0].value);
+       company = company + parseFloat(compinput[0].value);
+       youpay  = youpay +  parseFloat(youpayinput[0].value);
+            
+       
+       totpremium = premium;
+       totcompany = company;
+       totyoupay  = youpay;
+
+              
+       
+       document.getElementById('totpremium').value = totpremium.toFixed(2);
+       document.getElementById('totcompanypays').value = totcompany.toFixed(2);
+       document.getElementById('totyoupay').value = totyoupay.toFixed(2);
+       
+       swpch1 = parseFloat(document.getElementById('totyoupay').value * {{=swipecharge}}/100)
+       swipecharges = swpch1.toFixed(2)
+    
+       tax1 = parseFloat(document.getElementById('totyoupay').value * {{=servicetax}}/100)
+       servicetaxes = tax1.toFixed(2)
+    
+       document.getElementById('servicetax').value = servicetaxes;  
+       document.getElementById('swipecharge').value = swipecharges;  
+     
+    
+       
+       servicetaxes =    parseFloat(document.getElementById('servicetax').value);      
+       swipecharges =  parseFloat(document.getElementById('swipecharge').value);
+       
+       total = totyoupay + servicetaxes + swipecharges;
+       document.getElementById('total').value = total;  
+       
+    }   
+   
+}
+
+ 
+
+function xpremiumcalculation()
+{
+    
+    var premium = 0
+    var company = 0
+    var youpay  = 0
+    
+    var totpremium = 0
+    var totcompany = 0
+    var totyoupay  = 0
+    var servicetaxes = 0
+    var swipecharges = 0
+    var total = 0
+    
+    //gets table
+    var oTable  = document.getElementById('memberpayment');
+   
+    
+    
+    
+    //gets rows of table, the header is 0th row.
+    var rows = oTable.getElementsByTagName( 'tr' );
+    
+    for (i = 1; i < rows.length; i++){
+
+       //there are 6 columns : First three are not be conisdered.
+       //4th column is premium, 5th columns = company 6th column = youpay
+       var td =  rows[i].getElementsByTagName( 'td' );
+       
+       var preminput = td[4].getElementsByTagName( 'input' );
+       var compinput = td[5].getElementsByTagName( 'input' );
+       var youpayinput = td[6].getElementsByTagName( 'input' );
+      
+       premium = premium + parseFloat(preminput[0].value);
+       company = company + parseFloat(compinput[0].value);
+       youpay  = youpay +  parseFloat(youpayinput[0].value);
+            
+       
+       totpremium = premium;
+       totcompany = company;
+       totyoupay  = youpay;
+       
+       
+       document.getElementById('totpremium').value = totpremium.toFixed(2);
+       document.getElementById('totcompanypays').value = totcompany.toFixed(2);
+       document.getElementById('totyoupay').value = totyoupay.toFixed(2);
+       
+       servicetax =    parseFloat(document.getElementById('servicetax').value);      
+       swipecharge =  parseFloat(document.getElementById('swipecharge').value);
+       
+       total = totyoupay + servicetax + swipecharge;
+       document.getElementById('total').value = total;  
+       
+    }   
+   
+}
+
+function totalcalculation()
+{
+   
+    
+    var totpremium = 0
+    var totcompany = 0
+    var totyoupay  = 0
+    var servicetaxes = 0
+    var swipecharges = 0
+    var total = 0
+    
+       
+    totpremium = parseFloat(document.getElementById('totpremium').value);
+    totcompany = parseFloat(document.getElementById('totcompanypays').value);
+    totyoupay  = parseFloat(document.getElementById('totyoupay').value);
+    
+    swpch1 = parseFloat(document.getElementById('totyoupay').value * {{=swipecharge}}/100)
+    swipecharges = swpch1.toFixed(2)
+    
+    tax1 = parseFloat(document.getElementById('totyoupay').value * {{=servicetax}}/100)
+    servicetaxes = tax1.toFixed(2)
+    
+    document.getElementById('servicetax').value = servicetaxes;  
+    document.getElementById('swipecharge').value = swipecharges;  
+     
+    servicetaxes = parseFloat(document.getElementById('servicetax').value); 
+    swipecharges =  parseFloat(document.getElementById('swipecharge').value);
+    
+    total = totyoupay + servicetaxes + swipecharges;
+    document.getElementById('total').value = total;  
+    
+}
+
+
+function xtotalcalculation()
+{
+   
+    
+    var totpremium = 0
+    var totcompany = 0
+    var totyoupay  = 0
+    var servicetax = 0
+    var swipecharge = 0
+    var total = 0
+    
+       
+    totpremium = parseFloat(document.getElementById('totpremium').value);
+    totcompany = parseFloat(document.getElementById('totcompanypays').value);
+    totyoupay  = parseFloat(document.getElementById('totyoupay').value);
+    servicetax = parseFloat(document.getElementById('servicetax').value); 
+    swipecharge =  parseFloat(document.getElementById('swipecharge').value);
+    
+    total = totyoupay + servicetax + swipecharge;
+    document.getElementById('total').value = total;  
+    
+}
+
+
+</script>
+
+
+

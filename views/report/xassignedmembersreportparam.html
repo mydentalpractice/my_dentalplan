@@ -1,0 +1,107 @@
+{{extend 'mdp_layoutw3.html'}}
+
+<script>
+$(document).ready(function(){
+   
+    $("#providers").change(function(){
+       var x = $('#providers').val();
+       var y = $('#providers :selected').text();
+       var z = $('#providers :selected').index();
+       
+       $("#providercapitationreportparam_provider").val(x);
+         
+    });
+});
+
+$(document).ready(function(){
+   
+    $("#statuses").change(function(){
+       var x = $('#statuses').val();
+       var y = $('#statuses :selected').text();
+       var z = $('#statuses :selected').index();
+       
+       $("#providercapitationreportparam_memberstatus").val(x);
+         
+    });
+});
+</script>
+
+
+<header class="w3-container w3-dark-grey ">
+   <h4>{{=formheader}}</h4>
+</header>
+
+
+
+
+{{=form.custom.begin}}
+
+<table>
+<tr>
+    <td >
+	Provider
+    </td>
+     
+    <td >
+              <select class="form_details" id="providers">
+		  {{ for i in xrange(0, len(dsprovider)): }}
+                  <option value={{=dsprovider[i][0]}}>{{=dsprovider[i][1]}}</option>
+                {{pass}}
+                </select>
+            </td>
+       
+    </tr>     
+<tr  type="hidden" style="display:none;">
+<td >
+Provider
+</td>
+ <td >
+	{{=form.custom.widget.provider}}       
+	</td>
+</tr>
+
+<tr type="hidden" style="display:none;">
+<td >
+Start Date
+</td>
+ <td >
+	{{=form.custom.widget.startdate}}       
+	</td>
+</tr>
+<td >
+End Date
+</td>
+ <td >
+	{{=form.custom.widget.enddate}}       
+	</td>
+</tr>
+<tr>
+<td >
+Member Status
+</td>
+    <td  >
+              <select class="form_details" id="statuses">
+		    <option value="all">All</option>
+		    <option value="active">Active</option>
+		    <option value="inactive">Inactive</option>
+                </select>
+		
+	      
+
+            </td>
+</tr>
+<tr type="hidden" style="display:none;">
+<td >
+Member Status
+</td>
+    <td  >
+		
+	{{=form.custom.widget.memberstatus}}       
+
+            </td>
+</tr>
+</table>
+{{=form.custom.submit}}
+{{=form.custom.end}}
+</div>
+

@@ -1,0 +1,125 @@
+{{extend 'layout.html'}}
+
+<style>
+
+#commissions {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    width: 100%;
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+#commissions td, #customers th {
+    font-size: 1em;
+    padding: 3px 7px 2px 7px;
+}
+
+#commissions th {
+    font-size: 1.1em;
+    text-align: left;
+    padding-top: 5px;
+    padding-bottom: 4px;
+    background-color: rgb(100,100,100);
+    color: #ffffff;
+}
+
+#commissions tr.alt td {
+    color: black;
+    background-color:rgb(214,214,214);
+}
+
+
+
+</style>
+<div>
+<div id="enrollment_summary">
+<a href="http://www.mydentalplan.in">
+ <img src="/my_dentalplan/static/images/logo_my_dental_plan.png">
+</a>
+
+<h6>{{=A(T('<< Home'),_href=URL('default','index'))}} &nbsp; {{=A(T('<< Back'),_href=URL('report','enrollmentreportparam'))}}</h6>
+
+
+<table>
+<caption style="text-align:left"><h5>{{=formheader}}</h5></caption>
+<tr>
+<td class="form_details">
+Report Date:
+</td>
+<td class="form_details">
+{{=reportdate}}
+</td>
+</tr>
+<tr>
+<td>
+Report By:
+</td>
+<td>
+ {{=reportby}}
+</td>
+</tr>
+
+<tr>
+<td>
+Company:
+</td>
+<td>
+{{=companyname}} 
+</td>
+</tr>
+</table>
+</br>
+
+<h5 class="head-line">Enrollment Summary</h5>
+<table>
+  <tr>
+       <td class="form_details_unlimited">
+	Number of employees Submitted for Enrollment	   
+       </td>
+       <td class="form_details_unlimited">
+	{{=employees}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details_unlimited">
+	   Number of employees still to Attempt Enrollment
+       </td>
+       <td class="form_details_unlimited" >
+	{{=noattempts}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details_unlimited">
+	   Number of employees Attempting Enrollment
+       </td>
+       <td class="form_details_unlimited">
+	{{=attempts}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details_unlimited">
+	   Number of employees Completed Enrollment(Payment)
+       </td>
+       <td class="form_details_unlimited">
+	{{=completed}}       
+	</td>
+    </tr> 
+  
+  <tr>
+       <td class="form_details_unlimited">
+	   Number of employees Enrolled in the system
+       </td>
+       <td class="form_details_unlimited">
+	{{=enrolled}}       
+	</td>
+    </tr> 
+  
+</table>
+<button class="form_details_button" onclick="window.location='/my_dentalplan/report/enrollmentreport_pdf/{{=companyid}}/{{=companyname}}/{{=company}}/{{=reportdate}}/{{=reportby}}';return false">Print PDF</button>
+<div id="subscriberlist">
+{{=formB}}
+</div>
+
+<button class="form_details_button" onclick="window.location='/my_dentalplan/report/enrollmentreport_pdf/{{=companyid}}/{{=companyname}}/{{=company}}/{{=reportdate}}/{{=reportby}}';return false">Print PDF</button>
+</div>
+    

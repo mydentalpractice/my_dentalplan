@@ -1,0 +1,107 @@
+{{extend 'enroll_layoutw3.html'}}
+
+<header class="w3-container w3-teal">
+    <h5>Member Profile</h5>
+</header>
+
+<form  method="post" name="frmNewMember" id="frmNewMember">
+
+<div>
+{{=formA.custom.begin}}
+
+
+<div class="w3-row-padding">
+  <div class="w3-half w3-padding-0">
+    <input class="w3-input w3-padding-0 " type="text" value="{{=formA.custom.widget.webmember}}" readonly>
+    <label class="w3-label w3-text-blue w3-padding-0"><b>Member ID</b></label>
+  </div>
+  <div class="w3-half w3-padding-0">
+    <input class="w3-input w3-padding-0 " type="text" value="{{=formA.custom.widget.webkey}}" readonly>
+    <label class="w3-label w3-text-blue  w3-validate w3-padding-0"><b>Promotion Code</b></label>
+  </div>
+
+</div>
+
+<div class="w3-row-padding">
+  <div class="w3-half w3-padding-0">
+    <input class="w3-input w3-padding-0 " type="text" value="{{=formA.custom.widget.company}}" readonly>
+    <label class="w3-label w3-text-blue w3-validate w3-padding-0"><b>Company</b></label>
+  </div>
+  <div class="w3-half w3-padding-0">
+    <input class="w3-input w3-padding-0" type="text" placeholder="HMO Plan" value="{{=formA.custom.widget.hmoplan}}" readonly>
+    <label class="w3-label w3-text-blue w3-validate w3-padding-0"><b>HMO Plan</b></label>
+  </div>
+</div>
+
+<div class="w3-row-padding">
+  <div class="w3-half w3-padding-0">
+    <input class="w3-input w3-padding-0 " type="text" placeholder="Employee ID" value="{{formA.custom.widget.groupref}}">
+    <label class="w3-label w3-text-blue w3-padding-0"><b>Employee ID</b></label>
+  </div>
+
+  <div class="w3-half w3-padding-0">
+    {{=formA.custom.widget.webdob}}
+    </br>
+    <label class="w3-label w3-text-blue  w3-validate w3-padding-0"><b>DOB</b></label>
+  </div>
+  
+</div>
+
+<div class="w3-row-padding">
+  <div class="w3-half w3-padding-0">
+    <input class="w3-input w3-padding-0 w3-border" type="text" value="{{=formA.custom.widget.fname}}" >
+    <label class="w3-label  w3-validate"><b>First Name</b></label>
+  </div>
+  <div class="w3-half w3-padding-0">
+    <input class="w3-input w3-padding-0  w3-border" type="text"  value="{{=formA.custom.widget.mname}}" >
+    <label class="w3-label w3-text-blue w3-validate  w3-padding-0"><b>Middle Name</b></label>
+  </div>
+  
+</div>
+<div class="w3-row-padding">
+  <div class="w3-half w3-padding-0">
+    <input class="w3-input w3-padding-0  w3-border" type="text" value="{{=formA.custom.widget.lname}}" >
+    <label class="w3-label  w3-validate "><b>Last Name</b></label>
+  </div>
+</div>
+
+<div class="w3-row-padding">
+  <div class="w3-half w3-padding-0">
+   {{=formA.custom.widget.groupregion}}
+   <br/>
+    <label class="w3-label  w3-text-blue"><b>Group Region</b></label>
+  </div>
+  <div class="w3-half w3-padding-0">
+   
+    {{=formA.custom.widget.gender}}
+    <br/>
+    <label class="w3-label w3-text-blue">Gender</label>
+  </div>
+</div>
+  
+</div>
+
+<div class="w3-row-padding"> 
+  <div class="w3-half w3-padding-0">
+  <div class="w3-half w3-padding-8">
+  
+  <input  type="button" class="w3-btn-block w3-left-align w3-teal" onclick="window.location='/my_dentalplan/enroll/member_home';return false" value="Cancel">
+
+  </div>
+  </div>
+  
+  <div class="w3-half w3-padding-0">
+  <div class="w3-half w3-padding-8">
+  <button type="submit" class="w3-btn-block w3-right-align w3-teal">Enter Contact Details >>></button>
+  </div>
+  </div>
+  
+</div>
+
+{{=formA.custom.end}}
+
+
+
+</form>
+
+

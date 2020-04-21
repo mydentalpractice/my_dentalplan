@@ -1,0 +1,900 @@
+{{extend 'layoutenroll2.html'}}
+
+<script>
+
+function changeRegions(){
+var regionopts = document.getElementById("regions");
+var region = regionopts.options[regionopts.selectedIndex].value;
+var x = document.getElementById("webmember_groupregion");
+    x.value = region;
+   
+    ajax('{{=URL('member','plans')}}', ['groupregion','company'], 'plansdiv');
+    
+var y = document.getElementById("webmember_hmoplan");
+
+    y.value = 1;    
+
+checkout = document.getElementById("checkout");
+checkout.style="display:none";
+   
+};
+
+function changePlans(){
+var planopts = document.getElementById("plans");
+var plan = planopts.options[planopts.selectedIndex].value;
+
+var y = document.getElementById("webmember_hmoplan");
+
+    y.value = plan;
+
+   
+};
+
+
+function newDependant()
+{
+    document.getElementById('action').value  = 'adddependant'
+}
+
+function proceedCheckout()
+{
+    document.getElementById('action').value  = 'checkout'
+}
+
+
+function uploadmyphoto()
+{
+    document.getElementById('action').value  = 'addphoto'
+}
+
+function xnewDependant()
+{
+
+    fname =  document.getElementById('webmember_fname').value
+    mname = document.getElementById('webmember_mname').value
+    lname = document.getElementById('webmember_lname').value
+    webdob = document.getElementById('webmember_webdob').value
+    gender = document.getElementById('webmember_gender').value
+    <!--hmoplan   = document.getElementById('webmember_hmoplan').value-->
+    <!--groupregion   = document.getElementById('webmember_groupregion').value-->
+
+    cell = document.getElementById('webmember_cell').value
+    telephone = document.getElementById('webmember_telephone').value
+    email = document.getElementById('webmember_email').value
+    address1 = document.getElementById('webmember_address1').value
+    address2 = document.getElementById('webmember_address2').value
+    address3 = document.getElementById('webmember_address3').value
+    city = document.getElementById('webmember_city').value
+    st = document.getElementById('webmember_st').value
+
+    pin = document.getElementById('webmember_pin').value
+    pin1 = document.getElementById('webmember_pin1').value
+    pin2= document.getElementById('webmember_pin2').value
+    pin3 = document.getElementById('webmember_pin3').value
+
+
+    astremail = ''
+    if(ValidateEmail(email) == false)
+    {
+	astremail = " Invalid Email! Please verify that there are no spaces in email!\n Valid syntax:xxx@domain.com or xxx.yyy@domain.com\n"
+    }
+
+
+    astr = ''
+    astrmember = ''
+    if( (fname == '') || (lname == '') || (address1 == '') || (address2 == '') || (city == '') || (st == '') || (pin == '') || (email == ''))
+    {
+	if(fname == '')
+	 astrmember = astrmember + 'First_Name, '
+	if(lname == '')
+	 astrmember = astrmember + 'Last_Name, '
+	if(address1 == '')
+	 astrmember = astrmember + 'Address1, '
+	if(address2 == '')
+	 astrmember = astrmember + 'Address2, '
+	if(city == '')
+	 astrmember = astrmember + 'City, '
+	if(st == '')
+	 astrmember = astrmember + 'State, '
+	if(pin == '')
+	 astrmember = astrmember + 'Pin, '
+	if(email == '')
+	 astrmember = astrmember + 'Email, '
+
+	astrmember = "Please enter the following valid fields " + astrmember + " before proceeding to add new dependant!\n"
+
+    }
+
+    if(astremail != '')
+    {
+	if(astr == '')
+	    astr = astremail
+	else
+	    astr = astr + '\n' + astremail
+
+    }
+
+
+
+    if(astrmember != '')
+    {
+
+	if(astr == '')
+	    astr = astrmember
+	else
+	    astr = astr + '\n' + astrmember
+
+    }
+
+
+    if(astr != '')
+    {
+	alert(astr)
+    }
+    else
+    {
+    qp =  ""
+    qp =  qp + "/" + encodeURIComponent(fname.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/"+ encodeURIComponent(mname.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(lname.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(webdob.replace("","nl2")).replace("/"," ")
+    qp =  qp +"/" + encodeURIComponent(gender.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(cell.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(telephone.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(email.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(address1.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(address2.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(address3.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(city.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + st.replace("(","openbracket").replace(")","closebracket")
+    qp =  qp + "/" + encodeURIComponent(pin.replace("","nl2")).replace("/"," ")
+    qp =  qp +"/" + encodeURIComponent(pin1.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(pin2.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(pin3.replace("","nl2")).replace("/"," ")
+
+    <!--qp =  qp + "/" + encodeURIComponent(hmoplan.replace("/"," ")).replace("/"," ")-->
+    <!--qp =  qp + "/" + encodeURIComponent(groupregion.replace("/"," ")).replace("/"," ")-->
+    qp =  qp + "/" + encodeURIComponent("0")
+    qp =  qp + "/" + encodeURIComponent("0")
+
+
+
+    qpenc = encodeURIComponent(qp)
+
+    window.location.assign("/my_dentalplan/default/runadddependantscript/{{=webmemberid}}" + qpenc + "/0/")
+    }
+
+}
+
+
+function xproceedCheckout()
+{
+
+
+    fname =  document.getElementById('webmember_fname').value
+    mname = document.getElementById('webmember_mname').value
+    lname = document.getElementById('webmember_lname').value
+    webdob = document.getElementById('webmember_webdob').value
+    gender = document.getElementById('webmember_gender').value
+    <!--hmoplan   = document.getElementById('webmember_hmoplan').value-->
+    <!--groupregion   = document.getElementById('webmember_groupregion').value-->
+
+    cell = document.getElementById('webmember_cell').value
+    telephone = document.getElementById('webmember_telephone').value
+    email = document.getElementById('webmember_email').value
+    address1 = document.getElementById('webmember_address1').value
+    address2 = document.getElementById('webmember_address2').value
+    address3 = document.getElementById('webmember_address3').value
+    city = document.getElementById('webmember_city').value
+    st = document.getElementById('webmember_st').value
+
+
+
+    pin = document.getElementById('webmember_pin').value
+    pin1 = document.getElementById('webmember_pin1').value
+    pin2= document.getElementById('webmember_pin2').value
+    pin3 = document.getElementById('webmember_pin3').value
+
+
+
+    astr = ''
+
+    astremail = ''
+    if(ValidateEmail(email) == false)
+    {
+	astremail = " Invalid Email! Please verify that there are no spaces in email!\n Valid syntax:xxx@domain.com or xxx.yyy@domain.com\n"
+    }
+
+    astrmember = ''
+    if( (fname == '') || (lname == '') || (address1 == '') || (address2 == '') || (city == '') || (st == '') || (pin == '') || (email == ''))
+    {
+	if(fname == '')
+	 astrmember = astrmember + 'First_Name, '
+	if(lname == '')
+	 astrmember = astrmember + 'Last_Name, '
+	if(address1 == '')
+	 astrmember = astrmember + 'Address1, '
+	if(address2 == '')
+	 astrmember = astrmember + 'Address2, '
+	if(city == '')
+	 astrmember = astrmember + 'City, '
+	if(st == '')
+	 astrmember = astrmember + 'State, '
+	if(pin == '')
+	 astrmember = astrmember + 'Pin, '
+	if(email == '')
+	 astrmember = astrmember + 'Email, '
+
+	astrmember = "Please enter the following valid fields " + astrmember + " before proceeding to checkout!\n"
+
+
+    }
+
+    if(astremail != '')
+    {
+	if(astr == '')
+	    astr = astremail
+	else
+	    astr = astr + '\n' + astremail
+
+    }
+
+    if(astrmember != '')
+    {
+	if(astr == '')
+	    astr = astrmember
+	else
+	    astr = astr + '\n' + astrmember
+
+    }
+
+    if(astr != '')
+    {
+	alert(astr)
+    }
+    else
+    {
+
+    qp =  ""
+    qp =  qp + "/" + encodeURIComponent(fname.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/"+ encodeURIComponent(mname.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(lname.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(webdob.replace("","nl2")).replace("/"," ")
+    qp =  qp +"/" + encodeURIComponent(gender.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(cell.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(telephone.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(email.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(address1.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(address2.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(address3.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(city.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + st.replace("(","openbracket").replace(")","closebracket")
+    qp =  qp + "/" + encodeURIComponent(pin.replace("","nl2")).replace("/"," ")
+    qp =  qp +"/" + encodeURIComponent(pin1.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(pin2.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(pin3.replace("","nl2")).replace("/"," ")
+
+    qpenc = encodeURIComponent(qp)
+
+    <!--alert("/my_dentalplan/default/runproceedscheckoutscript/{{=webmemberid}}/{{=webkey}}/" + fname + "/" + webdob + "/" + qpenc + "/")-->
+
+
+
+    window.location.assign("/my_dentalplan/default/runproceedscheckoutscript/{{=webmemberid}}/{{=webkey}}/" + fname + "/" + webdob  + "/" + qpenc + "/")
+
+
+
+    }
+
+
+}
+
+
+function xuploadmyphoto()
+{
+
+
+    fname =  document.getElementById('webmember_fname').value
+    mname = document.getElementById('webmember_mname').value
+    lname = document.getElementById('webmember_lname').value
+    webdob = document.getElementById('webmember_webdob').value
+    gender = document.getElementById('webmember_gender').value
+
+    cell = document.getElementById('webmember_cell').value
+    telephone = document.getElementById('webmember_telephone').value
+    email = document.getElementById('webmember_email').value
+    address1 = document.getElementById('webmember_address1').value
+    address2 = document.getElementById('webmember_address2').value
+    address3 = document.getElementById('webmember_address3').value
+    city = document.getElementById('webmember_city').value
+    st = document.getElementById('webmember_st').value
+
+
+
+    pin = document.getElementById('webmember_pin').value
+    pin1 = document.getElementById('webmember_pin1').value
+    pin2= document.getElementById('webmember_pin2').value
+    pin3 = document.getElementById('webmember_pin3').value
+
+    astr = ''
+
+    astremail = ''
+    if(ValidateEmail(email) == false)
+    {
+	astremail = " Invalid Email! Please verify that there are no spaces in email!\n Valid syntax:xxx@domain.com or xxx.yyy@domain.com\n"
+    }
+
+    astrmember = ''
+    if( (fname == '') || (lname == '') || (address1 == '') || (address2 == '') || (city == '') || (st == '') || (pin == '') || (email == ''))
+    {
+	if(fname == '')
+	 astrmember = astrmember + 'First_Name, '
+	if(lname == '')
+	 astrmember = astrmember + 'Last_Name, '
+	if(address1 == '')
+	 astrmember = astrmember + 'Address1, '
+	if(address2 == '')
+	 astrmember = astrmember + 'Address2, '
+	if(city == '')
+	 astrmember = astrmember + 'City, '
+	if(st == '')
+	 astrmember = astrmember + 'State, '
+	if(pin == '')
+	 astrmember = astrmember + 'Pin, '
+	if(email == '')
+	 astrmember = astrmember + 'Email, '
+
+	astrmember = "Please enter the following valid fields " + astrmember + " before proceeding to upload your photo!\n"
+
+    }
+
+    if(astremail != '')
+    {
+	if(astr == '')
+	    astr = astremail
+	else
+	    astr = astr + '\n' + astremail
+
+    }
+
+    if(astrmember != '')
+    {
+	if(astr == '')
+	    astr = astrmember
+	else
+	    astr = astr + '\n' + astrmember
+
+    }
+
+    if(astr != '')
+    {
+	alert(astr)
+    }
+    else
+    {
+
+
+    qp =  ""
+    qp =  qp + "/" + encodeURIComponent(fname.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/"+ encodeURIComponent(mname.replace("","nl2")).replace("/"," ").replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(lname.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(webdob.replace("","nl2")).replace("/"," ")
+    qp =  qp +"/" + encodeURIComponent(gender.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(cell.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(telephone.replace("","nl2")).replace("/"," ").replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(email.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(address1.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(address2.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(address3.replace("","nl2")).replace("/"," ").replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(city.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + st.replace("(","openbracket").replace(")","closebracket")
+    qp =  qp + "/" + encodeURIComponent(pin.replace("","nl2")).replace("/"," ")
+    qp =  qp +"/" + encodeURIComponent(pin1.replace("","nl2")).replace("/"," ").replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(pin2.replace("","nl2")).replace("/"," ").replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(pin3.replace("","nl2")).replace("/"," ").replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent("hmoplan").replace("","nl2").replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent("groupregion").replace("","nl2").replace("/"," ")
+
+    qpenc = encodeURIComponent(qp)
+
+    <!--alert("/my_dentalplan/default/runphotoscript/{{=webmemberid}}/{{=webkey}}/" + fname + "/" + webdob + "/" + qpenc + "/0/")-->
+
+
+
+    window.location.assign("/my_dentalplan/default/runphotoscript/{{=webmemberid}}/{{=webkey}}/" + fname + "/" + webdob  + "/" + qpenc + "/0/")
+    }
+
+
+
+
+}
+
+
+
+
+
+
+
+$(document).ready(function(){
+    $("#web_enrollment").click(function(){
+       $("#provider_sitekey").val("random_key");
+       <!--$("#planname").val($("#company_hmoplan").text());-->
+
+    });
+});
+
+$(document).ready(function(){
+
+    $("#providers").change(function(){
+       var x = $('#providers').val();
+       var y = $('#providers :selected').text();
+       var z = $('#providers :selected').index();
+
+       $("#providername").text(z)
+
+       $("#webmember_provider").val(x);
+
+       $("#text1").text(x);
+       $("#text2").text(y);
+       $("#text3").text(z);
+
+    });
+});
+
+$(document).ready(function(){
+
+    $("#provider").change(function(){
+       var x = $('#provider').val();
+       var y = $('#provider :selected').text();
+       var z = $('#provider :selected').index();
+
+       $("#text1").text(x);
+       $("#text2").text(y);
+       $("#text3").text(z);
+
+
+
+
+    });
+});
+
+
+$(document).ready(function(){
+
+    $("#plans").change(function(){
+       var x = $('#plans').val();
+       var y = $('#plans :selected').text();
+       var z = $('#plans :selected').index();
+
+
+
+       $("#webmember_hmoplan").val(x);
+
+       $("#text1").text(x);
+       $("#text2").text(y);
+       $("#text3").text(z);
+
+    });
+});
+
+</script>
+
+<form  method="post" name="frmWebMember" id="frmWebMember">
+
+
+
+{{=formA.custom.begin}}
+
+<div class="w3-container w3-hide">
+{{=formA.custom.widget.groupregion}}  
+{{=formA.custom.widget.hmoplan}}   
+{{=formA.custom.widget.startdate}}   
+</div>   
+ 
+
+
+
+
+
+ <div class="w3-container w3-padding-2">
+ <h6>{{=A(T('<< Back'),_href=URL('default','member_login'))}}</h6>
+ <header class="w3-container w3-dark-grey ">
+   <h4>{{=formheader}}</h4>
+</header>
+{{if (webkey=='sH4fI9'):}}
+<h4 style="color:red;">Kindly fill the details of the person to be enrolled on the main page while filling the form.DO NOT FILL SABRE EMPLOYEE DETAILS as they are already enrolled by SABRE</h4>
+{{pass}}
+<h4 style="color:red;">Please select your Region and Plan from the selection below, if not already selected.</h4>
+<h4 style="color:red;">If you have any questions, please contact MyDentalPlan at Tel:1800-102-7526 or Email:info@mydentalplan.in</h4>		
+
+<br/>
+
+
+
+ <header class="w3-container w3-dark-grey ">
+ <h5>Details</h5>
+ </header>
+
+
+
+
+<table>
+  <tr>
+       <td class="form_details ">
+	   Member ID
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.webmember}}
+	</td>
+    </tr>
+  <tr>
+       <td class="form_details">
+	   Employee ID
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.groupref}}
+	</td>
+    </tr>
+
+  <tr>
+       <td class="form_details ">
+	   Company
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.company}}
+	</td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+	   Provider
+       </td>
+       <td class="form_details ">
+	{{=providername}}&nbsp;&nbsp; <span style="display:none">{{=formA.custom.widget.provider}}</span>
+	</td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+	   Webkey
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.webkey}}
+	</td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+	  Status
+       </td>
+       <td >
+	{{=formA.custom.widget.status}}
+	</td>
+    </tr>
+      
+
+    <tr>
+       <td class="form_details">
+	   Region
+       </td>
+       <td class="form_details">
+	     <select class="form_details " id="regions" onchange="changeRegions()">
+	            <option value='0'>--Select--</option>
+		    {{ for region in regions: }}
+			{{if (region.id == regionid):}}
+			  <option selected="selected" value={{=region.id}}>{{=region.region}}({{=region.groupregion}})</option>
+			{{else:}}
+			<option value={{=region.id}}>{{=region.region}}({{=region.groupregion}})</option>
+			{{pass}}
+		    {{pass}}
+                </select>         
+	     
+	</td>
+     </tr> 
+     
+<tr>
+       <td class="form_details">
+	   Plan
+       </td>
+     
+    <td class="form_details " >
+<div id='plansdiv'>
+
+		<select class="form_details " id="plans" onchange="changePlans()">
+		    <option value='1'>--Select--</option>
+	    
+		    {{for plan in plans:}}
+			{{if (plan.id == planid):}}
+			  <option selected="selected" value={{=plan.id}}>{{=plan.name}} ({{=plan.hmoplancode}})</option>
+			{{else:}}
+			<option value={{=plan.id}}>{{=plan.name}} ({{=plan.hmoplancode}})</option>
+			{{pass}}
+		    {{pass}}				  
+		</select>
+		
+		
+	    </div>    
+             
+	</td>
+       
+    </tr>     
+
+    
+ 
+
+</table>
+
+
+</br>
+ <header class="w3-container w3-dark-grey ">
+ <h5 >Personal Details</h5>
+ </header>
+ 
+<table>
+  <tr>
+       <td class="form_details ">
+	   Enter your First Name <span style="color:red">*</span>
+       </td>
+       <td class="form_details " >
+	{{=formA.custom.widget.fname}}
+	</td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+	   Enter your Middle Name
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.mname}}
+	</td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+	  Enter your Last Name <span style="color:red">*</span>
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.lname}}
+	</td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+       Enter your DOB
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.webdob}}
+	</td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+	   Please select your Gender
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.gender}}
+	</td>
+    </tr>
+    <tr class="form_details">
+            <td class="form_details " >
+                Premium Paid
+            </td>
+            <td class="form_details " >
+                                 {{=formA.custom.widget.paid}}
+            </td>
+         </tr>
+    <tr type="hidden" style="display:none;">
+            <td class="form_details " >
+                Upgraded
+            </td>
+            <td class="form_details " >
+                                 {{=formA.custom.widget.upgraded}}
+            </td>
+         </tr>
+
+
+</table>
+
+
+
+
+
+ </br>
+
+ <header class="w3-container w3-dark-grey ">
+ <h5 >Contact Details</h5>
+ </header>
+<table>
+  <tr>
+       <td class="form_details ">
+	   Enter your Mobile Number <span style="color:red">*</span>
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.cell}}
+	</td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+	   Enter your Telephone Number
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.telephone}}
+	</td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+	   Enter your Email <span style="color:red">*</span>
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.email}}
+	</td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+	   Enter your Address -1 <span style="color:red">*</span>
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.address1}}
+	</td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+	   Enter your Address -2 <span style="color:red">*</span>
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.address2}}
+	</td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+	   Enter your Address -3
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.address3}}
+	</td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+	   Enter your City <span style="color:red">*</span>
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.city}}
+	</td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+	   Please select your State <span style="color:red">*</span>
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.st}}
+	</td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+	   Enter your Pin <span style="color:red">*</span>
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.pin}}
+	</td>
+    </tr>
+
+
+</table>
+
+
+</br>
+ <header class="w3-container w3-dark-grey ">
+ <h5 >Area Dentist Choices</h5>
+ </header>
+<table>
+  <tr>
+       <td class="form_details ">
+	   Area of dentist choice 1 (pincode)
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.pin1}}
+	</td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+	   Area of dentist choice 2 (pincode)
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.pin2}}
+	</td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+	   Area of dentist choice 3 (pincode)
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.pin3}}
+	</td>
+    </tr>
+
+
+</table>
+
+
+</br>
+
+ <header class="w3-container w3-dark-grey ">
+ <h5 >Passport Size Photo</h5>
+ </header>
+    <table>
+   
+            <td>
+                {{if ((rows[0]['webmember.image'] != "")  &  (rows[0]['webmember.image'] != None)):  }}
+                   <img src="{{=URL('my_dentalplan', 'member', 'download', args=rows[0]['webmember.image'] )}}" style="width:150px" />
+
+                {{else:}}
+                       No Image&nbsp;
+                {{pass}}
+
+
+            </td>
+         </tr>
+       <tr>
+
+            <td>
+		<input type="submit" method="POST" class="form_details_button" onclick="javascript: uploadmyphoto()" value="Select your Photo">
+            </td>
+         </tr>
+    </table>
+    <br/>
+
+
+ <header class="w3-container w3-dark-grey ">
+ <h5 >Dependants</h5>
+ </header>
+ 
+<table>
+
+
+<tr>
+            <td colspan="4">
+                <table>
+                
+                <td>
+		{{if(paid==False):}}    
+		<h4 style="color:red;">Please verify that you have selected Region and Plan on this form, if not already selected!</h4>
+		<h4 style="color:red;">If you have any questions, please contact MyDentalPlan at Tel:1800-102-7526 or Email:info@mydentalplan.in</h4>		
+                {{if(relations != -1):}}		
+		{{if(relations == 0):}}
+		<h5></h5>
+	        <h5>Your Dental Plan does not allow you to add dependants to your account</h5>
+	        <h5>Please contact your company's HR/Administration Department or <a href="http://www.mydentalplan.in">MyDentalPlan</a> for more details.</h5>
+		{{else:}}
+		{{if(subscribers < maxsubscribers):}}
+                <input class="form_details_button" type="submit" method="POST" onclick="javascript: newDependant()" value="Add Dependant">
+		{{pass}}
+		{{if(subscribers>maxsubscribers):}}
+		<h5>You have more dependants {{=(int(subscribers)-1)}} than allowed by your company {{=(int(maxsubscribers)-1)}}. Please delete additional dependants.
+		{{pass}}
+		{{pass}}
+		{{pass}}
+                </td>
+		{{pass}}
+                </tr>
+                <tr>
+                <td>
+                {{=formB}}
+                </td>
+                </tr>
+                </table>
+            </td>
+         </tr>
+
+    </table>
+    {{=formA.custom.submit}}
+
+
+    <input  type="button" class="form_details_button" onclick="window.location='/my_dentalplan/default/member_login';return false" value="Cancel">
+
+
+
+    {{if( (showcheckout == True) & (subscribers<=maxsubscribers)):}}
+    <input  class="form_details_button" id="checkout" type="submit" method="POST" onclick="javascript: proceedCheckout()" value="Proceed Checkout">
+    {{pass}}
+
+    <input type="text" id="action" name="action" value="submit" type="hidden" style="display:none;">
+
+{{=formA.custom.end}}
+</div>
+
+</form>
+
+

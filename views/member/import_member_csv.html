@@ -1,0 +1,31 @@
+{{extend 'layoutenroll2.html'}}
+
+<h4>Sabre Employees Web Enrollment</h4>
+
+<div id="import" >
+  <h6>{{=A(T('<< Home'),_href=URL('default','index'))}}</h6>
+  <table>
+   <tr>
+   <td>
+   {{=FORM(
+  
+            TABLE(
+             TR(TD('Import File:'),TD(INPUT(_type='file',_name='csvfile')),TD(INPUT(_type='submit',_class='form_details_button',_value='Upload'))), 
+             TR(TD( INPUT(_type='hidden',_value='importdata',_name='table')),TD(),TD())
+            )
+        )
+    }}   
+   </td>
+   </tr>
+  </table>
+</div>
+
+
+
+
+ 
+
+
+
+     
+    

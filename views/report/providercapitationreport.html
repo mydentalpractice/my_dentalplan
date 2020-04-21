@@ -1,0 +1,105 @@
+{{extend 'mdp_layoutw3.html'}}
+
+<style>
+
+#capitations {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    width: 100%;
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+#capitations td, #customers th {
+    font-size: 1em;
+    padding: 3px 7px 2px 7px;
+}
+
+#capitations th {
+    font-size: 1.1em;
+    text-align: left;
+    padding-top: 5px;
+    padding-bottom: 4px;
+    background-color: rgb(100,100,100);
+    color: #ffffff;
+}
+
+#capitations tr.alt td {
+    color: black;
+    background-color:rgb(214,214,214);
+}
+
+
+
+</style>
+<div id="capreport">
+<a href="http://www.mydentalplan.in">
+ <img src="/my_dentalplan/static/images/logo_my_dental_plan.png">
+</a>
+
+<header class="w3-container w3-dark-grey ">
+   <h4>{{=formheader}}</h4>
+</header>
+
+<table>
+
+<tr>
+<td>
+Report Date:
+</td>
+<td>
+{{=reportdate}}
+</td>
+</tr>
+<tr>
+<td>
+Provider:
+</td>
+<td>
+{{=providername}} ({{=provider}})
+</td>
+</tr>
+<tr>
+<td>
+Cap. Period:
+</td>
+<td>
+ {{=startdate}} To {{=enddate}})
+</td>
+</tr>
+</table>
+
+
+<table id="capitations">
+  <tr>
+    <th>Group</th>
+    <th>Plan</th>
+    <th>Month</th>
+    <th>Members</th>
+    <th>Monthly Capitation</th>
+  </tr>
+  {{cmp = None}}
+  {{plan = None}}
+  {{for i in xrange(0,len(ds)):}}
+  <tr>
+      {{if (cmp != ds[i][0]):}}
+      <td>{{=ds[i][0]}}</td>
+      {{cmp = ds[i][0]}}
+      {{else:}}
+      <td>&nbsp;</td>
+      {{pass}}
+      {{if (plan != ds[i][1]):}}
+      <td>{{=ds[i][1]}}</td>
+      {{plan = ds[i][1]}}
+      {{else:}}
+      <td>&nbsp;</td>
+      {{pass}}
+      <td>{{=ds[i][2]}}</td>
+      <td>{{=ds[i][3]}}</td>
+      <td>{{=ds[i][4]}}</td>
+   </tr>
+  {{pass}}
+</table>  
+<button class="form_details_button" onclick="window.location='/my_dentalplan/report/providercapitationreport_pdf/{{=providerid}}/{{=providername}}/{{=provider}}/{{=startdate}}/{{=enddate}}';return false">Print PDF</button>
+</div>
+    
+  

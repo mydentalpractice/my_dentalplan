@@ -1,0 +1,94 @@
+{{extend 'mdp_layoutw3.html'}}
+
+ <header class="w3-container w3-dark-grey ">
+   <h4>Payment Receipt</h4>
+ </header>
+ <br/>
+ <h5>Thank You for upgrading your policy!  Please contact MyDentalPlan Administrator for Welcome Kit and Member Card</h5>
+
+
+<div>
+   
+
+    
+    
+    <table id="paymentreceipt">
+        <tr>
+        <td class="form_details"></td>
+        <td class="form_details"></td>
+        <td ><input type="text" class="w3-hide" name="txno" id="txno"  value={{=txno}} /></td>
+        </tr>
+    
+        <tr>
+        <td class="form_details">Receipt Number:</td>
+        <td class="form_details" ><input type="text" name="txno" id="txno"  value={{=txno}} /></td>
+        </tr>
+        
+        <tr>
+        <td class="form_details">Receipt Date:</td>
+        
+        <td class="form_details"><input type="text" name="txdatetime" id="txdatetime"  value={{=txdatetime}} /></td>
+        </tr>
+    
+        <tr>
+        <td class="form_details">Member:</td>
+        
+        <td class="form_details"><input type="text" name="member" id="member" value="{{=member}}"/></td>
+        </tr>
+
+        <tr>
+        <td class="form_details">Payment:</td>
+        
+        <td class="form_details"><input type="text" name="totpremium" id="totpremium"  value={{=totpremium}} /></td>
+        </tr>
+    
+        <tr>
+        <td class="form_details">Company Pays: </td>    
+        
+        <td class="form_details"><input type="text" name="totcompanypays" id="totcompanypays"   value={{=totcompanypays}} /></td></tr>
+
+        <tr>
+        <td class="form_details">Member Pays(A):</td>    
+        
+        <td class="form_details"><input type="text" name="totyoupay" id="totyoupay"   value={{=totyoupay}} /></td>
+        </tr>
+        
+        <tr>
+        <td class="form_details">GST @18%(B):</td>    
+        
+        <td class="form_details"><input type="text" name="servicetax" id="servicetax"  value={{=servicetax}} /></td>
+        </tr>
+        
+        <tr>
+        <td class="form_details">Swipe Charges(C):</td>    
+        
+        <td class="form_details"><input type="text" name="swipecharge" id="swipecharge"  value={{=swipecharge}} /></td>
+        </tr>
+        <tr>
+        <td class="form_details">Last Premium(D):</td>    
+        
+        <td class="form_details"><input type="text" name="lastpaid" id="lastpaid"  value={{=lastpaid}} /></td>
+        </tr>
+        
+        <tr>
+        <td class="form_details">Amount Paid by Member(A+B+C-D):</td>    
+        
+        <td class="form_details"><input type="text" name="total" id="total"  value={{=total}} /></td>
+        </tr>
+        
+        <tr>
+        <td class="form_details">Payment Details:</td>    
+        
+        <td class="form_details"><textarea name="paymentdetails" id="paymentdetails" rows="5" cols="50" placeholder="Enter Payment Details">{{=paymentdetails}}</textarea></td>
+        </tr>
+    
+    </table>
+     
+    
+  
+</div>
+<input  id="cancel"    type="button" class="form_details_button" onclick="window.location='/my_dentalplan/policyrenewal/list_member?page={{=page}}';return false" value="Return to Policy Upgrade Member List">
+    {{if(mode == "CreditCard"):}}
+        <input  id="paybycc"    type="button" class="form_details_button" onclick="window.location='/my_dentalplan/policyrenewal/payby_cc/{{=paymenttxlog}}?page={{=page}}';return false" value="Make Renewal Payment">
+        <input  id="renewalpayment"    type="button" class="form_details_button" onclick="window.location='/my_dentalplan/policyrenewal/email_renewalpayment/{{=paymenttxlog}}';return false" value="Email Renewal Payment Link">
+    {{pass}}

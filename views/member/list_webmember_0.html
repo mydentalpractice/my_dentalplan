@@ -1,0 +1,30 @@
+{{extend 'layout.html'}}
+
+<div>
+<h6>{{=A(T('<< Home'),_href=URL('default','index'))}}</h6>
+<h5>Group(Company) Enrollment Status</h5>
+ <table>
+        
+  <tr>
+  <td>
+  <h6> Please select the Group(Company) </h6>
+  </td>
+  </tr>
+  <tr>
+  <td>
+    {{ rows = db(db.company.is_active==True).select() }}
+    {{if len(rows):}}
+    <ul>
+    {{ for r in rows: }}
+      <li>
+        <a href="/my_dentalplan/member/list_webmember/{{=r.id}}/{{=r.company}}/{{=r.name}}//">
+            {{=r.company}}    {{=r.name}}
+        </a>
+      </li>
+    {{pass}}
+    </ul>
+    {{pass}}
+    </td>
+    </tr>
+    </table>
+    </div>

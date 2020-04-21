@@ -1,0 +1,38 @@
+  {{
+  response.files.insert(0,URL('static','css/w3.css'))
+  }}
+  
+  {{for i in xrange(0, len(cprs),1): }}
+  {{if i==items_per_page: break}}
+  <div class="w3-container  w3-pale-green w3-topbar  w3-border-grey w3-border w3-section ">
+  
+              <div class="w3-quarter w3-container w3-padding-0">
+                <div class="w3-rest  w3-tiny">Plan: {{=cprs[i].hmoplan.name}} ({{=cprs[i].hmoplan.hmoplancode}})</div>
+            </div>
+            <div class="w3-quarter w3-container w3-padding-0">
+                <div class="w3-rest  w3-tiny">Region:   {{=cprs[i].groupregion.groupregion}}</div>
+                <div class="w3-rest  w3-tiny">Relation: {{=cprs[i].companyhmoplanrate.relation}}</div>
+            </div>            
+            
+            <div class="w3-quarter w3-container w3-padding-0">
+                <div class="w3-rest  w3-tiny">Premium:      {{=cprs[i].companyhmoplanrate.premium}}</div>
+                <div class="w3-rest  w3-tiny">Company Pays: {{=cprs[i].companyhmoplanrate.companypays}}</div>
+                <div class="w3-rest  w3-tiny">Capitation: {{=cprs[i].companyhmoplanrate.capitation}}</div>
+            </div> 
+            <div class="w3-quarter w3-container w3-padding-0">
+            <div class="w3-btn-bar" style="float: right;">
+                <a class="w3-btn w3-teal  w3-round " style="width:120px;height:35px" \
+                href="{{=URL('company','update_companyplanrate',args=[cprs[i].companyhmoplanrate.id,\
+                cprs[i].companyhmoplanrate.company,cprs[i].companyhmoplanrate.hmoplan],\
+                vars=dict(page=page))}}">Plan Rate Details</a>
+                
+                <a class="w3-btn w3-teal  w3-round " style="width:120px;height:35px" \
+                href="{{=URL('company','delete_companyplanrate',args=[cprs[i].companyhmoplanrate.id,\
+                cprs[i].companyhmoplanrate.company,cprs[i].companyhmoplanrate.hmoplan],\
+                vars=dict(page=page))}}">Delete Plan Rate</a>
+                
+            </div>
+            </div>
+    </div>
+  {{pass}}
+  {{pass}}   

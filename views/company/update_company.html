@@ -1,0 +1,363 @@
+{{extend 'mdp_layoutw3.html'}}
+
+
+
+
+
+
+
+
+<header class="w3-container w3-dark-grey ">
+   <h4>{{=formheader}}</h4>
+</header>  
+
+{{=formA.custom.begin}}
+<div class="w3-container w3-hide">
+{{=formA.custom.widget.enrolleddate}}
+{{=formA.custom.widget.renewaldate}}
+{{=formA.custom.widget.terminationdate}}
+</div> 
+   
+    <table>
+        
+        <tr>
+            <td class="form_details">
+                Group Code
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.company}}
+            </td>
+            <td class="form_details">
+                Agent
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.agent}}
+                                 <input class="form_details_button", type="submit", value="Refresh", id="agentsubmit"></input>
+                                 
+            </td>
+         </tr> 
+         
+        <tr>
+            <td class="form_details">
+                Group Name
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.name}}
+            </td>
+            <td class="form_details">
+                Agent Name
+            </td>
+            <td class="form_details">
+                                  {{=agentname}}
+                                 
+                                
+            </td>
+         </tr>            
+
+        <tr>
+            <td class="form_details">
+                HR Contact Name
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.contact}}
+            </td>
+            <td class="form_details">
+                Commission
+            </td>
+            <td class="form_details">
+                         {{=formA.custom.widget.commission}}
+            </td>
+         </tr>            
+
+        <tr>
+            <td class="form_details">
+                HR Contact Number
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.telephone}}
+            </td>
+            <td class="form_details" type="hidden" style="display:none;">
+                Plan Code
+            </td>
+            <td class="form_details" type="hidden" style="display:none;">
+                                 {{=formA.custom.widget.hmoplan}}
+                                  <input class="form_details_button", type="submit", value="Refresh", id="agentsubmit"></input>
+            </td>
+         </tr> 
+         
+         <tr>
+            <td class="form_details">
+                Address 1
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.address1}}
+            </td>
+            <td class="form_details" type="hidden" style="display:none;">
+                Plan
+            </td>
+            <td class="form_details" type="hidden" style="display:none;">
+                                {{=planname}}
+                       
+                                
+            </td>
+         </tr>            
+
+         <tr>
+            <td class="form_details">
+                Address 2
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.address2}}
+            </td>
+            <td class="form_details">
+                Cap Cycle
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.capcycle}}
+            </td>
+         </tr>            
+         
+         <tr>
+            <td class="form_details">
+                Address 3
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.address3}}
+            </td>
+            <td class="form_details">
+                Prem Cycle
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.premcycle}}
+            </td>
+         </tr>            
+         <tr>
+            <td class="form_details">
+                City
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.city}}
+            </td>
+            <td class="form_details">
+                Admin Fee
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.adminfee}}
+            </td>
+         </tr>            
+         
+         <tr>
+            <td class="form_details">
+                State
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.st}}
+            </td>
+            <td class="form_details">
+                Min. Subscribers
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.minsubscribers}}
+            </td>
+         </tr>            
+
+         <tr>
+            <td class="form_details">
+                PIN
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.pin}}
+            </td>
+            <td class="form_details">
+                Max. Subscribers
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.maxsubscribers}}
+            </td>
+         </tr>            
+         <tr>
+            <td class="form_details">
+                Subscriber Age (Min)
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.minsubsage}}
+            </td>
+            <td class="form_details">
+                Subscriber Age (Max)
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.maxsubsage}}
+            </td>
+         </tr>            
+         <tr>
+            <td class="form_details">
+                Dependant Age (Min)
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.mindependantage}}
+            </td>
+            <td class="form_details">
+                Dependant Age (Max)
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.maxdependantage}}
+            </td>
+            
+         </tr>            
+         <tr>
+            <td class="form_details">
+                <h4 style="color:red">Group Key</h4>
+            </td>
+            <td class="form_details" >
+                                 <h4 style="color:red">{{=formA.custom.widget.groupkey}}</h4>
+            </td>
+            
+            <td class="form_details">
+                Dependant Mode
+            </td>
+            <td class="form_details">
+                                {{=formA.custom.widget.dependantmode}}
+            </td>
+            <td class="form_details">
+                Authorization Required
+            </td>
+            <td class="form_details">
+               {{=formA.custom.widget.authorizationrequired}}
+            </td>
+         </tr>   
+         <tr>
+      <td class="form_details">
+                <h4 style="color:red">Payment Types</h4>
+            </td>
+            <td class="form_details">
+                Online {{=formA.custom.widget.onlinepayment}}
+            </td>
+          
+            
+            <td class="form_details">
+                Cashless  {{=formA.custom.widget.cashlesspayment}}
+            </td>
+            <td class="form_details">
+                               
+            </td>
+            <td class="form_details">
+                Cash  {{=formA.custom.widget.cashpayment}}
+            </td>
+           
+            <td class="form_details">
+                Cheque{{=formA.custom.widget.chequepayment}}
+            </td>
+          
+         </tr>   
+         
+         <tr>
+            <td class="form_details">
+                Notes
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.notes}}
+            </td>
+         </tr>            
+ 
+    
+    </table>
+  
+{{=formA.custom.submit}}   
+<button class="form_details_button" onclick="window.location='{{=URL('company','list_company',vars=dict(page=page,pagecprs=pagecprs))}}';return false">Cancel</button>&nbsp;&nbsp;
+{{=formA.custom.end}}
+
+
+<br/>
+
+<header class="w3-container w3-dark-grey ">
+   <h4>Company Plan Rates <button class="form_details_button"   onclick="window.location='{{=URL('company','create_companyplanrate',args=[companyid,planid],vars=dict(page=page,pagcprs=pagecprs))}}';return false">Add Rate</button>     </h4>
+</header>  
+
+<div class="w3-row-padding w3-hide">
+  <div class="w3-half " style='line-height:1.5;'>
+    <table>
+    <tr>
+    <td>
+    Enter Plan Code to Search: 
+    </td>
+    <td>
+    <input class="w3-input w3-border-black w3-tiny" type="text" id="plancode">
+    </td>
+    <td>
+    <button class="w3-btn w3-blue w3-round-small" >Search</button>
+    </td>
+    </tr>
+    </table>
+  </div>
+  
+</div>
+    
+
+<br/>
+
+
+{{if (cprs != None):}}
+<div class="w3-container w3-padding-0" >
+ <div class="w3-half w3-container w3-padding-2 w3-left-align" >
+ {{if (pagecprs==0):}}
+   <a class="w3-btn  w3-round-xxlarge w3-light-blue  w3-hide" style="width:120px;height:35px" href="{{=URL("company","update_company",vars=dict(page=page,pagecprs=pagecprs-1), args=[companyid])}}">Previous</a> 
+ {{else:}}
+   <a class="w3-btn w3-round-xxlarge w3-light-blue" style="width:120px;height:35px" href="{{=URL("company","update_company",vars=dict(page=page,pagecprs=pagecprs-1), args=[companyid])}}">Previous</a>
+ {{pass}}
+ </div>
+ <div class="w3-half w3-container w3-padding-2 w3-right-align" >
+ {{if len(cprs)>= items_per_page:}}
+ <a class="w3-btn w3-round-xxlarge w3-light-blue" style="width:120px;height:35px" href="{{=URL("company","update_company",vars=dict(page=page,pagecprs=pagecprs+1), args=[companyid])}}">Next</a>
+ {{else:}}
+  <a class="w3-btn  w3-round-xxlarge w3-light-blue  w3-hide" style="width:120px;height:35px" href="{{=URL("company","update_company",vars=dict(page=page,pagecprs=pagecprs+1), args=[companyid])}}">Next</a> 
+ {{pass}}
+ </div>
+
+ 
+
+</div>
+
+
+{{for i in xrange(0, len(cprs),1): }}
+  {{if i==items_per_page: break}}
+  <div class="w3-container  w3-pale-green w3-topbar  w3-border-grey w3-border w3-section ">
+  
+              <div class="w3-quarter w3-container w3-padding-0">
+                <div class="w3-rest  w3-tiny">Plan: {{=cprs[i].hmoplan.name}} ({{=cprs[i].hmoplan.hmoplancode}})</div>
+            </div>
+            <div class="w3-quarter w3-container w3-padding-0">
+                <div class="w3-rest  w3-tiny">Region:   {{=cprs[i].groupregion.groupregion}}</div>
+                <div class="w3-rest  w3-tiny">Relation: {{=cprs[i].companyhmoplanrate.relation}}</div>
+                <div class="w3-rest  w3-tiny">Dependant Order: {{=cprs[i].companyhmoplanrate.covered}}</div>
+            </div>            
+            
+            <div class="w3-quarter w3-container w3-padding-0">
+                <div class="w3-rest  w3-tiny">Premium:      {{=cprs[i].companyhmoplanrate.premium}}</div>
+                <div class="w3-rest  w3-tiny">Company Pays: {{=cprs[i].companyhmoplanrate.companypays}}</div>
+                <div class="w3-rest  w3-tiny">Capitation: {{=cprs[i].companyhmoplanrate.capitation}}</div>
+            </div> 
+            <div class="w3-quarter w3-container w3-padding-0">
+            <div class="w3-btn-bar" style="float: right;">
+                <a class="w3-btn w3-teal  w3-round " style="width:120px;height:35px" \
+                href="{{=URL('company','update_companyplanrate',args=[cprs[i].companyhmoplanrate.id,\
+                cprs[i].companyhmoplanrate.company,cprs[i].companyhmoplanrate.hmoplan],\
+                vars=dict(page=page,pagecprs=pagecprs))}}">Plan Rate Details</a>
+                
+                <a class="w3-btn w3-teal  w3-round " style="width:120px;height:35px" \
+                href="{{=URL('company','delete_companyplanrate',args=[cprs[i].companyhmoplanrate.id,\
+                cprs[i].companyhmoplanrate.company,cprs[i].companyhmoplanrate.hmoplan],\
+                vars=dict(page=page,pagecprs=pagecprs))}}">Delete Plan Rate</a>
+                
+            </div>
+            </div>
+    </div>
+  {{pass}}
+  {{pass}}   
+ 
+
+{{pass}} 
+
+
+
+
+

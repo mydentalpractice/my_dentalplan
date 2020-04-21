@@ -1,0 +1,35 @@
+{{extend 'layoutenroll2.html'}}
+
+<script>
+function renewalslist()
+{
+   
+    window.location.replace("/my_dentalplan/policyrenewal/list_member?page={{=page}}")
+
+
+}
+
+</script>
+
+
+ <div class="w3-container w3-padding-16">
+ <header class="w3-container w3-dark-grey ">
+   <h3>Upgrade Policy Payment Email</h3>
+  
+</header>
+
+
+
+
+     
+    <h3></h3><br/>
+    
+    {{if(ret == True):}}
+    <h5>Upgrade Policy  Payment link successfully sent to {{=membername}}'s email address! - {{=memberemail}}</h5>
+    {{else:}}
+    <h5>Error in sending Upgrade Policy  Payment Link to {{=membername}}'s email address! - {{=memberemail}}</h5>
+    {{pass}}
+
+    <input  type="button" class="form_details_button_18" onclick="javascript: renewalslist()" value="Return to Upgrade Policy Member List">
+
+</div>

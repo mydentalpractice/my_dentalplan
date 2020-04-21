@@ -1,0 +1,49 @@
+{{extend 'mdp_layoutw3.html'}}
+
+
+<header class="w3-container w3-dark-grey ">
+   <h4>New Procedure Code</h4>
+</header>
+
+{{=formA.custom.begin}}
+    <table>
+        <tr>
+            <td class="form_details">
+                Procedure Code
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.dentalprocedure}}
+            </td>
+         </tr>            
+         <tr>
+            <td class="form_details">
+                Short Description
+            </td>
+            <td class="form_details">
+                                {{=formA.custom.widget.shortdescription}}
+            </td>
+         </tr>            
+         <tr>
+            <td class="form_details">
+                Description
+            </td>
+            <td class="form_details">
+                                {{=formA.custom.widget.description}}
+            </td>
+         </tr>            
+        
+         <tr>
+            <td class="form_details">
+                UCR Fee
+            </td>
+            <td class="form_details">
+                                {{=formA.custom.widget.procedurefee}}
+            </td>
+        </tr>
+    </table>
+    {{=formA.custom.submit}}
+    <!--<button style=";z-index:10012;border-top-width:0px;border-bottom-width:0px;border-left-width:0px;border-right-width:0px;border-top-left-radius:3px;border-top-right-radius:3px;border-bottom-right-radius:3px;border-bottom-left-radius:3px;border-color:#dddddd;border-style:solid;background-color:#3498db;color:#FFF;font-size:14px;font-weight:bold;font-style:normal;font-family:Arial;text-align:center;box-shadow:0 1px 2px rgba(0, 0, 0, 0.4);-o-box-shadow:0 1px 2px rgba(0, 0, 0, 0.4);-moz-box-shadow:0 1px 2px rgba(0, 0, 0, 0.4);-webkit-box-shadow:0 1px 2px rgba(0, 0, 0, 0.4);background-image:url('');background-size:auto;background-repeat:repeat;background-position:center center;padding-top:6px;padding-right:10px;padding-bottom:6px;padding-left:10px;left:188px;top:520px;width:120px;height:30px;" class="ElButton active " onclick="window.location='/my_dentalplan/procedure/list_procedure//';return false">Cancel</button>-->
+    <button class="form_details_button" onclick="window.location='{{=URL('procedure','list_procedure',vars=dict(page=page))}}';return false">Cancel</button>
+
+  {{=formA.custom.end}}  
+</div>

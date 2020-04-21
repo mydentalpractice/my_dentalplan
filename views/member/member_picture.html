@@ -1,0 +1,291 @@
+{{extend 'layout1.html'}}
+
+
+<div>
+<h6>{{=A(T('<< Back'),_href=URL('member','update_member',vars=dict(page=page),args=[memberid]))}}</h6>
+
+{{=formA.custom.begin}}
+   
+    <table>
+     <caption style="text-align:left"><h4>{{=formheader}}</h4></caption>
+       <tr>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Photo</th>
+            </td>
+            <td>
+                    {{=formA.custom.widget.image}}
+                     <input class="form_details_button", type="submit", value="Refresh", id="agentsubmit" formaction={{=URL('member','update_member',args=[memberid])}}></input>
+            </td>
+         </tr> 
+    </table>
+    <br/>
+    
+    <div type="hidden" style="display:none;">
+    <h5 class="head-line">Details</h5>
+<table>
+  <tr>
+       <td class="form_details">
+	   Member ID
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.patientmember}}      
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details">
+	   Company
+       </td>
+       <td class="form_details">
+	       {{=formA.custom.widget.company}}      
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details">
+	   Provider
+       </td>
+       
+       <td class="form_details">
+	{{=formA.custom.widget.provider}}  
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details">
+	   Webkey
+       </td>
+       <td class="form_details">
+	 {{=formA.custom.widget.webkey}}    
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details">
+	  Status
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.status}}   
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details">
+	   Region
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.groupregion}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details">
+	   HMO Member
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.hmopatientmember}}     
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details">
+	   PAN#
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.pan}}     
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details">
+	   Member Order
+       </td>
+       <td class="form_details">
+	 {{=formA.custom.widget.memberorder}}     
+	</td>
+    </tr> 
+
+</table>
+
+
+</br>   
+   
+<h5 class="head-line">Personal Details</h5>
+<table>
+  <tr>
+       <td class="form_details ">
+	   Enter your First Name
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.fname}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Middle Name
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.mname}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	  Enter your Last Name
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.lname}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+       Enter your DOB
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.dob}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Please select your Gender
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.gender}}       
+	</td>
+    </tr> 
+  
+
+</table>
+  
+ </br>
+ 
+ <h5 class="head-line">Contact Details</h5>
+<table>
+  <tr>
+       <td class="form_details ">
+	   Enter your Mobile Number
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.cell}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details "> 
+	   Enter your Telephone Number
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.telephone}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Email 
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.email}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Address -1
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.address1}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Address -2
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.address2}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Address -3
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.address3}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your City
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.city}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Please select your State
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.st}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Pin
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.pin}}       
+	</td>
+    </tr> 
+  
+
+</table>
+
+ 
+</br>   
+
+<h5 class="head-line">Premiums and Dates</h5>
+<table>
+  <tr>
+       <td class="form_details ">
+	  Premium
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.premium}}      
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	  Enrollment Date
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.enrollmentdate}}      
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	    Renewal Date
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.duedate}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Termination Date
+       </td>
+       <td class="form_details ">
+	 {{=formA.custom.widget.terminationdate}}      
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Premium Start Date
+       </td>
+       <td class="form_details ">
+	 {{=formA.custom.widget.premstartdt}}      
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Premium End Date
+       </td>
+       <td class="form_details ">
+	 {{=formA.custom.widget.premenddt}}      
+	</td>
+    </tr> 
+  
+
+</table>
+{{=formA.custom.end}}
+</div>
+</div>
+
+

@@ -1,0 +1,338 @@
+{{extend 'layout.html'}}
+
+<script>
+$(document).ready(function(){
+    $("#web_enrollment").click(function(){
+       $("#provider_sitekey").val("random_key");
+       <!--$("#planname").val($("#company_hmoplan").text());-->
+     
+    });
+});
+
+
+$(document).ready(function(){
+   
+    $("#providers").change(function(){
+       var x = $('#providers').val();
+       var y = $('#providers :selected').text();
+       var z = $('#providers :selected').index();
+       
+       $("#providername").text(z) 
+       
+       $("#patientmember_provider").val(x);
+       
+       $("#text1").text(x); 
+       $("#text2").text(y); 
+       $("#text3").text(z); 
+      
+    });
+});
+
+$(document).ready(function(){
+   
+    $("#provider").change(function(){
+       var x = $('#provider').val();
+       var y = $('#provider :selected').text();
+       var z = $('#provider :selected').index();
+       
+       $("#text1").text(x); 
+       $("#text2").text(y); 
+       $("#text3").text(z); 
+       
+       
+       
+      
+    });
+});
+</script>
+
+<div>
+<h6>{{=A(T('<< Home'),_href=URL('default','index'))}}&nbsp;&nbsp;&nbsp;{{=A(T('<< Back'),_href=URL('member','list_member'))}}</h6>
+<h4 class="head-line">{{=formheader}}</h4>
+{{=formA.custom.begin}}
+   
+    <h5 class="head-line">Details</h5>
+<table>
+  <tr>
+       <td class="form_details">
+	   Member ID
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.patientmember}}      
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details">
+	   Company
+       </td>
+       <td class="form_details">
+	       {{=formA.custom.widget.company}}      
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details">
+	   Provider
+       </td>
+       
+      <td class="form_details " >
+              <select id="providers">
+                {{ for i in xrange(0, len(ds)): }}
+                  
+                  <option value={{=ds[i].id}}>{{=ds[i].providername}}</option>
+                {{pass}}
+                </select>
+            </td>
+	     <tr>
+            <td class="form_details " >
+            </td>
+            <td type="hidden" style="display:none;">
+		    {{=formA.custom.widget.provider}}
+            </td>
+         </tr>            
+  
+    </tr> 
+  <tr>
+       <td class="form_details">
+	   Webkey
+       </td>
+       <td class="form_details">
+	 {{=formA.custom.widget.webkey}}    
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details">
+	  Status
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.status}}   
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details">
+	   Region
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.groupregion}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details">
+	   HMO Member
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.hmopatientmember}}     
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details">
+	   PAN#
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.pan}}     
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details">
+	   Member Order
+       </td>
+       <td class="form_details">
+	 {{=formA.custom.widget.memberorder}}     
+	</td>
+    </tr> 
+
+</table>
+
+
+</br>   
+   
+<h5 class="head-line">Personal Details</h5>
+<table>
+  <tr>
+       <td class="form_details ">
+	   Enter your First Name
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.fname}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Middle Name
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.mname}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	  Enter your Last Name
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.lname}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+       Enter your DOB
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.dob}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Please select your Gender
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.gender}}       
+	</td>
+    </tr> 
+  
+
+</table>
+  
+ </br>
+ 
+ <h5 class="head-line">Contact Details</h5>
+<table>
+  <tr>
+       <td class="form_details ">
+	   Enter your Mobile Number
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.cell}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details "> 
+	   Enter your Telephone Number
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.telephone}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Email 
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.email}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Address -1
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.address1}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Address -2
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.address2}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Address -3
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.address3}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your City
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.city}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Please select your State
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.st}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Pin
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.pin}}       
+	</td>
+    </tr> 
+  
+
+</table>
+
+ 
+</br>   
+
+<h5 class="head-line">Premiums and Dates</h5>
+<table>
+  <tr>
+       <td class="form_details ">
+	  Premium
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.premium}}      
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	  Enrollment Date
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.enrollmentdate}}      
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	    Renewal Date
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.duedate}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Termination Date
+       </td>
+       <td class="form_details ">
+	 {{=formA.custom.widget.terminationdate}}      
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Premium Start Date
+       </td>
+       <td class="form_details ">
+	 {{=formA.custom.widget.premstartdt}}      
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Premium End Date
+       </td>
+       <td class="form_details ">
+	 {{=formA.custom.widget.premenddt}}      
+	</td>
+    </tr> 
+  
+
+</table>
+    {{=formA.custom.submit}}
+   
+<button class="form_details_button" onclick="window.location='/my_dentalplan/member/list_member/';return false">Cancel</button>&nbsp;&nbsp;
+
+{{=formA.custom.end}}
+</div>
+
+
+

@@ -1,0 +1,27 @@
+{{extend 'layoutenroll2.html'}}
+
+<script>
+function home()
+{
+   
+    window.location.replace("/my_dentalplan/default/index")
+
+
+}
+
+</script>
+
+<div>
+     
+    <h3>Dental Case Sheet</h3><br/>
+    
+    {{if(ret == True):}}
+    <h5>Dental Case Sheet successfully sent to {{=fname}}, {{=lname}} at {{=email}}!</h5>
+    {{else:}}
+    <h5>Error in sending Dental Case Sheet successfully to {{=fname}}, {{=lname}} at {{=email}}!</h5>
+    
+    {{pass}}
+
+    <input  type="button" class="form_details_button_18" onclick="javascript: home()" value="Return to Home">
+
+</div>

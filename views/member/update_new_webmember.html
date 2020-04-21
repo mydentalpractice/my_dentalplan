@@ -1,0 +1,706 @@
+{{extend 'layout.html'}}
+
+<script>
+
+function newDependant()
+{
+    document.getElementById('action').value  = 'adddependant'
+}
+
+function proceedEnrollment()
+{
+    document.getElementById('action').value  = 'enrollment'
+}
+
+
+function uploadmyphoto()
+{
+    document.getElementById('action').value  = 'addphoto'
+}
+
+
+function xValidateEmail(inputText){
+var status = false;
+var emailRegEx = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+     if (inputText.search(emailRegEx) == -1) {
+         status = false;
+     }
+     else {
+          status = true;
+     }
+     return status;
+}
+
+
+
+
+function xnewDependant()
+{
+
+
+
+    fname =  document.getElementById('webmember_fname').value
+    mname = document.getElementById('webmember_mname').value
+    lname = document.getElementById('webmember_lname').value
+    webdob = document.getElementById('webmember_webdob').value
+    gender = document.getElementById('webmember_gender').value
+    hmoplan   = document.getElementById('webmember_hmoplan').value
+    groupregion   = document.getElementById('webmember_groupregion').value
+
+
+
+    cell = document.getElementById('webmember_cell').value
+    telephone = document.getElementById('webmember_telephone').value
+    email = document.getElementById('webmember_email').value
+    address1 = document.getElementById('webmember_address1').value
+    address2 = document.getElementById('webmember_address2').value
+    address3 = document.getElementById('webmember_address3').value
+    city = document.getElementById('webmember_city').value
+    st = document.getElementById('webmember_st').value
+
+    pin = document.getElementById('webmember_pin').value
+    pin1 = document.getElementById('webmember_pin1').value
+    pin2= document.getElementById('webmember_pin2').value
+    pin3 = document.getElementById('webmember_pin3').value
+
+    astremail = ''
+    if(ValidateEmail(email) == false)
+    {
+	astremail = " Invalid Email! Please verify that there are no spaces in email!\n Valid syntax:xxx@domain.com or xxx.yyy@domain.com\n"
+    }
+
+
+    astr = ''
+    astrmember = ''
+    if( (fname == '') || (lname == '') || (address1 == '') || (address2 == '') || (city == '') || (st == '') || (pin == '') || (email == ''))
+    {
+	if(fname == '')
+	 astrmember = astrmember + 'First_Name, '
+	if(lname == '')
+	 astrmember = astrmember + 'Last_Name, '
+	if(address1 == '')
+	 astrmember = astrmember + 'Address1, '
+	if(address2 == '')
+	 astrmember = astrmember + 'Address2, '
+	if(city == '')
+	 astrmember = astrmember + 'City, '
+	if(st == '')
+	 astrmember = astrmember + 'State, '
+	if(pin == '')
+	 astrmember = astrmember + 'Pin, '
+	if(email == '')
+	 astrmember = astrmember + 'Email, '
+
+	astrmember = "Please enter the following valid fields " + astrmember + " before proceeding to add new dependant!\n"
+
+    }
+
+    if(astremail != '')
+    {
+	if(astr == '')
+	    astr = astremail
+	else
+	    astr = astr + '\n' + astremail
+
+    }
+
+
+
+    if(astrmember != '')
+    {
+
+	if(astr == '')
+	    astr = astrmember
+	else
+	    astr = astr + '\n' + astrmember
+
+    }
+
+    if(astr != '')
+    {
+	alert(astr)
+    }
+    else
+    {
+
+    qp =  ""
+    qp =  qp + "/" + encodeURIComponent(fname.replace("","nl2"))
+    qp =  qp + "/"+ encodeURIComponent(mname.replace("","nl2"))
+    qp =  qp + "/" + encodeURIComponent(lname.replace("","nl2"))
+    qp =  qp + "/" + encodeURIComponent(webdob.replace("","nl2"))
+    qp =  qp +"/" + encodeURIComponent(gender.replace("","nl2"))
+    qp =  qp + "/" + encodeURIComponent(cell.replace("","nl2"))
+    qp =  qp + "/" + encodeURIComponent(telephone.replace("","nl2"))
+    qp =  qp + "/" + encodeURIComponent(email.replace("","nl2"))
+    qp =  qp + "/" + encodeURIComponent(address1.replace("","nl2"))
+    qp =  qp + "/" + encodeURIComponent(address2.replace("","nl2"))
+    qp =  qp + "/" + encodeURIComponent(address3.replace("","nl2"))
+    qp =  qp + "/" + encodeURIComponent(city.replace("","nl2"))
+    qp =  qp + "/" + st.replace("(","openbracket").replace(")","closebracket")
+    qp =  qp + "/" + encodeURIComponent(pin.replace("","nl2"))
+    qp =  qp +"/" + encodeURIComponent(pin1.replace("","nl2"))
+    qp =  qp + "/" + encodeURIComponent(pin2.replace("","nl2"))
+    qp =  qp + "/" + encodeURIComponent(pin3.replace("","nl2"))
+    qp =  qp + "/" + encodeURIComponent(hmoplan.replace("","nl2"))
+    qp =  qp + "/" + encodeURIComponent(groupregion.replace("","nl2"))
+
+    qpenc = encodeURIComponent(qp)
+
+
+    window.location.assign("/my_dentalplan/default/runadddependantscript/{{=webmemberid}}" + qpenc + "/1/")
+    }
+
+}
+
+function xuploadmyphoto()
+{
+
+
+    fname =  document.getElementById('webmember_fname').value
+    mname = document.getElementById('webmember_mname').value
+    lname = document.getElementById('webmember_lname').value
+    webdob = document.getElementById('webmember_webdob').value
+    gender = document.getElementById('webmember_gender').value
+    hmoplan   = document.getElementById('webmember_hmoplan').value
+    groupregion   = document.getElementById('webmember_groupregion').value
+
+
+    cell = document.getElementById('webmember_cell').value
+    telephone = document.getElementById('webmember_telephone').value
+    email = document.getElementById('webmember_email').value
+    address1 = document.getElementById('webmember_address1').value
+    address2 = document.getElementById('webmember_address2').value
+    address3 = document.getElementById('webmember_address3').value
+    city = document.getElementById('webmember_city').value
+    st = document.getElementById('webmember_st').value
+
+
+
+    pin = document.getElementById('webmember_pin').value
+    pin1 = document.getElementById('webmember_pin1').value
+    pin2= document.getElementById('webmember_pin2').value
+    pin3 = document.getElementById('webmember_pin3').value
+
+    astr = ''
+
+    if(ValidateEmail(email) == false)
+    {
+	alert("You have entered an invalid email address!");
+    }
+    else if( (fname == '') || (lname == '') || (address1 == '') || (address2 == '') || (city == '') || (st == '') || (pin == '') || (email == ''))
+    {
+	if(fname == '')
+	 astr = astr + 'First_Name, '
+	if(lname == '')
+	 astr = astr + 'Last_Name, '
+	if(address1 == '')
+	 astr = astr + 'Address1, '
+	if(address2 == '')
+	 astr = astr + 'Address2, '
+	if(city == '')
+	 astr = astr + 'City, '
+	if(st == '')
+	 astr = astr + 'State, '
+	if(pin == '')
+	 astr = astr + 'Pin, '
+	if(email == '')
+	 astr = astr + 'Email, '
+
+	alert("Please enter the following valid fields " + astr + " before proceeding to uploading your photo!")
+    }
+    else
+    {
+
+    qp =  ""
+    qp =  qp + "/" + encodeURIComponent(fname.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/"+ encodeURIComponent(mname.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(lname.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(webdob.replace("","nl2")).replace("/"," ")
+    qp =  qp +"/" + encodeURIComponent(gender.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(cell.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(telephone.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(email.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(address1.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(address2.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(address3.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(city.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + st.replace("(","openbracket").replace(")","closebracket")
+    qp =  qp + "/" + encodeURIComponent(pin.replace("","nl2")).replace("/"," ")
+    qp =  qp +"/" + encodeURIComponent(pin1.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(pin2.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(pin3.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(hmoplan.replace("","nl2")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(groupregion.replace("","nl2")).replace("/"," ")
+
+
+    qpenc = encodeURIComponent(qp)
+
+    window.location.assign("/my_dentalplan/default/runphotoscript/{{=webmemberid}}/None/None/None" + qpenc + "/1/")
+    }
+
+
+}
+
+
+function xproceedEnrollment()
+{
+
+
+   email  = document.getElementById('webmember_email').value
+   region = document.getElementById('webmember_groupregion').value
+
+   if((region == "1")||(region == ""))
+   {
+	alert("Please enter a valid Region!");
+   }
+   else if(ValidateEmail(email) == false)
+    {
+	alert("You have entered an invalid email address!");
+    }
+    else
+    {
+	window.location.assign('/my_dentalplan/member/enroll_webmember/{{=webmemberid}}/{{=companyid}}/{{=companycode}}/{{=companyname}}')
+
+    }
+}
+
+
+
+
+$(document).ready(function(){
+   
+    $("#plans").change(function(){
+       var x = $('#plans').val();
+       var y = $('#plans :selected').text();
+       var z = $('#plans :selected').index();
+       
+     
+       
+       $("#webmember_hmoplan").val(x);
+       
+       $("#text1").text(x); 
+       $("#text2").text(y); 
+       $("#text3").text(z); 
+      
+    });
+});
+
+$(document).ready(function(){
+    $("#web_enrollment").click(function(){
+       $("#provider_sitekey").val("random_key");
+       <!--$("#planname").val($("#company_hmoplan").text());-->
+     
+    });
+});
+
+$(document).ready(function(){
+   
+    $("#providers").change(function(){
+       var x = $('#providers').val();
+       var y = $('#providers :selected').text();
+       var z = $('#providers :selected').index();
+       
+       $("#providername").text(z) 
+       
+       $("#webmember_provider").val(x);
+       
+       $("#text1").text(x); 
+       $("#text2").text(y); 
+       $("#text3").text(z); 
+      
+    });
+});
+
+$(document).ready(function(){
+   
+    $("#provider").change(function(){
+       var x = $('#provider').val();
+       var y = $('#provider :selected').text();
+       var z = $('#provider :selected').index();
+       
+       $("#text1").text(x); 
+       $("#text2").text(y); 
+       $("#text3").text(z); 
+       
+       
+       
+      
+    });
+});
+
+
+</script>
+
+
+<form  method="post" name="frmWebMember" id="frmWebMember">
+<div>
+<h6>{{=A(T('<< Home'),_href=URL('default','index'))}}</h6>
+<h4 class="head-line">{{=formheader}}</h4>
+
+{{=formA.custom.begin}}
+   
+   
+   
+   
+<h5 class="head-line">Details</h5>
+<table>
+  <tr>
+       <td class="form_details">
+	   Member ID
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.webmember}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details">
+	   Company
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.company}}       
+	</td>
+    </tr> 
+<tr>
+  
+       <td class="form_details">
+	   Webkey
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.webkey}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details">
+	  Status
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.status}}       
+	</td>
+    </tr>     
+           <tr>
+            <td class="form_details " >
+                Provider
+            </td>
+            <td class="form_details " >
+              <select id="providers">
+                {{ for i in xrange(0, len(ds)): }}
+                  {{if (ds[i].id == providerid):}}
+		  {{provid = int(ds[i].id)}}
+		  {{provcnt = 0}}
+		  {{for j in xrange(0,len(dsprovs)):}}
+		  {{if(dsprovs[j][0] == provid):}}
+		  {{provcnt = int(dsprovs[j][1])}}
+		  {{pass}}
+		  {{pass}}
+                    <option selected="selected" value={{=ds[i].id}}>{{=ds[i].providername}}{{if(ds[i].city != ''):}} |  {{=ds[i].city}} {{pass}} {{if (ds[i].pin != ''):}} | {{=ds[i].pin}} {{pass}}  {{if(provid != 1):}}| {{=provcnt}}{{pass}}</option>
+                  {{else:}}
+		  {{provid = ds[i].id}}
+		  {{provcnt = int(dsprovs[i][1])}}
+                  <option value={{=ds[i].id}}>{{=ds[i].providername}}{{if(ds[i].city != ''):}} |  {{=ds[i].city}} {{pass}} {{if (ds[i].pin != ''):}} | {{=ds[i].pin}}  {{pass}} {{if(provid != 1):}}| {{=provcnt}}{{pass}}</option>
+                  {{pass}}
+                {{pass}}
+                </select>
+            </td>
+	    </tr>
+	    <tr>
+            <td class="form_details " >
+            </td>
+            <td type="hidden" style="display:none;">
+		    {{=formA.custom.widget.provider}}
+            </td>
+         </tr>            
+      <tr>
+       <td class="form_details">
+	   Plan
+       </td>
+     
+    <td class="form_details " >
+              <select id="plans">
+		  {{ for i in xrange(0, len(dsplans)): }}
+                  {{if (dsplans[i][0] == planid):}}
+                    <option selected="selected" value={{=dsplans[i][0]}}>{{=dsplans[i][1]}}</option>
+		   
+                  {{else:}} 
+                  <option value={{=dsplans[i][0]}}>{{=dsplans[i][1]}}</option>
+                  {{pass}}
+                {{pass}}
+                </select>
+            </td>
+       
+    </tr>     
+
+    <tr type="hidden" style="display:none;">
+       <td class="form_details" type="hidden" style="display:none;">
+       Plan
+       </td>
+       
+       <td class="form_details" type="hidden" style="display:none;">
+	 {{=formA.custom.widget.hmoplan}}    
+	</td>
+    </tr>     
+
+  
+  <tr>
+       <td class="form_details">
+	   Region
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.groupregion}}       
+	</td>
+    </tr> 
+
+  <tr>
+            <td class="form_details " >
+                Web Enrollment Date
+            </td>
+            <td class="form_details " >
+                                 {{=formA.custom.widget.webenrolldate}}
+            </td>
+    </tr>
+    <tr>
+            <td class="form_details " >
+                Web Enrollment Complete Date
+            </td>
+            <td class="form_details " >
+                                 {{=formA.custom.widget.webenrollcompletedate}}
+            </td>
+         </tr>           
+</table>
+
+
+</br>
+
+<h5 class="head-line">Personal Details</h5>
+<table>
+  <tr>
+       <td class="form_details ">
+	   Enter your First Name <span style="color:red">*</span>
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.fname}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Middle Name
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.mname}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	  Enter your Last Name <span style="color:red">*</span>
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.lname}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+       Enter your DOB
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.webdob}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Please select your Gender
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.gender}}       
+	</td>
+    </tr> 
+  <tr>
+            <td class="form_details " >
+                Enter your PAN#
+            </td>
+            <td  class="form_details " colspan="3">
+                                 {{=formA.custom.widget.webpan}}
+            </td>
+         </tr>   
+
+</table>
+</br>
+
+ <h5 class="head-line">Contact Details</h5>
+<table>
+  <tr>
+       <td class="form_details ">
+	   Enter your Mobile Number <span style="color:red">*</span>
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.cell}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details "> 
+	   Enter your Telephone Number
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.telephone}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Email <span style="color:red">*</span>
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.email}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Address -1 <span style="color:red">*</span>
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.address1}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Address -2 <span style="color:red">*</span>
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.address2}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Address -3
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.address3}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your City <span style="color:red">*</span>
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.city}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Please select your State <span style="color:red">*</span>
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.st}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Pin <span style="color:red">*</span>
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.pin}}       
+	</td>
+    </tr> 
+  
+
+</table>
+
+ 
+</br>
+
+<h5 class="head-line">Area Dentist Choices</h5>
+<table>
+  <tr>
+       <td class="form_details ">
+	   Area of dentist choice 1 (pincode)
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.pin1}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Area of dentist choice 2 (pincode) 
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.pin2}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Area of dentist choice 3 (pincode)
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.pin3}}       
+	</td>
+    </tr> 
+  
+
+</table>
+
+
+ <table>
+     <caption style="text-align:left"><h5>Passport size Photo</h5></caption>
+       <tr>
+            <td>
+                {{if ((rows[0]['webmember.image'] != "")  &  (rows[0]['webmember.image'] != None)):  }}
+                   <img src="{{=URL('my_dentalplan', 'member', 'download', args=rows[0]['webmember.image'] )}}" style="width:150px" />
+
+                {{else:}}
+                       No Image&nbsp;
+                {{pass}}
+
+
+            </td>
+         </tr>
+       <tr>
+
+            <td>
+		<input type="submit" method="POST" class="form_details_button" onclick="javascript: uploadmyphoto()" value="Select your Photo">
+            </td>
+         </tr>
+    </table>
+    
+
+
+    <table>
+        
+<tr>
+            <td colspan="4">
+                <table>
+                    <caption style="text-align:left"><h4>Dependants</h4></caption>
+                <tr>
+                <td >
+		{{if(relations == 0):}}
+	        <h5>Your Dental Plan does not allow you to add dependants to your account</h5>
+	        <h5>Please contact your company's HR/Administration Department or <a href="http://www.mydentalplan.in">MyDentalPlan</a> for more details.</h5>
+		{{else:}}
+		{{if(subscribers < maxsubscribers):}}
+                <input class="form_details_button" type="submit" method="POST" onclick="javascript: newDependant()" value="Add Dependant">
+		{{pass}}
+		{{if(subscribers>maxsubscribers):}}
+		<h5>You have more dependants {{=(int(subscribers)-1)}} than allowed by your company {{=(int(maxsubscribers)-1)}}. Please delete additional dependants.
+		{{pass}}
+		{{pass}}                
+		</td>
+                </tr>
+                <tr>
+                <td>
+                {{=formB}}
+                </td>
+                </tr>    
+                </table>
+            </td>
+         </tr>            
+    
+    </table>
+    {{=formA.custom.submit}}
+    <button class="form_details_button" onclick="window.location='/my_dentalplan/default/index';return false">Return</button>&nbsp;&nbsp;
+    {{if( (showenrollment == True)):}}
+	<input type="submit"  method="POST" class="form_details_button" onclick="javascript: proceedEnrollment()" value="Enroll Member"> 
+    {{pass}}
+    
+    <input type="text" id="action" name="action" value="submit" type="hidden" style="display:none">
+{{=formA.custom.end}}
+   
+</div>
+</form>
+
+

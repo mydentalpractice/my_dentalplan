@@ -1,0 +1,23 @@
+@charset "UTF-8";
+/* CSS Document */
+
+
+
+.white
+{color:#ffffff;}
+
+body
+{padding-top:20px;
+background-color:#f1eeee;
+font-family:Arial, Helvetica, sans-serif;
+line-height:2em;
+}
+
+.pagecontainer
+{
+	background-color:#ffffff;
+}
+
+.center
+{margin:auto 0;
+}

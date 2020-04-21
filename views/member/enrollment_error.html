@@ -1,0 +1,30 @@
+{{extend 'layoutenroll2.html'}}
+
+<script>
+function memberenrollment()
+{
+   
+    window.location.replace('/my_dentalplan/member/member_enrollment')
+}
+
+function memberenrollment_ibm()
+{
+   
+    window.location.replace('/my_dentalplan/member/member_enrollment_ibm')
+}
+
+</script>
+
+<div>
+     
+    <h3>Enrollment Error</h3><br/>
+    
+    {{if(errMssg == 'IBMERROR'):}}
+        <h5>IBM is not registered with My Dental Plan : Please contact My Dental Plan</h5>
+        <input  type="button" class="form_details_button" onclick="javascript: memberenrollment_ibm()" value="Return to Member Enrollment">
+    {{else:}}
+        <input  type="button" class="form_details_button" onclick="javascript: memberenrollment({{=returnURL}})" value="Return to Member Enrollment">    
+    {{pass}}
+    
+
+</div>

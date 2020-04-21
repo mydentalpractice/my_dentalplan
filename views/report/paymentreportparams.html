@@ -1,0 +1,80 @@
+{{extend 'mdp_layoutw3.html'}}
+
+<script>
+
+function exportcsv()
+{
+    document.getElementById('action').value  = 'csv'
+}
+
+
+
+</script>
+
+<header class="w3-container w3-dark-grey ">
+   <h4>{{=formheader}}</h4>
+</header>
+
+
+
+
+
+{{=form.custom.begin}}
+
+<table>
+<tr>
+    <td class="form_details ">
+	Provider
+    </td>
+
+    <td class="form_details ">
+	{{=form.custom.widget.provider}}
+    </td>
+
+    </tr>
+    
+
+<tr>
+<td class="form_details ">
+From Year
+</td>
+ <td class="form_details ">
+	{{=form.custom.widget.fromyear}}
+</td>
+</tr>
+
+<tr>
+<td class="form_details ">
+From Month
+</td>
+ <td class="form_details ">
+	{{=form.custom.widget.frommonth}}
+	</td>
+</tr>
+<tr>
+<td class="form_details ">
+To Year
+</td>
+ <td class="form_details ">
+	{{=form.custom.widget.toyear}}
+</td>
+</tr>
+
+<tr>
+<td class="form_details ">
+To Month
+</td>
+ <td class="form_details ">
+	{{=form.custom.widget.tomonth}}
+	</td>
+</tr>
+
+</table>
+{{=form.custom.submit}}
+
+<input class="form_details_button" type="submit" method="POST"  onclick="javascript:exportcsv()" value="Export CSV">
+
+<input type="text" id="action" name="action" value="submit" type="hidden" style="display:none;">
+
+{{=form.custom.end}}
+

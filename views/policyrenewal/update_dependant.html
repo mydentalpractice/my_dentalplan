@@ -1,0 +1,143 @@
+{{extend 'mdp_layoutw3.html'}}
+
+<script>
+
+
+
+$(document).ready(function(){
+   
+    $("#relations").change(function(){
+       var x = $('#relations').val();
+       var y = $('#relations :selected').text();
+       var z = $('#relations :selected').index();
+       
+       $("#patientmemberdependants_relation").val(x);
+       
+      
+    });
+});
+</script>
+
+<div>
+
+
+{{=formA.custom.begin}}
+   
+   
+  
+ 
+    
+    <table>
+        <caption style="text-align:left"><h4>Dependant of  {{=fname}}&nbsp;{{=lname}}&nbsp;</h4></caption>
+       
+         
+        <tr>
+            <td class="form_details " >
+                First Name <span style="color:red">*</span>
+            </td>
+            <td class="form_details " >
+                                 {{=formA.custom.widget.fname}}
+            </td>
+         </tr> 
+        <tr>
+            <td class="form_details " >
+                Middle Name
+            </td>
+            <td class="form_details " >
+                                 {{=formA.custom.widget.mname}}
+            </td>
+         </tr> 
+         
+        <tr>
+            <td class="form_details " >
+                Last Name <span style="color:red">*</span>
+            </td>
+            <td class="form_details " >
+                                 {{=formA.custom.widget.lname}}
+            </td>
+         </tr>            
+        <tr>
+            <td class="form_details " >
+                DOB
+            </td>
+            <td class="form_details " >
+                    {{=formA.custom.widget.depdob}}
+                                
+            </td>
+         </tr>            
+        <tr>
+            <td class="form_details " >
+                Gender
+            </td>
+            <td class="form_details " >
+                                 {{=formA.custom.widget.gender}}
+            </td>
+         </tr>            
+
+  <tr>
+            <td class="form_details " >
+                Relation
+            </td>
+            <td class="form_details " >
+             
+		   
+		<select  class="form_details "  id="relations">
+                {{ for i in xrange(0, len(relations)): }}
+		    {{if(selectedrelation == relations[i].relation):}}
+		    <option selected="selected" value={{=relations[i].relation}}>{{=relations[i].relation}}</option>
+		    {{else:}}
+		    <option value={{=relations[i].relation}}>{{=relations[i].relation}}</option>
+		    {{pass}}
+                {{pass}}
+                </select>	
+            </td>
+         </tr>  
+        <tr>
+            <td class="form_details " type="hidden" style="display:none;">
+                Relation
+            </td>
+            <td >
+             
+		    {{=formA.custom.widget.relation}}
+            </td>
+         </tr>          
+	 <tr>
+            <td class="form_details " >
+                Patient
+            </td>
+            <td class="form_details " >
+                                 {{=formA.custom.widget.patientmember}}
+            </td>
+            <td class="form_details " >
+                
+            </td>
+            <td class="form_details " >
+	    
+            </td>
+         </tr>            
+	 <tr>
+            <td class="form_details " >
+                Premium Paid
+            </td>
+            <td class="form_details " >
+                                 {{=formA.custom.widget.paid}}
+            </td>
+            <td class="form_details " >
+              
+            </td>
+            <td class="form_details " >
+	    
+            </td>
+         </tr>            
+
+    </table>
+    {{=formA.custom.submit}}
+     
+    <button class="form_details_button" onclick="window.location='{{=URL('policyrenewal','upgrade_policy',vars=dict(page=page,memberid=memberid))}}';return false">Return</button>&nbsp;&nbsp;
+
+    <!--<button class="form_details_button" onclick="window.close()">Close</button>&nbsp;&nbsp;-->
+{{=formA.custom.end}}
+</div>
+
+
+

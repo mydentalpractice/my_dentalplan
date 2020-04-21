@@ -1,0 +1,130 @@
+{{extend 'layoutenroll2.html'}}
+
+<div class="w3-container w3-padding-16">
+ <header class="w3-container w3-dark-grey ">
+   <h3>Payment Receipt</h3>
+  <h4>{{=ResponseHeader}}</h4>
+</header>
+
+
+
+     
+    {{if(welcomekit == True):}}
+    <h4>Welcome Kit containing Member Card, Provider Information and Helpful Tips pamphlet has been sent to your email address</h4>
+    {{pass}}
+    
+    <table>
+    
+   <tr>
+        <td class="form_details">Payment towards</td>
+        <td>&nbsp;&nbsp;</td>
+        <td ><input type="text" class="w3-hide" name="txno" id="txno"  value="My Dental Plan Healthcare Pvt. Ltd."/></td>
+    </tr>    
+   <tr>
+        <td class="form_details">GSTIN Number</td>
+        <td>&nbsp;&nbsp;</td>
+        <td ><input type="text" class="w3-hide" name="txno" id="txno"  value="29AAJCM5040Q1ZU"/></td>
+    </tr>    
+    
+    
+     <tr>
+        <td class="form_details">Payment ID:</td>
+        <td>&nbsp;&nbsp;</td>
+        <td class="form_details"><input type="text" name="paymentid" id="paymentid"  value={{=PaymentID}} /></td>
+    </tr>
+        
+     <tr>
+        <td class="form_details">Transaction ID:</td>
+        <td>&nbsp;&nbsp;</td>
+        <td class="form_details"><input type="text" name="transactionid" id="transactionid"  value={{=TransactionID}} /></td>
+    </tr>
+    
+     <tr>
+        <td class="form_details">Merchant ID:</td>
+        <td>&nbsp;&nbsp;</td>
+        <td class="form_details"><input type="text" name="merchantrefno" id="merchantrefno"  value={{=MerchantRefNo}} /></td>
+    </tr>
+    
+    <tr>
+        <td class="form_details">Billing Name:</td>
+        <td>&nbsp;&nbsp;</td>
+        <td class="form_details"><input type="text" name="billingname" id="billingname"  value={{=BillingName}} /></td>
+    </tr>
+    <tr>
+        <td class="form_details">Billing Address:</td>
+        <td>&nbsp;&nbsp;</td>
+        <td class="form_details"><input type="text" name="billingaddr" id="billingaddr"  value={{=BillingAddress}} /></td>
+    </tr>
+    
+    <tr>
+        <td class="form_details">Premium Amount:</td>
+        <td>&nbsp;&nbsp;</td>
+        <td class="form_details">
+              {{if(Amount == 'Error'):}}
+                &nbsp;
+              {{else:}}
+                <input type="text" name="txamount" id="txamount"  value={{=txamount}} />                        
+              {{pass}}
+        </td>
+    </tr>
+    
+    <tr>
+        <td class="form_details">GST @18%:</td>
+        <td>&nbsp;&nbsp;</td>
+        <td class="form_details">
+              {{if(Amount == 'Error'):}}
+                &nbsp;
+              {{else:}}
+                <input type="text" name="servicetax" id="servicetax"  value={{=servicetax}} />                        
+              {{pass}}
+        </td>
+    </tr>
+    <tr>
+        <td class="form_details">Swipe Charges:</td>
+        <td>&nbsp;&nbsp;</td>
+        <td class="form_details">
+              {{if(Amount == 'Error'):}}
+                &nbsp;
+              {{else:}}
+                <input type="text" name="swipecharge" id="swipecharge"  value={{=swipecharge}} />                        
+              {{pass}}
+        </td>
+    </tr>
+    
+    <tr>
+        <td class="form_details">Amount Paid:</td>
+        <td>&nbsp;&nbsp;</td>
+        <td class="form_details">
+             <input type="text" name="swipecharge" id="swipecharge"  value={{=Amount}} />
+        </td>
+    </tr>
+    
+    <tr>
+        <td class="form_details">Payment Date:</td>
+        <td>&nbsp;&nbsp;</td>
+        <td class="form_details">
+             <input type="text" name="datecreated" id="datecreated"  value={{=DateCreated}} />
+        </td>
+    </tr>
+    <tr>
+        <td class="form_details">Transaction Code:</td>
+        <td>&nbsp;&nbsp;</td>
+        <td class="form_details">
+             <input type="text" name="ResponseCode" id="ResponseCode"  value={{=ResponseCode}} />
+        </td>
+    </tr>
+    <tr>
+        <td class="form_details">Transaction Status:</td>
+        <td>&nbsp;&nbsp;</td>
+        <td class="form_details">
+             <input type="text" name="ResponseMessage" id="ResponseMessage"  value={{=ResponseMessage}} />
+        </td>
+    </tr>
+       
+    
+    
+    </table>
+
+  <button class="form_details_button" onclick="window.location='/my_dentalplan/default/emailpaymentreceipt/{{=PaymentID}}/{{=TransactionID}}/{{=MerchantRefNo}}/{{=BillingName}}/{{=BillingAddress}}/{{=txamount}}/{{=servicetax}}/{{=swipecharge}}/{{=Amount}}/{{=DateCreated}}/{{=ResponseCode}}/{{=ResponseMessage}}';return false">Email Payment Receipt</button>&nbsp;&nbsp;
+
+</div>

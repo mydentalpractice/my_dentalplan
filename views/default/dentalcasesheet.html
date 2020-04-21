@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Dental Case Sheet</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  
+    
+   {{include 'web2py_ajax.html'}}    
+   
+</head>
+<body>
+<style>
+.title{border-bottom: 1px solid rgb(39, 169, 227);
+    background: rgb(39, 169, 227);
+    margin: 0px 0px 16px 0px;
+    padding: 12px 20px;color:#fff;}
+    .form-control{border-radius:0px !important}
+       label{color: #27a9e3;} 
+       .cont{    border: 1px solid #95d1ec;
+    padding: 15px 20px;
+    margin-bottom: 14px;}
+    .np{padding:0px;}
+     @media only screen and (max-width: 500px) and (min-width: 300px)  {
+
+    .ct{width:90% !important; margin:0px auto !important;}   
+    }
+   
+</style>
+
+  
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12" style="margin-top: 20px; border: 1px solid #27a9e3; padding: 0px;">
+      <div>
+
+      </div>
+      <h3><img src="../static/images/logo_my_dental_plan.png" class="img-responsive"/></h3>
+     
+        <h3 class="title"><center>Dental Case Sheet</center></h3>
+         <div class="col-sm-6">
+              <form class="form-horizontal cont">
+              <div class="form-group">
+                <label class="control-label col-sm-3" for="email">First Name</label>
+                <div class="col-sm-8">
+                  <input type="text" class="form-control" id="email" placeholder="First Name" value={{=fname}}>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-sm-3" for="pwd">Last Name</label>
+                <div class="col-sm-8"> 
+                  <input type="text" class="form-control" id="pwd" placeholder="Last Name" value={{=lname}}>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label class="control-label col-sm-3" for="pwd">Phone Number</label>
+                <div class="col-sm-8"> 
+                  <input type="text" class="form-control" id="pwd" placeholder="Phone Number" value={{=cell}}>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-sm-3" for="pwd">Email</label>
+                <div class="col-sm-8"> 
+                  <input type="email" class="form-control" id="pwd" placeholder="Email" value={{=email}}>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-sm-3" for="pwd">Company</label>
+                <div class="col-sm-8"> 
+                  <select name="carlist" form="carform" class="form-control">
+		    {{ for i in xrange(0, len(companys)): }}
+		    {{if (companys[i].id == companyid):}}
+		      <option selected="selected" value={{=companys[i].id}}>{{=companys[i].name}} ({{=companys[i].company}})</option>
+		    {{else:}}
+		      <option value={{=companys[i].id}}>{{=companys[i].name}} ({{=companys[i].company}})</option>
+		    {{pass}}
+		    {{pass}}
+                  </select>
+                </div>
+              </div>
+            </form>
+        </div>
+
+
+        <div class="col-sm-6">
+           <form class="cont">
+            <label class="col-sm-12" for="email"><center>Intra Oral X-ray/Image</center></label>
+              <img src="{{=URL('default','download',args=image)}}" style="width:50%" class="img-responsive center-block"/>
+               </form>
+        </div>
+        <div class="col-sm-12 np">
+             <div class="col-sm-12">
+              <form class="form-horizontal cont">
+              <div class="form-group">
+                
+                <div class="col-sm-12">
+                   <label class="col-sm-12" for="email">Intra Oral Examination Report</label>
+                  <textarea class="form-control" rows="2"  id="comment"  placeholder="Intra Oral Examination Report" >{{=desc}}</textarea>
+                 
+                </div>
+              </div>
+              <div class="form-group">
+                
+                <div class="col-sm-12">
+                  <label class="col-sm-12" for="email">Treatment Plan Required</label>
+                  <textarea class="form-control" rows="2"  id="comment"  placeholder="Treatment Plan Required">{{=tplans}}</textarea>
+                
+                </div>
+              </div>
+              
+              
+            </form>
+        </div>
+
+
+
+	<div class="col-sm-12"><h3 style="margin: 0px 0px 8px 0px;font-size: 18px;">For any clarification, write to us at <a mailto:"info@mydentalplan.in">info@mydentalplan.in</a></h3></div>
+
+
+        </div>
+
+        
+
+
+    </div>
+    
+  </div>
+</div>
+
+</body>
+</html>

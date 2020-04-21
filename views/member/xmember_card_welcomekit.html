@@ -1,0 +1,166 @@
+{{extend 'layoutcard.html'}}
+<div id="card" >
+
+    <div class="container">
+	<!--panel starts here-->
+	<div class="row">
+	  <div class="col-sm-6">
+	    <div class="panel panel-default">
+		<div class="list-group">
+		    <a href="#" class="list-group-item active">
+		      <h4 class="list-group-item-heading">My Dental Plan</h4>
+		      <p class="list-group-item-text">Member Card</p>
+		    </a>
+		</div>
+		  <div class="panel panel-info">
+		    <div class="panel-heading">
+			  <h3 class="panel-title"><strong>Member Details</strong></h3>
+		    </div>
+		    <div class="panel-body">
+		      <div class="row">
+			<div class="col-xs-6 col-md-3">
+			
+			      <!--<a href="#" class="thumbnail">-->
+				<!--<img src="assets/img/suj.jpg" alt="Sneha Malhotra"/>-->
+			      <!--</a>-->
+			</div>
+			<div>
+			<table>
+			<tr>
+			<td>
+			<table>
+			<tr>
+			<td>
+			  &nbsp;&nbsp;&nbsp;
+			  {{if ((rows[0].patientmember.image != "")  &  (rows[0].patientmember.image != None)):  }}
+			      <img src="{{=URL('my_dentalplan', 'member', 'download', args=rows[0].patientmember.image )}}" style="width:150px" />
+                   
+			  {{else:}}
+			      No Image&nbsp;
+			  {{pass}}			
+			</td>
+			</tr>
+			</table>
+			</td>
+			
+			<td>
+			  &nbsp;&nbsp;
+			</td>
+			<td>
+			  <table>
+			      <tr>
+				  <td><strong>Member ID:</strong></td>
+				  <td>&nbsp;&nbsp;{{=rows[0].patientmember.patientmember}}</td>
+			      </tr>
+			      <tr>
+				  <td><strong>Name:</strong></td>
+				  <td>&nbsp;&nbsp;{{=rows[0].patientmember.fname}}&nbsp;&nbsp;{{=rows[0].patientmember.lname}}</td>
+			      </tr> 
+			      <tr>
+				  <td><strong>Age:</strong></td>
+				  <td>&nbsp;&nbsp;{{=age}}</td>
+			      </tr>
+			      <tr>
+				  <td><strong>DOB:</strong></td>
+				  <td>&nbsp;&nbsp;{{=rows[0].patientmember.dob}}</td>
+			      </tr>
+			  </table>
+			</td>
+			</tr>
+			</table>
+			</div>
+		      </div>
+		     <div> 
+		      <table class="table">
+			<thead>
+			  <tr>
+			    <th>Company Name</th>
+			    <th>Plan Effective Date</th>
+			    <th>Valid Through</th>
+			    <th>Plan Name</th>
+			  </tr>
+			</thead>
+			  <tbody>
+			    <tr>
+			      <td>{{=rows[0].company.name}}</td>
+			      <td>{{=rows[0].patientmember.enrollmentdate}}</td>
+			      <td>{{=rows[0].patientmember.duedate}}</td>
+			      <td>{{=rows[0].hmoplan.name}}</td>
+			      
+			    </tr>
+			  </tbody>
+			</table>
+		      </div>
+		    </div>
+		  </div> 
+		  <div class="panel panel-info">
+                      <div class="panel-heading">
+                        <h3 class="panel-title"><strong>Your Dental Provider Details</strong></h3>
+                      </div>
+                      <div class="panel-body">
+			<table>
+                            <tr>
+			      <td><strong>Doctor ID:</strong></td>
+			      <td>{{=rows[0].provider.provider}}</td>
+			    </tr>
+			    <tr>
+				<td><strong>Doctor:</strong></td>
+				<td>{{=rows[0].provider.providername}}</td>
+			    </tr> 
+			    <tr>
+				<td><strong>Address:</strong></td>
+				<td>{{=rows[0].provider.address1}}&nbsp;&nbsp;&nbsp;&nbsp;{{=rows[0].provider.address2}}&nbsp;&nbsp;&nbsp;&nbsp;{{=rows[0].provider.address3}}</br>
+				    {{=rows[0].provider.city}}&nbsp;&nbsp;&nbsp;&nbsp;{{=rows[0].provider.st}}&nbsp;&nbsp;&nbsp;&nbsp;{{=rows[0].provider.pin}}&nbsp;
+				</td>
+			    </tr>
+			    <tr>
+				<td><strong>Phone:</strong></td>
+				<td>{{=rows[0].provider.cell}}</td>
+			    </tr>
+			    <tr>
+				<td><strong>Email:</strong></td>
+				<td>{{=rows[0].provider.email}}</td>
+			    </tr>
+			</table>
+		    </div>
+		  </div>   
+		  <div class="panel panel-info">
+		    <div class="panel-heading">
+		      <h3 class="panel-title"><strong>Dependents of {{=rows[0].patientmember.fname}}&nbsp;&nbsp;{{=rows[0].patientmember.lname}}</strong></h3>
+		    </div>
+		    <div>
+		      {{=formB}}
+		    </div>
+		  </div>
+		  <div class="panel panel-info">
+		    <div class="panel-heading">
+		      <h4 class="panel-title"><strong>Disclaimer</strong></h4>
+		    </div>
+		    <div style="text-align:justify; font-size:9px; line-height: 120%;">
+		    <blockquote style="text-align:justify; font-size:9px; line-height: 100%;">
+			    Mydental plan is an offering in India which promotes dental wellness through bringing awareness among the population on the importance of oral health and its impact on quality of life. These products are not insurance products or insurance offerings. Mydental Plan promotes preventive health and aims to provide oral health care at affordable cost by subsidising the treatment costs and offering free preventive oral health packages. The preferred provider network of MY Dental Plan includes third party dentists and dental practices of repute and having met the quality standards of My Dental Plan and have agreed to perform the treatments at a particular cost and quality.
+			    MyDental plan has Quality Audit committee that audits the dental practice in terms of quality of infrastructure, processes and treatment care. Mydental plan does not own any practices or is in direct financial beneficiary of any treatments undertaken. MDp shall not be liable to any negligence or misconduct of the providers. MDP on its best effort basis endeavors to ensure that the dentists engaged by MDP are doing so for a societal cause and in case any unethical practice is suspected against the practitioner, MDP disciplinary committee may de-empanel such a service provider from MDP’s network. MDP allots the subscriber to a clinic without bias based on the preference of location of the subscriber. MDP does not hold any reservations for or against any practitioner. It offers the service provider’s details to relevant members only basis the need and convenience of the member. MDP reserves a right to terminate the certification of dentists in case they fail to adhere to the pricing norms or materially fail to carry out of any of their obligations. MDP is entitled to use the data of the subscribers for any research or epidemiological purposes. MDP appreciates feedback from its members (via feedback section and contact us section of this website) & ensures resolution to all fair requests and does not encourage use of any public media/forum with respect to any issues with the services offered to its members.
+			    </blockquote>
+		    </div>
+		  </div>
+		 
+
+	    </div> 
+	  </div>
+	</div> 
+    </div>
+		    
+
+
+ 
+</div>
+
+
+  
+
+ 
+
+
+
+     
+    

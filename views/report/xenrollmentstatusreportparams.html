@@ -1,0 +1,113 @@
+{{extend 'mdp_layoutw3.html'}}
+<script>
+
+function exportcsv()
+{
+    document.getElementById('action').value  = 'csv'
+}
+
+function pdf()
+{
+    document.getElementById('action').value  = 'pdf'
+}
+
+$(document).ready(function(){
+
+    $("#companys").change(function(){
+       var x = $('#companys').val();
+       var y = $('#companys :selected').text();
+       var z = $('#companys :selected').index();
+
+       $("#enrollmentstatusreportparams_company").val(x);
+       $("#enrollmentstatusreportparams_companyname").val(y);
+
+    });
+});
+</script>
+
+
+<header class="w3-container w3-dark-grey ">
+   <h4>{{=formheader}}</h4>
+</header>
+
+
+
+
+
+
+{{=form.custom.begin}}
+
+<table>
+<tr>
+    <td >
+	Company
+    </td>
+
+    <td  >
+              <select class="form_details" id="companys">
+		  {{ for i in xrange(0, len(dscompany)): }}
+                  <option value={{=dscompany[i][0]}}>{{=dscompany[i][1]}}</option>
+                {{pass}}
+                </select>
+            </td>
+
+    </tr>
+<tr  type="hidden" style="display:none;">
+<td >
+Company
+</td>
+ <td >
+	{{=form.custom.widget.company}}
+	</td>
+</tr>
+<tr  type="hidden" style="display:none;">
+<td >
+Company Name
+</td>
+ <td >
+	{{=form.custom.widget.companyname}}
+	</td>
+</tr>
+
+<tr>
+<td >
+Status
+</td>
+ <td >
+	{{=form.custom.widget.status}}
+	</td>
+</tr>
+<tr>
+<td >
+Start Date
+</td>
+ <td >
+	{{=form.custom.widget.startdt}}
+	</td>
+</tr>
+<tr>
+<td >
+End Date
+</td>
+ <td >
+	{{=form.custom.widget.enddt}}
+	</td>
+</tr>
+<tr>
+<td >
+Active Members
+</td>
+ <td >
+	{{=form.custom.widget.is_active}}
+	</td>
+</tr>
+</table>
+{{=form.custom.submit}}
+<input class="form_details_button" type="submit" method="POST"  onclick="javascript:exportcsv()" value="Export CSV">
+
+<input type="text" id="action" name="action" value="submit" type="hidden" style="display:none;">
+
+{{=form.custom.end}}
+
+</div>
+

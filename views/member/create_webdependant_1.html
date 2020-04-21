@@ -1,0 +1,143 @@
+{{extend 'mdp_layoutw3.html'}}
+
+<script>
+$(document).ready(function(){
+   
+    $("#relations").change(function(){
+       var x = $('#relations').val();
+       var y = $('#relations :selected').text();
+       var z = $('#relations :selected').index();
+       
+       
+       
+       $("#webmemberdependants_relation").val(x);
+       
+       $("#text1").text(x); 
+       $("#text2").text(y); 
+       $("#text3").text(z); 
+      
+    });
+});
+</script>
+<div>
+{{if(logmode=='enrollment'):}}
+    <h6>{{=A(T('<< Home'),_href=URL('default','member_register'))}}</h6>
+{{pass}}
+{{if(logmode=='login'):}}
+    <h6>{{=A(T('<< Home'),_href=URL('default','member_login'))}}</h6>
+{{pass}}
+{{if(logmode=='register'):}}
+    <h6>{{=A(T('<< Home'),_href=URL('default','member_register'))}}</h6>
+{{pass}}
+
+{{=formA.custom.begin}}
+
+   
+    <table>
+         <caption style="text-align:left"><h4>{{=formheader}} for {{=fname}}&nbsp;{{=lname}}&nbsp</h4></caption>
+        <tr>
+            <td class="form_details "  >
+                Dependant Order
+            </td>
+            <td>
+                                 {{=formA.custom.widget.memberorder}}
+            </td>
+         </tr> 
+         
+        <tr>
+            <td class="form_details "  class="form_details " >
+                First Name <span style="color:red">*</span>
+            </td> 
+            <td class="form_details " >
+                                 {{=formA.custom.widget.fname}}
+            </td>
+         </tr> 
+        <tr>
+            <td class="form_details " >
+                Middle Name
+            </td>
+            <td class="form_details " >
+                                 {{=formA.custom.widget.mname}}
+            </td>
+         </tr> 
+         
+        <tr>
+            <td class="form_details " >
+                Last Name <span style="color:red">*</span>
+            </td>
+            <td class="form_details " >
+                                 {{=formA.custom.widget.lname}}
+            </td>
+         </tr>            
+        <tr>
+            <td class="form_details " >
+                DOB
+            </td>
+            <td class="form_details " >
+                    {{=formA.custom.widget.depdob}}
+                                
+            </td>
+         </tr>            
+        <tr>
+            <td class="form_details " >
+                Gender
+            </td>
+            <td class="form_details " >
+                                 {{=formA.custom.widget.gender}}
+            </td>
+         </tr>            
+
+        <tr>
+            <td class="form_details " >
+                Relation
+            </td>
+            <td class="form_details " >
+             
+		   
+		<select id="relations">
+                {{ for i in xrange(0, len(relations)): }}
+		    <option value={{=relations[i].relation}}>{{=relations[i].relation}}</option>
+                {{pass}}
+                </select>	
+            </td>
+         </tr>  
+        <tr>
+            <td class="form_details " type="hidden" style="display:none;">
+                Relation
+            </td>
+            <td class="form_details " type="hidden" style="display:none;">
+             
+		    {{=formA.custom.widget.relation}}
+            </td>
+         </tr>  
+	 
+        <tr>
+            <td class="form_details " >
+                Patient
+            </td>
+            <td class="form_details " >
+                                 {{=formA.custom.widget.webmember}}
+            </td>
+            <td class="form_details " >
+                
+            </td>
+            <td class="form_details " >
+            </td>
+         </tr>            
+
+    
+    </table>
+    {{=formA.custom.submit}}
+    {{if(int(sourceid) == 0):}}   
+        <button class="form_details_button" onclick="window.location='{{=URL('member','update_webmember_0',vars=dict(page=page),args=[webmemberid])}}';return false">Cancel</button>&nbsp;&nbsp;
+    {{else:}}
+        <button class="form_details_button" onclick="window.location='{{=URL('member','update_webmember_1',vars=dict(page=page),args=[webmemberid])}}';return false">Cancel</button>&nbsp;&nbsp;
+    {{pass}}
+{{=formA.custom.end}}
+
+<h5>Dependants</h5>
+{{=formB}}
+</div>
+
+
+

@@ -1,0 +1,158 @@
+{{extend 'mdp_layoutw3.html'}}
+
+
+
+
+<div class="w3-main" style="margin-left:300px;margin-top:10px;">
+{{=formA.custom.begin}}
+
+<div class="w3-container w3-hide">
+{{=formA.custom.widget.groupregion}}
+{{=formA.custom.widget.hmoplan}}
+</div>
+
+<header class="w3-container w3-dark-grey ">
+   <h4>Plan Rate Details</h4>
+</header>  
+    <table>
+   
+         <tr>
+            <td class="form_details">
+                Group(Company)
+            </td>
+            <td class="form_details">
+                                {{=formA.custom.widget.company}}
+            </td>
+         </tr>            
+        <tr>
+            <td class="form_details">
+                Region
+            </td>
+            
+
+
+
+            <td class="form_details">
+	         <select class="form_details" id="regions" onchange="changeRegions()">
+		    {{ for region in regions: }}
+			{{if (region.id == 1):}}
+			  <option selected="selected" value={{=region.id}}>{{=region.groupregion}}</option>
+			{{else:}}
+			    <option value={{=region.id}}>{{=region.groupregion}}</option>
+			{{pass}}
+		    {{pass}}
+                </select>            
+	    </td>
+            
+            <td class="form_details">
+		
+            </td>
+         </tr>                     
+        <tr>
+            <td class="form_details">
+                Plan
+            </td>
+            <td class="form_details">
+                                 
+				 <div id="plansdiv">
+					<select class="form_details" id="plans" onchange="changePlans()">
+					    <option value='1'>--Select--</option>
+					    {{for plan in plans:}}
+					      {{if (plan.id == planid):}}
+						<option selected="selected"  value={{=plan.id}}>{{=plan.name}} ({{=plan.hmoplancode}})</option>
+					      {{else:}}
+						<option value={{=plan.id}}>{{=plan.name}} ({{=plan.hmoplancode}})</option>
+					      {{pass}}
+					    {{pass}}				  
+					</select>				
+				  
+				 </div>
+
+            </td>
+         </tr>            
+        <tr>
+            <td class="form_details">
+                Relation
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.relation}}
+            </td>
+         </tr>            
+         <tr>
+            <td class="form_details">
+                Dependant Order
+            </td>
+            <td class="form_details">
+                                {{=formA.custom.widget.covered}}  {{=coverederror}}
+            </td>
+	    
+         </tr>            
+         <tr>
+            <td class="form_details">
+                Premium
+            </td>
+            <td class="form_details">
+                                {{=formA.custom.widget.premium}}
+            </td>
+         </tr>            
+         <tr>
+            <td class="form_details">
+                Company Pays
+            </td>
+            <td class="form_details">
+                                {{=formA.custom.widget.companypays}}
+            </td>
+         </tr>            
+         <tr>
+            <td class="form_details">
+                Capitation
+            </td>
+            <td class="form_details">
+                                {{=formA.custom.widget.capitation}}
+            </td>
+         </tr>            
+         
+    </table>
+    {{if(len(coverederror)==0):}}
+    {{=formA.custom.submit}}
+    {{pass}}
+    <!--<button style=";z-index:10012;border-top-width:0px;border-bottom-width:0px;border-left-width:0px;border-right-width:0px;border-top-left-radius:3px;border-top-right-radius:3px;border-bottom-right-radius:3px;border-bottom-left-radius:3px;border-color:#dddddd;border-style:solid;background-color:#3498db;color:#FFF;font-size:14px;font-weight:bold;font-style:normal;font-family:Arial;text-align:center;box-shadow:0 1px 2px rgba(0, 0, 0, 0.4);-o-box-shadow:0 1px 2px rgba(0, 0, 0, 0.4);-moz-box-shadow:0 1px 2px rgba(0, 0, 0, 0.4);-webkit-box-shadow:0 1px 2px rgba(0, 0, 0, 0.4);background-image:url('');background-size:auto;background-repeat:repeat;background-position:center center;padding-top:6px;padding-right:10px;padding-bottom:6px;padding-left:10px;left:188px;top:520px;width:120px;height:30px;" class="ElButton active " onclick="window.location='/my_dentalplan/procedure/list_procedure//';return false">Cancel</button>-->
+    <button class="form_details_button" onclick="window.location='{{=URL('company','update_company',vars=dict(page=page),args=[companyid])}}';return false">Return</button>
+    
+
+  {{=formA.custom.end}}  
+  
+  <br/>
+  
+</div>
+
+<script>
+
+
+
+function changeRegions(){
+var regionopts = document.getElementById("regions");
+var region = regionopts.options[regionopts.selectedIndex].value;
+var y = document.getElementById("companyhmoplanrate_groupregion");
+var z = document.getElementById("companyhmoplanrate_hmoplan");
+    y.value = region;
+    ajax('{{=URL('company','plans')}}', ['groupregion'], 'plansdiv');
+    z.value = 1;
+};
+
+function changePlans(){
+var planopts = document.getElementById("plans");
+var plan = planopts.options[planopts.selectedIndex].value;
+var y = document.getElementById("companyhmoplanrate_hmoplan");
+
+    y.value = plan;
+
+   
+};
+    
+    
+
+
+
+</script>
+

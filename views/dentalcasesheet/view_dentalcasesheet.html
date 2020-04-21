@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Dental Case Sheet</title>
+  <meta charset="utf-8">
+ 
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+<style>
+  .right{float: right;}
+  .container{margin:20px;border: 2px solid #88c5ef;padding: 20px;background: #ecf6fd;}
+  .form-control{border: 2px solid #2799e8 !important;}
+  .bor{ border: 2px solid #2799e8;padding: 12px 0px;}
+  h2{font-weight: bold}
+  hr{border: 1px solid #ffffff;margin: 8px;}
+  .act{border: 1px solid #2799e8;
+    padding: 10px;
+    margin: 10px 0px;}
+    @media only screen and (max-width: 1600px) and (min-width: 720px)  {
+.container{width:50%;margin:0px auto;border: 2px solid #88c5ef;padding: 20px;background: #ecf6fd;}
+}
+    
+</style>
+  
+<div class="container">
+{{=formA.custom.begin}}
+  <div class="row">
+     <h2><center>Dental Case Sheet</center></h2>
+    <div class="col-sm-12">
+      <div class="form-group">
+          <label for="comment">Child Name:</label>
+          {{=formA.custom.widget.child_name}}
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="sel1">Gender:</label>
+        {{=formA.custom.widget.xgender}}        
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="sel1">DOB:</label>
+          {{=formA.custom.widget.dob}}
+      </div>
+    </div>
+    <div class="col-sm-12">
+      <div class="form-group">
+          <label for="comment">School Name:</label>
+          {{=formA.custom.widget.school_name}}
+      </div>
+      
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="sel1">Admission Number:</label>
+        {{=formA.custom.widget.admission_number}}
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="sel1">Class and Section:</label>
+        {{=formA.custom.widget.child_class}}
+      </div>
+    </div>
+     <div class="col-sm-12">
+      <div class="form-group">
+          <label for="comment">Parent Name:</label>
+        {{=formA.custom.widget.parent_name}}
+      </div>
+      <div class="form-group">
+          <label for="comment">Phone Number:</label>
+          {{=formA.custom.widget.cell}}
+      </div>
+      <div class="form-group">
+          <label for="comment">Email Id:</label>
+          {{=formA.custom.widget.email}}
+
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="sel1">Dental Case Created On:</label>
+          {{=formA.custom.widget.created_on}}
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="sel1">Dental Case Modified On:</label>
+                  {{=formA.custom.widget.modified_on}}
+
+      </div>
+    </div>
+ 
+  <h4><center>Oral Health Record</center></h4>
+  <div class="col-sm-12 bor">
+       {{if(formA.custom.widget.cavity_milk_teeth['value'] == True):}}
+        <div class="col-sm-12">
+          <span>1) Cavity (Milk Teeth)</span>
+          <span class="right"><label class="radio-inline"><input type="radio" name="milk" disabled='true' checked>Yes</label>
+         <label class="radio-inline"><input type="radio" name="milk" disabled='true' >No</label></span>
+         <hr>
+       </div>
+       {{else:}}
+        <div class="col-sm-12">
+          <span>1) Cavity (Milk Teeth)</span>
+          <span class="right"><label class="radio-inline"><input type="radio" name="milk" disabled='true' >Yes</label>
+         <label class="radio-inline"><input type="radio" name="milk" disabled='true'  checked>No</label></span>
+         <hr>
+       </div>
+       {{pass}}
+       {{if(formA.custom.widget.cavity_perm_teeth['value'] == True):}}
+       <div class="col-sm-12">
+          <span>2) Cavity (Permanent Teeth)</span>
+          <span class="right"><label class="radio-inline"><input type="radio" name="Permanent"  disabled='true' checked >Yes</label>
+         <label class="radio-inline"><input type="radio" name="Permanent" disabled='true'  >No</label></span>
+         <hr>
+       </div>
+       {{else:}}
+       <div class="col-sm-12">
+          <span>2) Cavity (Permanent Teeth)</span>
+          <span class="right"><label class="radio-inline"><input type="radio" name="Permanent" disabled='true'  >Yes</label>
+         <label class="radio-inline"><input type="radio" name="Permanent"  disabled='true' checked>No</label></span>
+         <hr>
+       </div>
+       {{pass}}       
+       
+       {{if(formA.custom.widget.crooked_teeth['value'] == True):}}
+        <div class="col-sm-12">
+          <span>3) Crooked teeth</span>
+          <span class="right"><label class="radio-inline"><input type="radio" name="Crooked" disabled='true'  checked>Yes</label>
+         <label class="radio-inline"><input type="radio" name="Crooked"  disabled='true' >No</label></span>
+         <hr>
+       </div>
+       {{else:}}
+        <div class="col-sm-12">
+          <span>3) Crooked teeth</span>
+          <span class="right"><label class="radio-inline"><input type="radio" name="Crooked" disabled='true' >Yes</label>
+         <label class="radio-inline"><input type="radio" name="Crooked"  disabled='true' checked>No</label></span>
+         <hr>
+       </div>
+       {{pass}}       
+       
+       {{if(formA.custom.widget.gum_problems['value'] == True):}}
+       <div class="col-sm-12">
+          <span>4) Gum Problems</span>
+          <span class="right"><label class="radio-inline"><input type="radio" name="Gum" disabled='true'  checked>Yes</label>
+         <label class="radio-inline"><input type="radio" name="Gum" disabled='true' >No</label></span>
+         <hr>
+       </div>
+       {{else:}}
+       <div class="col-sm-12">
+          <span>4) Gum Problems</span>
+          <span class="right"><label class="radio-inline"><input type="radio" name="Gum" disabled='true' >Yes</label>
+         <label class="radio-inline"><input type="radio" name="Gum"  disabled='true' checked>No</label></span>
+         <hr>
+       </div>
+       {{pass}}       
+       {{if(formA.custom.widget.fluoride_check['value'] == True):}}
+       <div class="col-sm-12">
+          <span>5) Floride Varnish Done?</span>
+          <span class="right"><label class="radio-inline"><input type="radio" name="Floride"  disabled='true' checked>Yes</label>
+         <label class="radio-inline"><input type="radio" name="Floride" disabled='true' >No</label></span>
+       </div>
+       {{else:}}
+       <div class="col-sm-12">
+          <span>5) Floride Varnish Done?</span>
+          <span class="right"><label class="radio-inline"><input type="radio" name="Floride" disabled='true' >Yes</label>
+         <label class="radio-inline"><input type="radio" name="Floride"  disabled='true' checked>No</label></span>
+       </div>
+      {{pass}}       
+       
+ </div> 
+ </div> 
+   <h4>Action Needed</h4>
+    
+        <div class="col-sm-12 act">
+            <label class="form-check-label">
+            {{=formA.custom.widget.emergency_consult}} Emergency Consultation with the dentist and Flouride varnish application required.
+          </label>
+         </div>
+   
+        <div class="col-sm-12 act">
+            <label class="form-check-label">
+            {{=formA.custom.widget.priority_checkup}} High priority dental checkup every 6months and Flouride varnish application required.
+          </label>
+         </div>
+     
+  
+        <div class="col-sm-12 act">
+            <label class="form-check-label">
+            {{=formA.custom.widget.routine_checkup}}Routine dental checkup needed.
+          </label>
+         </div>
+    <div class="form-group">
+          <label for="comment">Doctor Notes:</label>
+          {{=formA.custom.widget.casereport}}
+      </div>
+
+    <a href="{{=returnurl}}" class="btn btn-warning">Return </a>
+{{=formA.custom.end}}  
+</div>
+  
+  <!--</div>-->
+ 
+<!--</div>-->
+<script>   
+ function phoneno(){          
+            $('#mobile').keypress(function(e) {
+                var a = [];
+                var k = e.which;
+
+                for (i = 48; i < 58; i++)
+                    a.push(i);
+
+                if (!(a.indexOf(k)>=0))
+                    e.preventDefault();
+            });
+ 
+        }
+
+
+       </script>
+</body>
+</html>

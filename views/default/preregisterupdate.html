@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Dental Case Sheet</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  
+   {{include 'web2py_ajax.html'}}    
+   
+</head>
+<body>
+<style>
+.title{border-bottom: 1px solid rgb(39, 169, 227);
+    background: rgb(39, 169, 227);
+    margin: 0px 0px 16px 0px;
+    padding: 12px 20px;color:#fff;}
+    .form-control{border-radius:0px !important}
+       label{color: #27a9e3;} 
+       .cont{    border: 1px solid #95d1ec;
+    padding: 27px 20px;
+    margin: 20px;}
+    .np{padding:0px;}
+     @media only screen and (max-width: 500px) and (min-width: 300px)  {
+
+    .ct{width:90% !important; margin:0px auto !important;}   
+    }
+   
+</style>
+<div class="row">
+  <div class="col-sm-12" style="border-bottom: 1px solid #eee;">
+      <div class="container" style="width:60%; margin:0px auto;">
+      <h1><img src="https://www.mydentalplan.us/my_dentalplan/static/assets/img/logo-my-dental-plan_color.png" class="img-responsive">
+ </div></h1>
+
+    </div>
+  </div>
+</div>
+
+{{=form.custom.begin}}
+ <div style="display:none">
+  {{=form.custom.widget.pemail}}
+</div>
+<div class="container ct" style="width:60%; margin:0px auto;">
+  <div class="row">
+    <div class="col-sm-12" style="margin-top: 20px; border: 1px solid #27a9e3; padding: 0px;">
+      <h3 class="title"><center>Case Sheet</center></h3>
+         <div class="col-sm-12">
+	      <div class="form-group">
+		<label for="email">First Name:</label>
+		  {{=form.custom.widget.fname}}
+	      </div>
+	      <div class="form-group">
+		<label for="email">Last Name:</label>
+		{{=form.custom.widget.lname}}
+	      </div>
+	      <div class="form-group">
+		<label for="pwd">Email Id:</label>
+		{{=form.custom.widget.oemail}}
+	      </div>
+	      <div class="form-group">
+		<label for="pwd">Mobile Number:</label>
+		{{=form.custom.widget.cell}}
+	      </div>
+	      <div class="form-group">
+		<label for="pwd">Company:</label>
+		{{=form.custom.widget.company}}
+	      </div>
+	      
+	      <div class="form-group">
+	      <label for="comment">Intra Oral Examination Report:</label><br/>
+		{{=form.custom.widget.description}}
+	      </div>
+	      
+	      <div class="form-group">
+	      <label for="comment">Treatment Plan Required:</label><br/>
+		{{=form.custom.widget.treatmentplandetails}}
+	      </div>
+	      <br/>
+	      
+	      <div class="form-group">
+	      
+            
+		{{if ((priority.lower()=="emergency")):}}
+		  <label class="radio-inline">
+		      <input id="emergency"  type="radio" name="priority"  value="Emergency" checked>Emergency
+		  </label>
+		{{else:}}
+		  <label class="radio-inline">
+		      <input id="emergency"  type="radio" name="priority"  value="Emergency">Emergency
+		  </label>
+		{{pass}}
+
+		{{if ((priority.lower()=="high")):}}
+		  <label class="radio-inline">
+		      <input id="high"  type="radio" name="priority"  value="High" checked>High
+		  </label>
+		{{else:}}
+		  <label class="radio-inline">
+		      <input id="high"  type="radio" name="priority"  value="High">High
+		  </label>
+		{{pass}}
+      
+      
+      		{{if ((priority.lower()=="medium")):}}
+		  <label class="radio-inline">
+		      <input id="medium"  type="radio" name="priority"  value="Medium" checked>Medium
+		  </label>
+		{{else:}}
+		  <label class="radio-inline">
+		      <input id="medium"  type="radio" name="priority"  value="Medium">Medium
+		  </label>
+		{{pass}}
+
+
+      		{{if ((priority.lower()=="low")):}}
+		  <label class="radio-inline">
+		      <input id="low"  type="radio" name="priority"  value="Low" checked>Low
+		  </label>
+		{{else:}}
+		  <label class="radio-inline">
+		      <input id="low"  type="radio" name="priority"  value="Low" >Low
+		  </label>
+		{{pass}}
+	        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		
+		<label for="comment">Select image to upload:</label>
+		{{if((imagex != '') & (imagex!= None)):}}
+		     <img width="150px" height="150px" onclick="onClick(this)"  src="{{=URL('default','download',args=imagex)}}"/>
+		{{else:}}
+		   No Image
+		{{pass}}
+		<a class="btn btn-primary" style="color: #fff;background-color: #286090;border-color: #286090;" href="{{=URL('default','preregisterimage',vars=dict(preregid=preregid))}}">Image</a>	 
+
+	      </div>
+
+	      
+	      <div class="col-sm-6 col-sm-offset-3" style="margin-bottom:20px">
+		<button type="submit" class="btn btn-primary">Submit</button> <a type="button" class="btn btn-primary" style="float: right;margin-left:20px" href="//pdfcrowd.com/url_to_pdf/">PDF</a>
+	      </div>
+        </div>
+    </div>
+  </div>
+</div>
+{{=form.custom.end}}
+</body>
+</html>

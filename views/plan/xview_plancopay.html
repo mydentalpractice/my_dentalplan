@@ -1,0 +1,35 @@
+{{extend 'layout.html'}}
+{{=formA.custom.begin}}
+    <table>
+        <caption style="text-align:left"><h4>Copay Details</h4></caption>
+         <tr>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >HMO Plan</th>
+            </td>
+            <td>
+                                {{=formA.custom.widget.hmoplan}}
+            </td>
+         </tr>            
+        <tr>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Procedure Code</th>
+            </td>
+            <td>
+                                 {{=formA.custom.widget.dentalprocedure}}
+            </td>
+         </tr>            
+         <tr>
+            <td>
+                <th class="ElTextElement " style="z-index:10004;overflow:visible;color:;text-align:left;line-height:normal;font-weight:normal;font-style:normal;left:25px;top:255px;font-family:Arial;border-width:0px;border-style:solid;width:133px;" id="el1413744_70f98847f55b0ad49c9401f54db7359b" >Co-Pay</th>
+            </td>
+            <td>
+                                {{=formA.custom.widget.copay}}
+            </td>
+         </tr>            
+         
+    </table>
+    <!--<button style=";z-index:10012;border-top-width:0px;border-bottom-width:0px;border-left-width:0px;border-right-width:0px;border-top-left-radius:3px;border-top-right-radius:3px;border-bottom-right-radius:3px;border-bottom-left-radius:3px;border-color:#dddddd;border-style:solid;background-color:#3498db;color:#FFF;font-size:14px;font-weight:bold;font-style:normal;font-family:Arial;text-align:center;box-shadow:0 1px 2px rgba(0, 0, 0, 0.4);-o-box-shadow:0 1px 2px rgba(0, 0, 0, 0.4);-moz-box-shadow:0 1px 2px rgba(0, 0, 0, 0.4);-webkit-box-shadow:0 1px 2px rgba(0, 0, 0, 0.4);background-image:url('');background-size:auto;background-repeat:repeat;background-position:center center;padding-top:6px;padding-right:10px;padding-bottom:6px;padding-left:10px;left:188px;top:520px;width:120px;height:30px;" class="ElButton active " onclick="window.location='/my_dentalplan/procedure/list_procedure//';return false">Cancel</button>-->
+    <button class="form_details_button" onclick="window.location='/my_dentalplan/plan/update_plan/{{=planid}}//';return false">Return</button>
+
+  {{=formA.custom.end}}  
+</div>

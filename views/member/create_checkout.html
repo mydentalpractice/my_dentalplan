@@ -1,0 +1,108 @@
+{{extend 'layoutenroll2.html'}}
+
+<script>
+function makePayment()
+{
+
+    window.location.replace("/my_dentalplan/member/member_payment/{{=webmemberid}}/{{=webkey}}/{{=fname}}/{{=dob}}/{{=txno}}/")
+
+
+}
+
+</script>
+
+<div class="w3-container w3-padding-16">
+{{if(logmode=='enrollment'):}}
+    <h6>{{=A(T('<< Home'),_href=URL('default','member_register'))}}</h6>
+{{pass}}
+{{if(logmode=='login'):}}
+    <h6>{{=A(T('<< Home'),_href=URL('default','member_login'))}}</h6>
+{{pass}}
+{{if(logmode=='register'):}}
+    <h6>{{=A(T('<< Home'),_href=URL('default','member_register'))}}</h6>
+{{pass}}
+
+    <table>
+        <caption style="text-align:left"><h4>{{=formheader}}</h4></caption>
+
+        <tr>
+            <th class="form_details"  >First</th>
+            <th class="form_details" >Last</th>
+            <th class="form_details" >Relation</th>
+            <th class="form_details" >DOB</th>
+            <th class="form_details" >Premium</th>
+            <th class="form_details" >Company Pays</th>
+            <th class="form_details">You Pay</th>
+        </tr>
+
+
+        {{totpremium = 0}}
+        {{totcompanypays = 0}}
+        {{totyoupay = 0}}
+
+        {{for i in xrange(0,len(ds)):}}
+        <tr>
+
+            <td class="form_details" >{{=ds[i][1]}}</td>
+            <td class="form_details" >{{=ds[i][2]}}</td>
+            <td class="form_details" >{{=ds[i][0]}}</td>
+            <td class="form_details" >{{=ds[i][3]}}</td>
+            <td class="form_details" >{{=ds[i][4]}}</td>
+            <td class="form_details" >{{=ds[i][5]}}</td>
+            <td class="form_details" >{{=ds[i][6]}}</td>
+
+            {{totpremium = totpremium + int(ds[i][4])}}
+
+            {{totcompanypays = totcompanypays + int(ds[i][5])}}
+            {{totyoupay = totpremium - totcompanypays}}
+         </tr>
+        {{pass}}
+
+    </table>
+
+    <br/>
+    <br/>
+
+
+    <table>
+    <tr>
+    <td class="form_details">Total Premium:</td>
+    <td>&nbsp;&nbsp;</td>
+    <td class="form_details">{{=totpremium}}</td>
+    </tr>
+    <tr><td class="form_details">Company Pays: </td>    <td>&nbsp;&nbsp;</td>
+    <td class="form_details">{{=totcompanypays}}</td></tr>
+    <tr><td class="form_details">You Pay:</td>    <td>&nbsp;&nbsp;</td>
+     <td class="form_details">{{=totyoupay}}</td></tr>
+    <tr><td class="form_details">GST @18%:</td>    <td>&nbsp;&nbsp;</td>
+     <td class="form_details">{{=servicetax}}</td></tr>
+    <tr><td class="form_details">Swipe Charges:</td>    <td>&nbsp;&nbsp;</td>
+     <td class="form_details">{{=swipecharge}}</td></tr>
+    <tr><td class="form_details">Total You Pay:</td>    <td>&nbsp;&nbsp;</td>
+     <td  class="form_details">{{=total}}</td></tr>
+
+    </table>
+
+
+
+
+<br/>
+<br/>
+
+
+<input  type="button"  class="form_details_button_18" onclick="javascript: returnpage('{{=logmode}}')" value="Done">
+
+
+{{if((status != 'Completed') & (status != 'Enrolled')):}}
+{{if(total != 0):}}
+<input  type="button" class="form_details_button_18" onclick="javascript: makePayment()" value="Make Payment">
+{{else:}}
+<h5>Thank you! You have completed your My Dental Plan enrollment process.<h5>
+<h5>You will soon be getting a soft copy of Member Welcome Pack. This contains, your MemberID, Treatment Costing Document, Your Dentist's Portfolio.</h5>
+<h5>If you have any further questions please contact us on info@mydentalplan.in or call us on 1-800-102-7526</h5>
+{{pass}}
+{{else:}}
+<h5>Thank you! You have completed your My Dental Plan enrollment process.<h5>
+{{pass}}
+
+

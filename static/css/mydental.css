@@ -1,0 +1,63 @@
+/* CSS for the Detail Forms */
+td.form_details{
+    width:200px;
+    color:;
+    text-align:left;
+    border-width:0px;
+    border-style:solid;
+    left:25px;
+    top:255px;
+    z-index:10004;
+    overflow:visible;
+
+}
+
+td.form_details_unlimited{
+    width:80%;
+    padding:10px 5px 10px 5px;
+    color:#0086BF;
+    background-color: #BEBEBE;
+    text-align:left;
+    border-width:0px;
+    border-style:solid;
+    left:25px;
+    top:255px;
+    z-index:10004;
+    overflow:visible;
+
+}
+
+th.form_details{
+    color:#0080ff;
+    background-color: #BEBEBE;
+    padding:10px 5px 10px 5px;
+    text-align:left;
+    font-weight:normal;
+    line-height:normal;
+    font-style:normal;
+    font-family:Arial;
+    border-width:0px;
+    border-style:solid;
+    width:150px;
+
+    
+}    
+ 
+.form_details_button{
+    color:white;
+    font-size:10px;
+    background:#3498d8;
+    
+}
+
+.form_details_button_18{
+    color:white;
+    font-size:18px;
+    background:#3498d8;
+    
+}
+
+
+.form_details{
+    height:30px;
+}

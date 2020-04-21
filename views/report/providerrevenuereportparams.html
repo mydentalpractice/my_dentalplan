@@ -1,0 +1,44 @@
+{{extend 'mdp_layoutw3.html'}}
+
+{{=form.custom.begin}}
+<header class="w3-container w3-dark-grey ">
+   <h4>Provider Revenue Report</h4>
+</header>
+
+     </br>
+    <div class="form-group">
+    <!--<label for="comment">Year:</label>{{=form.custom.widget.year}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->
+    <br/>
+    <label for="comment">Yearly Breakdown:</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<input  id="totalyear"   type="radio" name="yearbreakdown" value="all" checked>Total  Revenue</input>
+      
+        &nbsp;&nbsp;&nbsp;&nbsp;
+    
+	
+	<input  id="byyear"   type="radio" name="yearbreakdown" value="byyear">Revenue By Year</input>
+       &nbsp;&nbsp;&nbsp;&nbsp;
+   
+
+   <br/>
+   
+   <label for="comment">Active:</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+   	<input  id="all"   type="radio" name="status" value="all" >Active + InActive</input>
+      
+        &nbsp;&nbsp;&nbsp;&nbsp;
+    
+	<input  id="active"   type="radio" name="status" value="active" checked>Active</input>
+       &nbsp;&nbsp;&nbsp;&nbsp;
+   
+        <input  id="inactive"   type="radio" name="status" value="all" >Inactive</input>
+   
+
+  </div>
+
+{{=form.custom.submit}}
+{{=form.custom.end}}
+
+
+
+
+
+

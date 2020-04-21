@@ -1,0 +1,169 @@
+{{extend 'mdp_layoutw3.html'}}
+
+
+<header class="w3-container w3-dark-grey ">
+   <h4>{{=formheader}}</h4>
+</header> 
+
+{{=formA.custom.begin}}
+   
+    <table>
+        
+        <tr>
+            <td class="form_details">
+                Agent Code
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.agent}}
+            </td>
+            <td class="form_details">
+                
+            </td>
+            <td class="form_details">
+            </td>
+         </tr> 
+         
+        <tr>
+            <td class="form_details">
+                Name
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.name}}
+            </td>
+            <td class="form_details">
+                
+            </td>
+            <td class="form_details">
+                
+                                
+            </td>
+         </tr>            
+
+
+         <tr>
+            <td class="form_details">
+                Address 1
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.address1}}
+            </td>
+            <td class="form_details">
+                Commission MTD
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.commissionMTD}}
+                                
+            </td>
+         </tr>            
+
+         <tr>
+            <td class="form_details">
+                Address 2
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.address2}}
+            </td>
+            <td class="form_details">
+                Commission YTD
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.commissionYTD}}
+            </td>
+         </tr>            
+         
+         <tr>
+            <td class="form_details">
+                Address 3
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.address3}}
+            </td>
+            <td class="form_details">
+                Assigned Groups
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.TotalCompanies}}
+            </td>
+         </tr>            
+         <tr>
+            <td class="form_details">
+                City
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.city}}
+            </td>
+            <td class="form_details">
+                Enrolled Date
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.enrolleddate}}
+            </td>
+         </tr>            
+         
+         <tr>
+            <td class="form_details">
+                State
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.st}}
+            </td>
+            <td class="form_details">
+                Tax ID
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.taxid}}
+            </td>
+         </tr>            
+
+         <tr>
+            <td class="form_details">
+                PIN
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.pin}}
+            </td>
+            <td class="form_details">
+                Cell#
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.cell}}
+            </td>
+         </tr>            
+         <tr>
+            <td class="form_details">
+                Telephone(Off)
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.telephone}}
+            </td>
+            <td class="form_details">
+                Fax
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.fax}}
+            </td>
+         </tr>            
+         <tr>
+            <td class="form_details">
+                Email
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.email}}
+            </td>
+            <td class="form_details">
+                Hold Commission Checks
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.holdcommissionchecks}}
+                                
+            </td>
+         </tr>            
+    </table>
+    {{=formA.custom.submit}}
+   
+     <button class="form_details_button" onclick="window.location='{{=URL('agent','list_agent')}}';return false">Cancel</button>&nbsp;&nbsp;
+
+{{=formA.custom.end}}
+</div>
+
+

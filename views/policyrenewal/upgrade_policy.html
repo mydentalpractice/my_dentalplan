@@ -1,0 +1,432 @@
+{{extend 'mdp_layoutw3.html'}}
+
+<script>
+$(document).ready(function(){
+   
+    $("#providers").change(function(){
+       var x = $('#providers').val();
+       var y = $('#providers :selected').text();
+       var z = $('#providers :selected').index();
+       
+       $("#providername").text(z) 
+       $("#patientmember_provider").val(x);
+       
+    });
+});
+
+$(document).ready(function(){
+   
+    $("#plans").change(function(){
+       var x = $('#plans').val();
+       var y = $('#plans :selected').text();
+       var z = $('#plans :selected').index();
+       
+       $("#patientmember_hmoplan").val(x);
+       
+    });
+});
+
+$(document).ready(function(){
+   
+    $("#provider").change(function(){
+       var x = $('#provider').val();
+       var y = $('#provider :selected').text();
+       var z = $('#provider :selected').index();
+      
+    });
+});
+
+function changePlans(){
+var planopts = document.getElementById("plans");
+var plan = planopts.options[planopts.selectedIndex].value;
+
+var y = document.getElementById("policyrenewal_hmoplan");
+
+    y.value = plan;
+
+   
+};
+
+</script>
+
+
+<form  method="post" name="frmUpgradePolicy" id="frmUpgradePolicy">
+{{=formA.custom.begin}}
+
+<div class="w3-container w3-hide">
+    {{=formA.custom.widget.webmember}}       
+    {{=formA.custom.widget.webkey}}
+    {{=formA.custom.widget.image}}
+    {{=formA.custom.widget.memberorder}}
+    {{=formA.custom.widget.pan}}
+    {{=formA.custom.widget.hmoplan}}    
+	<
+</div>
+
+<div class="w3-container w3-padding-16">
+ <header class="w3-container w3-dark-grey ">
+   <h4>Upgrade Member Policy</h4>
+ </header>
+<br/>
+
+<br/>
+ <header class="w3-container w3-dark-grey ">
+   <h5>Details</h5>
+</header>
+
+
+
+<table>
+  <tr>
+       <td class="form_details">
+	   Member ID
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.patientmember}}      
+	</td>
+ </tr> 
+ <tr>
+       <td class="form_details">
+	   Company Ref.
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.groupref}}       
+	</td>
+ </tr>     
+ <tr>
+       <td class="form_details">
+	   Company
+       </td>
+       <td class="form_details">
+	       {{=formA.custom.widget.company}}      
+	</td>
+  </tr> 
+  <tr>
+       <td class="form_details">
+	   Provider
+       </td>
+       
+       <td class="form_details " >
+       {{=formA.custom.widget.provider}}
+	</td>
+	
+    </tr> 
+  <tr>
+       <td class="form_details">
+	   Region
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.groupregion}}       
+	</td>
+    </tr> 
+    
+    <tr>
+       <td class="form_details">
+	   Plan
+       </td>
+    
+       <td class="form_details " >
+
+
+		<select class="form_details " id="plans" onchange="changePlans()">
+		    <option value='1'>--Select--</option>
+	    
+		    {{for plan in plans:}}
+			{{if (plan.id == planid):}}
+			  <option selected="selected" value={{=plan.id}}>{{=plan.name}} ({{=plan.hmoplancode}})</option>
+			{{else:}}
+			<option value={{=plan.id}}>{{=plan.name}} ({{=plan.hmoplancode}})</option>
+			{{pass}}
+		    {{pass}}				  
+		</select>
+		
+		
+	    </div>    
+             
+	</td>
+       
+    </tr>     
+
+
+
+    
+      
+
+<tr>
+       <td class="form_details">
+	  Status
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.status}}   
+	</td>
+    </tr> 
+
+  <tr>
+       <td class="form_details">
+	   Premium Paid
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.paid}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details">
+	   HMO Patient Member
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.hmopatientmember}}       
+	</td>
+    </tr> 
+ 
+</table>
+
+<br/>
+ <header class="w3-container w3-dark-grey ">
+   <h5>Personal Details</h5>
+</header>
+
+<table>
+  <tr>
+       <td class="form_details ">
+	   Enter your First Name
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.fname}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Middle Name
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.mname}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	  Enter your Last Name
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.lname}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+       Enter your DOB
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.dob}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Please select your Gender
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.gender}}       
+	</td>
+    </tr> 
+  
+
+</table>
+
+</br>
+  <header class="w3-container w3-dark-grey ">
+   <h5>Contact Details</h5>
+</header>
+ 
+<table>
+  <tr>
+       <td class="form_details ">
+	   Enter your Mobile Number
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.cell}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details "> 
+	   Enter your Telephone Number
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.telephone}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Email 
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.email}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Address -1
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.address1}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Address -2
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.address2}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Address -3
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.address3}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your City
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.city}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Please select your State
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.st}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Pin
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.pin}}       
+	</td>
+    </tr> 
+  
+
+</table>
+</br>   
+ <header class="w3-container w3-dark-grey ">
+   <h5>Premiums and Dates</h5>
+</header>
+ 
+
+<table>
+  <tr>
+       <td class="form_details ">
+	  Premium
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.premium}}      
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	  Enrollment Date
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.enrollmentdate}}      
+	</td>
+    </tr> 
+  <tr class="w3-hide">
+       <td class="form_details ">
+	    Renewal Date
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.duedate}}       
+	</td>
+    </tr> 
+  <tr class="w3-hide">
+       <td class="form_details ">
+	   Termination Date
+       </td>
+       <td class="form_details ">
+	 {{=formA.custom.widget.terminationdate}}      
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Premium Start Date
+       </td>
+       <td class="form_details ">
+	 {{=formA.custom.widget.premstartdt}}      
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Premium End Date
+       </td>
+       <td class="form_details ">
+	 {{=formA.custom.widget.premenddt}}      
+	</td>
+    </tr> 
+  
+
+</table>
+
+</br>
+
+
+
+
+ <header class="w3-container w3-dark-grey ">
+   <h5>Dependants</h5>
+</header>
+
+
+<table>
+         
+        
+<tr>
+            <td colspan="4">
+                <table>
+                    
+                <tr>
+                <td>
+		{{if(subscribers < maxsubscribers):}}
+                <!--<input type="button" class="form_details_button" onclick="javascript: newDependant()" value="Add Dependant">-->
+		<button class="form_details_button" type="submit" onclick="window.location='{{=URL('policyrenewal','create_dependant',vars=dict(memberid=memberid,page=page))}}';return false">Add Dependant</button>&nbsp;&nbsp;		  
+
+		{{pass}}
+		{{if(subscribers>maxsubscribers):}}
+		<h5>You cannot Upgrade!! Please remove dependant(s) as your policy allows({{=(int(maxsubscribers)-1)}}) dependant(s). You have ({{=(int(subscribers)-1)}}) dependant(s)!</h5> 
+		{{pass}}
+                </td>
+                </tr>
+                <tr>
+                <td>
+                {{=formB}}
+                </td>
+                </tr>    
+                </table>
+            </td>
+         </tr>            
+    
+    </table>
+
+
+{{=formA.custom.submit}}
+<button class="form_details_button" onclick="window.location='{{=URL('policyrenewal','list_member',vars=dict(page=page))}}';return false">Return</button>&nbsp;&nbsp;
+{{if( (showenrollment == True)):}}
+<input type="submit"  method="POST" class="form_details_button" onclick="javascript: proceedEnrollment()" value="Enroll Member"> 
+{{else:}}
+{{if(subscribers <= maxsubscribers):}}
+<button class="form_details_button" onclick="window.location='{{=URL('policyrenewal','upgrade_premiumpayment',vars=dict(memberid=memberid,page=page,lastpaid=lastpaid))}}';return false">Premium Payment</button>&nbsp;&nbsp;
+{{pass}}
+{{pass}}    
+<input type="text" id="action" name="action" value="submit" type="hidden" style="display:none">  
+{{=formA.custom.end}}
+</div>
+</form>
+
+        
+
+
+
+

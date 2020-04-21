@@ -1,0 +1,233 @@
+{{extend 'mdp_layoutw3.html'}}
+
+
+<form enctype="multipart/form-data" action="{{=URL('member', 'new_webmember_processpayment', args=[webmemberid])}}" method="post">
+
+<script>
+function premiumcalculation()
+{
+    
+    var premium = 0
+    var company = 0
+    var youpay  = 0
+    
+    var totpremium = 0
+    var totcompany = 0
+    var totyoupay  = 0
+    var servicetax = 0
+    var swipecharge = 0
+    var total = 0
+    
+    //gets table
+    var oTable  = document.getElementById('memberpayment');
+    <!--var oTable1 = document.getElementById('totalpayment');-->
+    
+    <!--// rows of summary table-->
+    <!--var rows1 = oTable1.getElementsByTagName( 'tr' );-->
+    <!--var td0 = rows1[0].getElementsByTagName( 'td' );-->
+    <!--var td1 = rows1[0].getElementsByTagName( 'td' );-->
+    <!--var td2 = rows1[0].getElementsByTagName( 'td' );-->
+    <!--var td3 = rows1[0].getElementsByTagName( 'td' );-->
+    <!--var td4 = rows1[0].getElementsByTagName( 'td' );-->
+    <!--var td5 = rows1[0].getElementsByTagName( 'td' );-->
+    <!--var td6 = rows1[0].getElementsByTagName( 'td' );-->
+   
+    <!--var totpremiuminput = td0[2].getElementsByTagName( 'input' );-->
+    <!--var totcompanyinput = td1[2].getElementsByTagName( 'input' );-->
+    <!--var totyoupayinput  = td2[2].getElementsByTagName( 'input' );-->
+    
+    
+    
+    //gets rows of table, the header is 0th row.
+    var rows = oTable.getElementsByTagName( 'tr' );
+    
+    for (i = 1; i < rows.length; i++){
+
+       //there are 6 columns : First three are not be conisdered.
+       //4th column is premium, 5th columns = company 6th column = youpay
+       var td =  rows[i].getElementsByTagName( 'td' );
+       
+       var preminput = td[4].getElementsByTagName( 'input' );
+       var compinput = td[5].getElementsByTagName( 'input' );
+       var youpayinput = td[6].getElementsByTagName( 'input' );
+      
+       premium = premium + parseFloat(preminput[0].value);
+       company = company + parseFloat(compinput[0].value);
+       youpay  = youpay +  parseFloat(youpayinput[0].value);
+            
+       
+       totpremium = premium;
+       totcompany = company;
+       totyoupay  = youpay;
+       
+       
+       document.getElementById('totpremium').value = totpremium.toFixed(2);
+       document.getElementById('totcompanypays').value = totcompany.toFixed(2);
+       document.getElementById('totyoupay').value = totyoupay.toFixed(2);
+       
+       servicetax =    parseFloat(document.getElementById('servicetax').value);      
+       swipecharge =  parseFloat(document.getElementById('swipecharge').value);
+       
+       total = totyoupay + servicetax + swipecharge;
+       document.getElementById('total').value = total;  
+       
+    }   
+   
+}
+
+function totalcalculation()
+{
+   
+    
+    var totpremium = 0
+    var totcompany = 0
+    var totyoupay  = 0
+    var servicetax = 0
+    var swipecharge = 0
+    var total = 0
+    
+       
+       totpremium = parseFloat(document.getElementById('totpremium').value);
+       totcompany = parseFloat(document.getElementById('totcompanypays').value);
+       totyoupay  = parseFloat(document.getElementById('totyoupay').value);
+       servicetax =    parseFloat(document.getElementById('servicetax').value);      
+       swipecharge =  parseFloat(document.getElementById('swipecharge').value);
+       
+       total = totyoupay + servicetax + swipecharge;
+       document.getElementById('total').value = total;  
+       
+   
+}
+</script>
+
+<div class="w3-container w3-padding-16">
+ <header class="w3-container w3-dark-grey ">
+   <h4>{{=formheader}}</h4>
+ </header>
+ 
+<div class="w3-container w3-medium  w3-padding-0">
+    <table id="memberpayment">
+      
+        
+        <tr>
+            <th class="form_details" >First</th>
+            <th class="form_details" >Last</th>
+            <th class="form_details" >Relation</th>    
+            <th class="form_details" >DOB</th>    
+            <th class="form_details" >Payment</th>    
+            <th class="form_details" >Company Pays</th>    
+            <th class="form_details">Member Pays</th>    
+        </tr>
+         
+        
+        {{totpremium = 0}}
+        {{totcompanypays = 0}}
+        {{totyoupay = 0}}
+        
+        {{for i in xrange(0,len(ds)):}}
+        <tr>
+             
+            <td class="form_details"  >{{=ds[i][1]}}</td>
+            <td class="form_details" >{{=ds[i][2]}}</td>
+            <td class="form_details" >{{=ds[i][0]}}</td>
+            <td class="form_details" >{{=ds[i][3]}}</td>
+            <td class="form_details" onchange="premiumcalculation()" ><input type="text" name="premium" value={{=ds[i][4]}} style="width:90%;"/></td>
+            <td class="form_details" onchange="premiumcalculation()"><input type="text" name="companypays" value={{=ds[i][5]}} style="width:90%;"/></td>
+            <td class="form_details" onchange="premiumcalculation()"><input type="text" name="youpay" value={{=ds[i][6]}} style="width:90%;" /></td>
+            
+            {{totpremium = totpremium + int(ds[i][4])}} 
+        
+            {{totcompanypays = totcompanypays + int(ds[i][5])}} 
+            {{totyoupay = totpremium - totcompanypays}}
+         </tr>            
+        {{pass}}
+
+    </table>
+    
+</div>   
+   
+    
+    
+    <!--Total Premium: <input type="text" name="totpremium" id="totpremium" value={{=totpremium}} />-->
+
+
+
+   
+</div>    
+
+   
+<div class="w3-row-padding  w3-medium">
+ <div class="w3-container w3-medium">
+  <div class="w3-quarter" style='line-height:1.5;'>
+    <label>Total Payment:</label>
+  </div>
+  <div class="w3-quarter" style='line-height:1.5;'>
+    <input type="text" name="totpremium" id="totpremium" onchange="totalcalculation()" value={{=totpremium}}  style="width:50%;"/>
+  </div>
+ </div> 
+
+ <div class="w3-container w3-medium">
+  <div class="w3-quarter" style='line-height:1.5;'>
+    <label>Total Company Pays:</label>
+  </div>
+  <div class="w3-quarter" style='line-height:1.5;'>
+    <input type="text" name="totcompanypays" id="totcompanypays"  onchange="totalcalculation()" value={{=totcompanypays}} style="width:50%;"/>
+  </div>
+ </div> 
+
+ <div class="w3-container w3-medium">
+  <div class="w3-quarter" style='line-height:1.5;'>
+    <label>Total Member Pays(A):</label>
+  </div>
+  <div class="w3-quarter" style='line-height:1.5;'>
+    <input type="text" name="totyoupay" id="totyoupay"  onchange="totalcalculation()" value={{=totyoupay}} style="width:50%;" />
+  </div>
+ </div> 
+
+ <div class="w3-container w3-medium">
+  <div class="w3-quarter" style='line-height:1.5;'>
+    <label>GST @18%(B):</label>
+  </div>
+  <div class="w3-quarter" style='line-height:1.5;'>
+    <input type="text" name="servicetax" id="servicetax" onchange="totalcalculation()" value={{=servicetax}} style="width:50%;"/>
+ </div> 
+</div>
+ <div class="w3-container w3-medium">
+  <div class="w3-quarter" style='line-height:1.5;'>
+    <label>Swipe Charges(C):</label>
+  </div>
+  <div class="w3-quarter" style='line-height:1.5;'>
+    <input type="text" name="swipecharge" id="swipecharge" onchange="totalcalculation()" value={{=swipecharge}} style="width:50%;"/>
+ </div> 
+</div>
+ <div class="w3-container w3-medium">
+  <div class="w3-quarter" style='line-height:1.5;'>
+    <label>Total (A+B+C):</label>
+  </div>
+  <div class="w3-quarter" style='line-height:1.5;'>
+    <input type="text" name="total" id="total" value={{=total}} style="width:50%;" />
+ </div> 
+</div>
+ <div class="w3-container w3-medium">
+  <div class="w3-quarter" style='line-height:1.5;'>
+    <label>Payment Details:</label>
+  </div>
+  <div class="w3-half" style='line-height:1.5;'>
+    <textarea name="paymentdetails" style="width:50%;"></textarea>
+ </div> 
+</div>
+
+  
+  
+  
+</div>
+<br/>
+<input  type="submit" class="form_details_button"  value="Make Payment">
+<input  type="button" class="form_details_button" onclick="window.location='{{=URL('default','main')}}';return false" value="Return">
+
+<h5>Thank you! You have completed your My Dental Plan enrollment process.<h5>
+
+
+
+</div>
+</form>

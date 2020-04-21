@@ -1,0 +1,25 @@
+{{extend 'layout.html'}}
+
+<table>
+<caption style="text-align:left"><h4>{{=formheader}}</h4></caption>
+<tr>
+<td>
+<h6>{{=A(T('<< Home'),_href=URL('my_dentalplan','default','index'))}}</h6>
+</td>
+</tr>
+<tr>
+<td>
+<button class="form_details_button"   onclick="window.location='/my_dentalplan/plan/create_copay//my_dentalplan/plan/update_copay///';return false">Add Copay</button> 
+</td>
+</tr>
+<tr>
+<td>
+{{=form}}
+</td>
+</tr>
+</table>
+
+
+
+
+

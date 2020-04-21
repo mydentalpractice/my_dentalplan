@@ -1,0 +1,94 @@
+{{extend 'layoutenroll2.html'}}
+
+<div>
+    <h6>{{=A(T('<< Home'),_href=URL('default','index'))}}&nbsp;&nbsp;&nbsp;&nbsp;{{=A(T('<< Back/Return'),_href=URL('policyrenewal','list_renewals',vars=dict(page=page)))}}</h6>    
+    <h5 class="head-line">Payment Receipt</h5>
+    
+    {{if(welcomekit == False):}}
+    <h5>Thank You for renewing your policy!  Please contact MyDentalPlan Administrator for Welcome Kit and Member Card</h5>
+    {{else:}}
+    <h5>Thank You for renewing your policy!  Welcome Kit including Membership Card has been emailed to you</h5>
+    {{pass}}
+    
+    <table id="paymentreceipt">
+    
+   <tr>
+        <td class="form_details">Payment towards</td>
+        <td>&nbsp;&nbsp;</td>
+        <td ><input type="text" class="w3-hide" name="txno" id="txno"  value="My Dental Plan Healthcare Pvt. Ltd."/></td>
+    </tr>    
+   <tr>
+        <td class="form_details">GSTIN Number</td>
+        <td>&nbsp;&nbsp;</td>
+        <td ><input type="text" class="w3-hide" name="txno" id="txno"  value="29AAJCM5040Q1ZU"/></td>
+    </tr>    
+    
+    
+        <tr>
+        <td class="form_details">Receipt Number:</td>
+        <td>&nbsp;&nbsp;</td>
+        <td class="form_details"><input type="text" name="txno" id="txno"  value={{=txno}} /></td>
+        </tr>
+        
+        <tr>
+        <td class="form_details">Receipt Date:</td>
+        <td>&nbsp;&nbsp;</td>
+        <td class="form_details"><input type="text" name="txdatetime" id="txdatetime"  value={{=txdatetime}} /></td>
+        </tr>
+    
+        <tr>
+        <td class="form_details">Member:</td>
+        <td>&nbsp;&nbsp;</td>
+        <td class="form_details"><input type="text" name="member" id="member" value="{{=member}}"/></td>
+        </tr>
+
+        <tr>
+        <td class="form_details">Payment:</td>
+        <td>&nbsp;&nbsp;</td>
+        <td class="form_details"><input type="text" name="totpremium" id="totpremium"  value={{=totpremium}} /></td>
+        </tr>
+    
+        <tr>
+        <td class="form_details">Company Pays: </td>    
+        <td>&nbsp;&nbsp;</td>
+        <td class="form_details"><input type="text" name="totcompanypays" id="totcompanypays"   value={{=totcompanypays}} /></td></tr>
+
+        <tr>
+        <td class="form_details">Member Pays(A):</td>    
+        <td>&nbsp;&nbsp;</td>
+        <td class="form_details"><input type="text" name="totyoupay" id="totyoupay"   value={{=totyoupay}} /></td>
+        </tr>
+        
+        <tr>
+        <td class="form_details">GST @18%(B):</td>    
+        <td>&nbsp;&nbsp;</td>
+        <td class="form_details"><input type="text" name="servicetax" id="servicetax"  value={{=servicetax}} /></td>
+        </tr>
+        
+        <tr>
+        <td class="form_details">Swipe Charges(C):</td>    
+        <td>&nbsp;&nbsp;</td>
+        <td class="form_details"><input type="text" name="swipecharge" id="swipecharge"  value={{=swipecharge}} /></td>
+        </tr>
+        
+        <tr>
+        <td class="form_details">Amount Paid by Member(A+B+C):</td>    
+        <td>&nbsp;&nbsp;</td>
+        <td class="form_details"><input type="text" name="total" id="total"  value={{=total}} /></td>
+        </tr>
+        
+        <tr>
+        <td class="form_details">Payment Details:</td>    
+        <td>&nbsp;&nbsp;</td>
+        <td class="form_details"><textarea name="paymentdetails" id="paymentdetails" rows="5" cols="50" placeholder="Enter Payment Details">{{=paymentdetails}}</textarea></td>
+        </tr>
+    
+    </table>
+     
+    <input  id="cancel"    type="button" class="form_details_button" onclick="window.location='/my_dentalplan/policyrenewal/list_renewals?page={{=page}}';return false" value="Return to Policy Renewal List">
+    {{if(mode == "CreditCard"):}}
+        <input  id="paybycc"    type="button" class="form_details_button" onclick="window.location='/my_dentalplan/policyrenewal/payby_cc/{{=paymenttxlog}}?page={{=page}}';return false" value="Make Renewal Payment">
+        <input  id="renewalpayment"    type="button" class="form_details_button" onclick="window.location='/my_dentalplan/policyrenewal/email_renewalpayment/{{=paymenttxlog}}';return false" value="Email Renewal Payment Link">
+    {{pass}}
+  
+</div>

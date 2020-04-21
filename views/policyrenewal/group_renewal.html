@@ -1,0 +1,11 @@
+{{extend 'mdp_layoutw3.html'}}
+
+<header class="w3-container w3-dark-grey ">
+   <h4>Renewal of Members</h4>
+</header>  
+
+{{=formA}}
+
+{{if renewalcount > 0:}}
+<h5>Number of members renewed {{=renewalcount}}. Please view the logger file to see the list of members renewed.</h5>
+{{pass}}

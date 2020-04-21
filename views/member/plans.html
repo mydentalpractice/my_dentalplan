@@ -1,0 +1,7 @@
+    <select id="plans" onchange="changePlans()">
+        <option value='1'>--Select--</option>
+    
+        {{for plan in plans:}}
+        <option value='{{=plan.id}}'>{{=plan.name}} ({{=plan.hmoplancode}})</option>
+        {{pass}}
+    </select>

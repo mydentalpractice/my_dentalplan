@@ -1,0 +1,59 @@
+{{extend 'layoutenroll2.html'}}
+
+
+
+<div id="import" >
+<h4>Do you want to suspend {{=name}} and dependants?</h4>
+<br/>
+
+<table>
+
+<tr>
+<td class="form_details "></td>
+<td class="form_details "></td>
+</tr>
+<tr>
+<td class="form_details ">Member</td>
+<td class="form_details ">{{=name}}</td>
+</tr>
+
+<tr>
+<td class="form_details "></td>
+<td class="form_details ">{{=webmember}}</td>
+</tr>
+
+<tr>
+<td class="form_details ">Address</td>
+<td class="form_details ">{{=address}}</td>
+</tr>
+<tr>
+<td class="form_details ">Company</td>
+<td class="form_details ">{{=company}}</td>
+</tr>
+<tr>
+<td class="form_details ">Provider</td>
+<td class="form_details ">{{=provider}} ({{=providercode}})</td>
+</tr>
+<tr>
+<td class="form_details ">Plan</td>
+<td class="form_details ">{{=plan}}</td>
+</tr>
+<tr>
+<td class="form_details ">Enrollment Date</td>
+<td class="form_details ">{{=enrollmentdate}}</td>
+</tr>
+<tr>
+<td class="form_details ">Termination Date</td>
+<td class="form_details ">{{=terminationdate}}</td>
+</tr>
+<tr>
+<td class="form_details ">Last Premium Paid Date</td>
+<td class="form_details ">{{=lastpremiumdate}}</td>
+</tr>
+<tr>
+<td class="form_details ">Total Premium Amount</td>
+<td class="form_details ">{{=premiumtotal}}</td>
+</tr>
+</table>
+<h4>{{=form}}</h4>
+</div>

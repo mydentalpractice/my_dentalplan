@@ -1,0 +1,24 @@
+{{extend 'mdp_layoutw3.html'}}
+<header class="w3-container w3-dark-grey ">
+   <h4>{{=formheader}}</h4>
+</header>
+<table>
+
+<tr>
+
+<tr>
+<td>
+<button class="form_details_button"   onclick="window.location='{{=URL('procedure','create_procedure',vars=dict(page=page))}}';return false">Add Procedure</button> 
+</td>
+</tr>
+<tr>
+<td>
+{{=form}}
+</td>
+</tr>
+</table>
+
+
+
+
+

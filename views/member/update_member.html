@@ -1,0 +1,556 @@
+{{extend 'mdp_layoutw3.html'}}
+
+<script>
+
+
+
+
+function ValidateEmail(inputText){
+var status = false;     
+var emailRegEx = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+     if (inputText.search(emailRegEx) == -1) {
+         status = false;
+     }
+     else {
+          status = true;
+     }
+     return status;
+}
+
+function newDependant()
+{
+   
+   
+    fname =  document.getElementById('patientmember_fname').value
+    mname = document.getElementById('patientmember_mname').value
+    lname = document.getElementById('patientmember_lname').value
+    webdob = document.getElementById('patientmember_dob').value
+    gender = document.getElementById('patientmember_gender').value
+    
+    cell = document.getElementById('patientmember_cell').value
+    telephone = document.getElementById('patientmember_telephone').value
+    email = document.getElementById('patientmember_email').value
+    address1 = document.getElementById('patientmember_address1').value
+    address2 = document.getElementById('patientmember_address2').value
+    address3 = document.getElementById('patientmember_address3').value
+    city = document.getElementById('patientmember_city').value
+    st = document.getElementById('patientmember_st').value
+    pin = document.getElementById('patientmember_pin').value
+    
+    if(ValidateEmail(email) == false)
+    {
+	alert("You have entered an invalid email address!");  
+	return;
+    }
+    
+    qp =  ""
+    qp =  qp + "/" + encodeURIComponent(fname.replace("/"," ")).replace("/"," ")
+    qp =  qp + "/"+ encodeURIComponent(mname.replace("/"," ")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(lname.replace("/"," ")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(webdob.replace("/"," ")).replace("/"," ")
+    qp =  qp +"/" + encodeURIComponent(gender.replace("/"," ")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(cell.replace("/"," ")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(telephone.replace("/"," ")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(email.replace("/"," ")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(address1.replace("/"," ")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(address2.replace("/"," ")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(address3.replace("/"," ")).replace("/"," ")
+    qp =  qp + "/" + encodeURIComponent(city.replace("/"," ")).replace("/"," ")
+    qp =  qp + "/" + st.replace("(","openbracket").replace(")","closebracket")
+    qp =  qp + "/" + encodeURIComponent(pin.replace("/"," ")).replace("/"," ")
+    
+    qpenc = encodeURIComponent(qp)
+    
+    window.location.assign("/my_dentalplan/default/runaddmemberdependantscript/{{=memberid}}" + qpenc + "/")
+
+}
+$(document).ready(function(){
+   
+    $("#providers").change(function(){
+       var x = $('#providers').val();
+       var y = $('#providers :selected').text();
+       var z = $('#providers :selected').index();
+       
+       $("#providername").text(z) 
+       
+       $("#patientmember_provider").val(x);
+       
+       $("#text1").text(x); 
+       $("#text2").text(y); 
+       $("#text3").text(z); 
+      
+    });
+});
+
+$(document).ready(function(){
+   
+    $("#plans").change(function(){
+       var x = $('#plans').val();
+       var y = $('#plans :selected').text();
+       var z = $('#plans :selected').index();
+       
+     
+       
+       $("#patientmember_hmoplan").val(x);
+       
+       $("#text1").text(x); 
+       $("#text2").text(y); 
+       $("#text3").text(z); 
+      
+    });
+});
+
+$(document).ready(function(){
+   
+    $("#provider").change(function(){
+       var x = $('#provider').val();
+       var y = $('#provider :selected').text();
+       var z = $('#provider :selected').index();
+       
+       $("#text1").text(x); 
+       $("#text2").text(y); 
+       $("#text3").text(z); 
+       
+       
+       
+      
+    });
+});
+</script>
+
+
+<form  method="post" name="frmMember" id="frmMember">
+{{=formA.custom.begin}}
+
+ <div class="w3-container w3-padding-16">
+ <header class="w3-container w3-dark-grey ">
+   <h4>{{=formheader}}</h4>
+</header>
+<br/>
+
+ 
+ <header class="w3-container w3-dark-grey ">
+   <h5>Passport size Photo</h5>
+</header>
+
+
+<table>
+     
+       <tr>
+            <td>
+                {{if ((rows[0].image != "")  &  (rows[0].image != None)):  }}
+                   <img src="{{=URL('my_dentalplan', 'member', 'download', args=rows[0].image )}}" style="width:150px" />
+                   
+                {{else:}}
+                       No Image&nbsp;       
+                {{pass}}
+                
+                    
+            </td>
+         </tr> 
+       <tr>
+         
+            <td>
+                <button class="form_details_button" onclick="window.location='{{=URL('member','member_picture',vars=dict(page=page),args=[memberid])}}';return false">Select your Photo</button>&nbsp;&nbsp;
+            </td>
+         </tr> 
+	 
+	 
+ </table>
+<br/>
+ <header class="w3-container w3-dark-grey ">
+   <h5>Details</h5>
+</header>
+
+<table>
+  <tr>
+       <td class="form_details">
+	   Member ID
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.patientmember}}      
+	</td>
+    </tr> 
+<tr>
+       <td class="form_details">
+	   Company Ref.
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.groupref}}       
+	</td>
+    </tr>     
+  <tr>
+       <td class="form_details">
+	   Company
+       </td>
+       <td class="form_details">
+	       {{=formA.custom.widget.company}}      
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details">
+	   Provider
+       </td>
+       
+     <td class="form_details " >
+              <select class="form_details "  id="providers">
+               {{ for i in xrange(0, len(ds)): }}
+                  {{if (ds[i].id == providerid):}}
+		  {{provid = int(ds[i].id)}}
+		  {{provcnt = 0}}
+		  {{for j in xrange(0,len(dsprovs)):}}
+		  {{if(dsprovs[j][0] == provid):}}
+		  {{provcnt = int(dsprovs[j][1])}}
+		  {{pass}}
+		  {{pass}}
+                    <option selected="selected" value={{=ds[i].id}}>{{=ds[i].provider}}{{if((ds[i].providername != '')&(ds[i].providername != ' ')):}}|{{=ds[i].providername}} {{pass}}{{if(ds[i].city != ''):}} |  {{=ds[i].city}} {{pass}} {{if (ds[i].pin != ''):}} | {{=ds[i].pin}} {{pass}}  {{if(provid != 1):}}| {{=provcnt}}{{pass}}</option>
+                  {{else:}}
+		  {{provid = ds[i].id}}
+		  {{provcnt = int(dsprovs[i][1])}}
+                  <option value={{=ds[i].id}}>{{=ds[i].provider}}{{if((ds[i].providername != '')&(ds[i].providername != ' ')):}}|{{=ds[i].providername}} {{pass}}{{if(ds[i].city != ''):}} |  {{=ds[i].city}} {{pass}} {{if (ds[i].pin != ''):}} | {{=ds[i].pin}}  {{pass}} {{if(provid != 1):}}| {{=provcnt}}{{pass}}</option>
+                  {{pass}}
+                {{pass}}
+                </select>
+            </td>
+	     <tr>
+            <td class="form_details " >
+            </td>
+             <td type="hidden" style="display:none;">
+		    {{=formA.custom.widget.provider}}
+            </td>
+         </tr>            
+	
+    </tr> 
+<tr>
+       <td class="form_details">
+	   Region
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.groupregion}}       
+	</td>
+    </tr> 
+    
+    <tr>
+       <td class="form_details" type="hidden" style="display:none;">
+	   Plan
+       </td>
+     
+    <td class="form_details "  type="hidden" style="display:none;">
+              <select id="plans">
+		  {{ for i in xrange(0, len(dsplans)): }}
+                  {{if (dsplans[i][0] == planid):}}
+                    <option selected="selected" value={{=dsplans[i][0]}}>{{=dsplans[i][1]}}</option>
+                  {{else:}}
+                  <option value={{=dsplans[i][0]}}>{{=dsplans[i][1]}}</option>
+                  {{pass}}
+                {{pass}}
+                </select>
+            </td>
+       
+    </tr>     
+
+
+    
+    <tr>
+       <td class="form_details">
+       Plan
+       </td>
+       
+       <td class="form_details">
+	 {{=formA.custom.widget.hmoplan}}    
+	</td>
+    </tr>     
+    
+  <tr>
+       <td class="form_details">
+	   Webkey
+       </td>
+       <td class="form_details">
+	 {{=formA.custom.widget.webkey}}    
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details">
+	  Status
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.status}}   
+	</td>
+    </tr> 
+  
+  <tr>
+       <td class="form_details">
+	   HMO Member
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.hmopatientmember}}     
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details">
+	   PAN#
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.pan}}     
+	</td>
+    </tr> 
+  <tr type="hidden" style="display:none;">
+       <td class="form_details">
+	   Member Order
+       </td>
+       <td class="form_details">
+	 {{=formA.custom.widget.memberorder}}     
+	</td>
+    </tr> 
+<tr type="hidden" style="display:none;">
+       <td class="form_details">
+	   Premium Paid:
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.paid}}       
+	</td>
+    </tr> 
+
+<tr >
+       <td class="form_details">
+	   Upgraded:
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.upgraded}}       
+	</td>
+    </tr> 
+    
+<tr type="hidden" style="display:none;">
+       <td class="form_details">
+	   Webmember:
+       </td>
+       <td class="form_details">
+	{{=formA.custom.widget.webmember}}       
+	</td>
+    </tr> 
+    
+</table>
+<br/>
+ <header class="w3-container w3-dark-grey ">
+   <h5>Personal Details</h5>
+</header>
+
+<table>
+  <tr>
+       <td class="form_details ">
+	   Enter your First Name
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.fname}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Middle Name
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.mname}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	  Enter your Last Name
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.lname}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+       Enter your DOB
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.dob}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Please select your Gender
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.gender}}       
+	</td>
+    </tr> 
+  
+
+</table>
+
+</br>
+  <header class="w3-container w3-dark-grey ">
+   <h5>Contact Details</h5>
+</header>
+ 
+<table>
+  <tr>
+       <td class="form_details ">
+	   Enter your Mobile Number
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.cell}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details "> 
+	   Enter your Telephone Number
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.telephone}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Email 
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.email}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Address -1
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.address1}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Address -2
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.address2}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Address -3
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.address3}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your City
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.city}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Please select your State
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.st}}       
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Enter your Pin
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.pin}}       
+	</td>
+    </tr> 
+  
+
+</table>
+</br>   
+ <header class="w3-container w3-dark-grey ">
+   <h5>Premiums and Dates</h5>
+</header>
+ 
+
+<table>
+  <tr>
+       <td class="form_details ">
+	  Premium
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.premium}}      
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	  Enrollment Date
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.enrollmentdate}}      
+	</td>
+    </tr> 
+  <tr class="w3-hide">
+       <td class="form_details ">
+	    Renewal Date
+       </td>
+       <td class="form_details ">
+	{{=formA.custom.widget.duedate}}       
+	</td>
+    </tr> 
+  <tr class="w3-hide">
+       <td class="form_details ">
+	   Termination Date
+       </td>
+       <td class="form_details ">
+	 {{=formA.custom.widget.terminationdate}}      
+	</td>
+    </tr> 
+  <tr >
+       <td class="form_details ">
+	   Premium Start Date
+       </td>
+       <td class="form_details ">
+	 {{=formA.custom.widget.premstartdt}}      
+	</td>
+    </tr> 
+  <tr>
+       <td class="form_details ">
+	   Premium End Date
+       </td>
+       <td class="form_details ">
+	 {{=formA.custom.widget.premenddt}}      
+	</td>
+    </tr> 
+  
+
+</table>
+
+</br>
+
+ <header class="w3-container w3-dark-grey ">
+   <h5>Dependants</h5>
+</header>
+
+<table >
+         
+        
+<tr>
+            <td colspan="4">
+                <table>
+                <tr>
+                <td>
+                {{=formB}}
+                </td>
+                </tr>    
+                </table>
+            </td>
+         </tr>            
+    
+    </table>
+    {{=formA.custom.submit}}
+    <button class="form_details_button" onclick="window.location='{{=URL('member','list_member',vars=dict(page=page))}}';return false">Cancel</button>&nbsp;&nbsp;
+    <button class="form_details_button" onclick="window.location='{{=URL('member','member_card_links',vars=dict(page=page,memberid=memberid),args=[memberid])}}';return false">Member Card</button>&nbsp;&nbsp;
+  
+{{=formA.custom.end}}
+</div>
+
+        
+
+
+
+

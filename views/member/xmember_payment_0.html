@@ -1,0 +1,33 @@
+<script type="text/javascript">
+function submitform()
+{
+    document.forms["frmTransaction"].submit();
+}
+</script>
+<form action="https://secure.ebs.in/pg/ma/payment/request" method="post" name="frmTransaction" id="frmTransaction">
+<input name="channel" type="hidden" value="{{=channel}}" />  
+<input name="account_id" type="hidden" value="{{=account_id}}" />  
+<input name="reference_no" type="hidden" value="{{=reference_no}} " />  
+<input name="amount" type="hidden" value="{{=amount}}" />  
+<input name="address" type="hidden" value="{{=address}}" />  
+<input name="city" type="hidden" value="{{=city}}" />  
+<input name="country" type="hidden" value="{{=country}}" />  
+<input name="currency" type="hidden" value="INR" />  
+<input name="description" type="hidden" value="Member Payment" />  
+<input name="email" type="hidden" value="{{=email}}" />  
+<input name="mode" type="hidden" value="LIVE" />  
+<input name="name" type="hidden" value="{{=name}}" />  
+<input name="phone" type="hidden" value="{{=phone}}" />  
+<input name="postal_code" type="hidden" value="{{=postal_code}}" />  
+<input name="return_url" type="hidden" value="{{=return_url}}" />  
+<input name="ship_name" type="hidden" value="{{=ship_name}}" />  
+<input name="ship_address" type="hidden" value="{{=ship_address}}" /> 
+<input name="ship_country" type="hidden" value="{{=ship_country}}" />  
+<input name="ship_state" type="hidden" value="{{=ship_state}}" />  
+<input name="ship_city" type="hidden" value="{{=ship_city}}" />  
+<input name="ship_postal_code" type="hidden" value="{{=ship_postal_code}}" />  
+<input name="ship_phone" type="hidden" value="{{=ship_phone}}" />  
+<input name="state" type="hidden" value="{{=state}}" />  
+<input name="secure_hash" type="hidden" value="{{=secure_hash}}"/>
+<a href="javascript: submitform()">Submit</a>
+

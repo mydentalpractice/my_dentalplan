@@ -1,0 +1,49 @@
+{{extend 'mdp_layoutw3.html'}}
+
+<header class="w3-container w3-dark-grey ">
+   <h4>Procedure Code Details</h4>
+</header>
+
+
+{{=formA.custom.begin}}
+    <table>
+       
+        <tr>
+            <td class="form_details">
+                Procedure Code
+            </td>
+            <td class="form_details">
+                                 {{=formA.custom.widget.dentalprocedure}}
+            </td>
+         </tr>            
+         <tr>
+            <td class="form_details">
+                Short Description
+            </td>
+            <td class="form_details">
+                                {{=formA.custom.widget.shortdescription}}
+            </td>
+         </tr>            
+         <tr>
+            <td class="form_details">
+                Description
+            </td>
+            <td class="form_details">
+                                {{=formA.custom.widget.description}}
+            </td>
+         </tr>            
+        
+         <tr>
+            <td class="form_details">
+                UCR Fee
+            </td>
+            <td class="form_details">
+                                {{=formA.custom.widget.procedurefee}}
+            </td>
+        </tr>
+    </table>
+    {{=formA.custom.submit}}
+    <button class="form_details_button" onclick="window.location='{{=URL('procedure','list_procedure',vars=dict(page=page))}}';return false">Cancel</button>
+
+  {{=formA.custom.end}}  
+</div>

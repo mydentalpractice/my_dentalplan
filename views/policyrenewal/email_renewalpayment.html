@@ -1,0 +1,32 @@
+{{extend 'layoutenroll2.html'}}
+
+<script>
+function renewalslist()
+{
+   
+    window.location.replace("/my_dentalplan/policyrenewal/list_renewals?page={{=page}}")
+
+
+}
+
+</script>
+
+
+ <div class="w3-container w3-padding-16">
+ <header class="w3-container w3-dark-grey ">
+  <h3>Renewal Payment Email</h3><br/>
+</header>
+
+
+     
+    
+    
+    {{if(ret == True):}}
+    <h5>Renewal Payment link successfully sent to {{=membername}}'s email address! - {{=memberemail}}</h5>
+    {{else:}}
+    <h5>Error in sending Renewal Payment Link to {{=membername}}'s email address! - {{=memberemail}}</h5>
+    {{pass}}
+
+    <input  type="button" class="form_details_button_18" onclick="javascript: renewalslist()" value="Return to Renewal List">
+
+</div>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Mydentalplan</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+  <link href="../static/assets.css/bootstrap-responsive.min.css" rel="stylesheet" />
+  <link href="../static/assets/css/styles.css" rel="stylesheet" />
+  <link href="../static/css/web2py.css" rel="stylesheet" />
+  <link href="../static/css/web2py_bootstrap.css" rel="stylesheet" />
+  
+    
+   {{include 'web2py_ajax.html'}}    
+  
+  <style>
+  label {
+    display: inline-block;
+    max-width: 100%;
+    margin-bottom: 5px;
+    font-weight: 700;
+    font-size: 20px;
+}
+  </style>
+  
+
+ 
+<form action="{{=URL('default','preregister')}}" method="post">
+<div class="container">
+ <div class="row">
+ <div class="col-md-4">
+ <img src="http://www.mydentalplan.us/my_dentalplan/static/assets/img/logo-my-dental-plan_color.png" class="img-responsive">
+ </div>
+ <div class="col-md-8">
+ </div>
+ </div>
+</div>
+<br />
+<br />
+
+<div class="container">
+ <div class="row">
+ <div class="col-md-2">
+
+ </div>
+ <div class="col-md-8" style="box-shadow: 0 0 15px rgba(0, 0, 0, 0.15), 0 0 1px 1px rgba(0, 0, 0, 0.1);border-radius: 10px;">
+ <div class="smiddle1">
+ <center><h3><b>Welcome</b> to My Dental Plan</h3></center>
+
+ <p style="background-color: #ff9500;padding: 12px;text-align: center;font-size: 21px;color: #fff;">Dental Screening Registration</p>
+
+ <br/>
+ <div >
+   <h3>Dear <u>{{=fname}} {{=lname}}</u>,</h3>
+   <h4>We thank you for registering with us for Dental Check-up.</h4>
+   <h4><strong>My Dental Plan Healthcare Pvt Ltd is a Guinness World Record Holder Company offering a unique Dental plan the FIRST of its kind in India.</strong></h4>
+   </br/>
+   <h4>You will receive the details of date and time for the dental check up through registered mobile number or to your email id shortly.</h4>
+
+   {{if(retVal == True):}}
+   <h5>SMS has been sent to your cell number.</h3>
+   {{pass}}
+  </div>
+ <br/> 
+  <div>
+  <button type="submit" class="btn btn-primary  btn-lg" style="color: #fff;background-color: #ff9500;border-color: #ff9500;float: right;">Return to Registration</button>
+ </div>
+ 
+ 
+<form>
+</html>
