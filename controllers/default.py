@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # this file is released under public domain and you can use without limitations
+# checking for git 
 from gluon import current
 db = current.globalenv['db']
 
