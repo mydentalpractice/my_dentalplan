@@ -8441,5 +8441,5 @@ ADD COLUMN `voucher_code` VARCHAR(45) NULL AFTER `customer_id`;
 
 4. YYZZPopulate procedure fee in procedurepriceplan 
 
-5. ZZZALTER TABLE `mydp_prod`.`treatment_procedure` 
+5. YYYZZZALTER TABLE `mydp_prod`.`treatment_procedure` 
 ADD COLUMN `policy_name` VARCHAR(128) NULL DEFAULT NULL AFTER `service_id`;
