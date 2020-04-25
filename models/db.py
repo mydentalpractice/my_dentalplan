@@ -938,6 +938,7 @@ db.define_table('treatment_procedure',
                  Field('relgrtransactionid', 'string'),
                  Field('relgrtransactionamt', 'double'),
                  Field('service_id', 'string'),
+                 Field('policy_name', 'string'),
                  Field('remarks', 'string'),
                  Field('treatmentdate','date',widget = lambda field, value:SQLFORM.widgets.date.widget(field, value, _style='height:30px'),default=request.now, requires=IS_DATE(format=T('%d/%m/%Y'),error_message='must be d/m/Y!'),label="Start Date",length=20),
                  Field('is_active', 'boolean', default = True)
@@ -1113,6 +1114,15 @@ db.define_table('paymenttxlog',
 
 db.paymenttxlog._singular = "PaymentTxLog"
 db.paymenttxlog._plural = "PaymentTxLog"
+
+
+db.define_table('rlgproperties',
+                Field('policy_name', 'string',default=''),
+                Field('api_key', 'string',default=''),
+                Field('url', 'string',default=''),
+)
+db.rlgproperties._singular = "PaymentTxLog"
+db.rlgproperties._plural = "PaymentTxLog"
 
 db.define_table('urlproperties',
                 Field('callbackurl', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'), default=''),
@@ -3222,6 +3232,8 @@ db.define_table('rlgdocument',
     Field('membername','string'),
     Field('ackid','string'),
     Field('policy_number','string'),
+    Field('policy_name','string'),
+    Field('voucher_code','string'),
     Field('customer_id','string'),
     Field('mobile_number','string'),
     Field('docdate', 'date',default=request.now,requires = IS_DATE(format=T('%d/%m/%Y'),error_message='must be d/m/Y!'),length=20),

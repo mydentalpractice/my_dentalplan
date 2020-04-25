@@ -8417,3 +8417,29 @@ LEFT JOIN company on company.id = patientmember.company
 LEFT JOIN groupregion on groupregion.id = patientmember.groupregion
 LEFT JOIN hmoplan on hmoplan.id = patientmember.hmoplan
 group by patientmember.company,patientmember.groupregion, patientmember.hmoplan
+
+
+8/04/2020
+==========
+
+1.  YYZZReligare Properties 
+CREATE TABLE `rlgproperties` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `policy_name` varchar(256) DEFAULT NULL,
+  `api_key` varchar(45) DEFAULT NULL,
+  `url` varchar(512) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+
+2, YYZZrlgdocument
+ALTER TABLE `mydp_prod`.`rlgdocument` 
+ADD COLUMN `policy_name` VARCHAR(45) NULL AFTER `policy_number`,
+ADD COLUMN `voucher_code` VARCHAR(45) NULL AFTER `customer_id`;
+
+3. YYZZmodified import provider_region_plan to Populate provider_region_plan procedurepriceplancode
+
+4. YYZZPopulate procedure fee in procedurepriceplan 
+
+5. ZZZALTER TABLE `mydp_prod`.`treatment_procedure` 
+ADD COLUMN `policy_name` VARCHAR(128) NULL DEFAULT NULL AFTER `service_id`;
