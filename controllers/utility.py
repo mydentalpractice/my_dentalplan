@@ -270,7 +270,11 @@ def importrlgprovider():
                 memberID = ""
                 
                 for row in reader:
-                    count = count+1
+		    count=count+1
+		    if(count == 1):
+			continue		    
+		    
+                    
                     strsql = "INSERT INTO importrlgprovider"
                     strsql = strsql + "(id,providercode,region,plan)VALUES("                
                     strsql = strsql + row[0] + " "
@@ -351,7 +355,11 @@ def importprovider():
                 memberID = ""
                 
                 for row in reader:
-                    count = count+1
+		    count = count+1
+		    
+		    if(count == 1):
+			continue		    
+		    
                     strsql = "INSERT INTO importprovider"
                     strsql = strsql + "(id,providerid,provider,title,providername,practicename,address1,address2,address3,city,st,pin,"
                     strsql = strsql + "p_address1,p_address2,p_address3,p_city,p_st,p_pin,telephone,cell,fax,email,taxid,enrolleddate,assignedpatientmembers,"
@@ -675,6 +683,9 @@ def importdoctor():
     
 		for row in reader:
 		    count = count + 1
+		    if(count == 1):
+			continue		    
+		   
 		    strsql = "INSERT INTO importdoctor"
 		    strsql = strsql + "(id,title,name,provider,speciality,role,"
 		    strsql = strsql + "practice_owner,email,cell,registration,color,stafftype,"
@@ -829,8 +840,12 @@ def importproviderregionplan():
 		    count = 0
 		    for row in reader:
 			count = count+1
+			
+			if(count == 1):
+			    continue		    
+			
 			code = row[1]
-			strsql = "INSERT INTO import_provider_region_plan(id,providercode,companycode,regioncode,policy,plancode,procdurepriceplancode)VALUES("
+			strsql = "INSERT INTO import_provider_region_plan(id,providercode,companycode,regioncode,policy,plancode,procedurepriceplancode)VALUES("
 			strsql = strsql + row[0] + ",'" + row[1] + "','" + row[2] + "','" + row[3] +"','" + row[4] + "','" + row[5] + "','" + row[6] + "')" 
 			db.executesql(strsql)    
 		        db.commit()
@@ -896,7 +911,11 @@ def importmember():
                 memberID = ""
                 
                 for row in reader:
-                    count = count+1
+		    count = count+1		    
+		    if(count == 1):
+			continue		    
+		    
+                    
                     logger.logger.info("Import Member = Count = " + str(count)) 
                     strsql = "INSERT INTO importmember"
                     strsql = strsql + "(ID,pattype,patientmember,groupref,fname,mname,lname,regionid,dob,gender,cell,telephone,email,status,address1,"
@@ -1051,7 +1070,9 @@ def importprocedurepriceplan():
                 reader = csv.reader(csvfile)
                 count = 0
                 for row in reader:
-                    count = count+1
+		    count = count+1
+		    if(count == 1):
+			continue		    
                     code = row[1]
                     strsql = "INSERT INTO importprocedurepriceplan(id, priceplancode,procedurecode,proceduredescription,UCR,copay,is_free,relgrproc,relgrprocdesc,service_id,service_name,service_category)VALUES("
                     strsql = strsql + row[0] + ",'" + row[1] + "','" + row[2] + "','" + row[3] + "'," + row[4] + "," + row[5] + ",'" + row[6] + "','" + row[7] + "','" + \
@@ -1105,9 +1126,12 @@ def importplans():
                 reader = csv.reader(csvfile)
                 count = 0
                 for row in reader:
-                    count = count+1
+		    count = count+1
+		    
+		    if(count == 1):
+			continue
                     code = row[1]
-                    strsql = "INSERT INTO importplan(id, plancode,name,procedurepriceplancode,is_active,created_on,created_by,modified_on,modified_by,planfile,region,welcomeletter)VALUES("
+                    strsql = "INSERT INTO importplan(id, hmoplancode,name,procedurepriceplancode,is_active,created_on,created_by,modified_on,modified_by,planfile,groupregion,welcomeletter)VALUES("
                     strsql = strsql + row[0] + ",TRIM('" + row[1] + "'),TRIM('" + row[2] + "'),TRIM('" + row[3] + "'),'" + row[4] + "','" + row[5] + "',1,'" + row[7] + "',1,'" + row[9] + "'," + row[10] + ",'" + row[11] + "')" 
                     db.executesql(strsql)    
             db.commit()
@@ -1115,10 +1139,10 @@ def importplans():
            
             
             
-            #strsql = "insert into hmoplan (covered, premium, capitation, companypays, company, hmoplan, is_active, created_on, created_by, modified_on, modified_by, relation,groupregion)"
-            #strsql = strsql + " select covered, premium, capitation, companypays, companyid, planid, 'T', Now(), 1, now(), 1, relation,regionid from importplanrates" 
-            #db.executesql(strsql)
-            #db.commit()
+            strsql = "insert into hmoplan (hmoplancode,name,procedurepriceplancode,is_active,created_on,created_by,modified_on,modified_by,planfile,groupregion,welcomeletter)"
+            strsql = strsql + " select hmoplancode,name,procedurepriceplancode,is_active,created_on,created_by,modified_on,modified_by,planfile,groupregion,welcomeletter from importplan" 
+            db.executesql(strsql)
+            db.commit()
         
         except Exception as e:
             error = "Import Plan Rates Exception Error - " + str(e)        
@@ -1156,7 +1180,11 @@ def importplanrates():
                 reader = csv.reader(csvfile)
                 count = 0
                 for row in reader:
-                    count = count+1
+		    count = count+1
+		    
+		    if(count == 1):
+			continue		    
+		    
                     code = row[1]
                     strsql = "INSERT INTO importplanrates(id, company,region,plan,relation,covered,premium,companypays,capitation,companyid,planid,regionid)VALUES("
                     strsql = strsql + row[0] + ",'" + row[1] + "','" + row[2] + "','" + row[3] + "','" + row[4] + "'," + row[5] + "," + row[6] + "," + row[7] + "," + row[8] + ",0,0,0)" 
