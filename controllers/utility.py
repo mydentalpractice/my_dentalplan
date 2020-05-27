@@ -1130,9 +1130,11 @@ def importplans():
 		    
 		    if(count == 1):
 			continue
+		    
                     code = row[1]
                     strsql = "INSERT INTO importplan(id, hmoplancode,name,procedurepriceplancode,is_active,created_on,created_by,modified_on,modified_by,planfile,groupregion,welcomeletter)VALUES("
                     strsql = strsql + row[0] + ",TRIM('" + row[1] + "'),TRIM('" + row[2] + "'),TRIM('" + row[3] + "'),'" + row[4] + "','" + row[5] + "',1,'" + row[7] + "',1,'" + row[9] + "'," + row[10] + ",'" + row[11] + "')" 
+		    #logger.loggerpms2.info("SQL\n" + strsql)
                     db.executesql(strsql)    
             db.commit()
             
