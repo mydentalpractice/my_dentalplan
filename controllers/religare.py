@@ -39,7 +39,7 @@ def generate_rlgvoucher():
     if form.accepts(request,session,keepvalues=True):
 	try:    
 	    auth = current.auth
-	    plancode = form.vars.plancode
+	    plancode = "399"
 	    for i in range (0, 1000):
 		count += 1
 		random.seed(int(time.time()) + i)
