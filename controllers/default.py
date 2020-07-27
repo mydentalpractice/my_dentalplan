@@ -5,9 +5,13 @@
 #ZZZZ
 from gluon import current
 db = current.globalenv['db']
+CRYPT = current.globalenv["CRYPT"]
 
 from gluon.tools import Crud
 crud = Crud(db)
+
+
+
 
 from decimal import Decimal
 from gluon.tools import Mail
@@ -39,6 +43,53 @@ from applications.my_pms2.modules import logger
 #########################################################################
 
 
+
+
+@auth.requires_membership('webadmin')
+@auth.requires_login()
+def create_webuser():
+    formheader = "New WebAdmin User"
+    returnurl = URL('default','main')
+    
+    form = SQLFORM.factory(
+        Field('email', 'string', label='xEmail',requires=[IS_EMAIL()]),
+        Field('fname', 'string',  label='xFirst Name',requires=IS_NOT_EMPTY()),
+        Field('lname', 'string',  label='xLast Name',requires=IS_NOT_EMPTY()),
+        Field('username', 'string',  label='xUser Name',requires=IS_NOT_EMPTY()),
+        Field('password', 'password',  label='xPassword',requires=[IS_NOT_EMPTY()]),
+        Field('confirmpassword', 'password',  label='CPassword',requires=[IS_NOT_EMPTY()]),        
+        #Field('password', 'password',  label='xPassword',requires=[IS_NOT_EMPTY(),CRYPT(key=auth.settings.hmac_key)]),
+        #Field('confirmpassword', 'password',  label='CPassword',requires=[IS_NOT_EMPTY(),CRYPT(key=auth.settings.hmac_key)]),        
+    )        
+    if form.process().accepted:
+	password = form.vars.password
+	if(form.vars.password!= form.vars.confirmpassword):
+	    response.flash = 'Password mismtach'
+	    redirect(URL('default','create_webuser'))
+	else:
+	    my_crypt = CRYPT(key=auth.settings.hmac_key)
+	    crypt_pass = my_crypt(password)[0] 
+	    
+	    userid = db.auth_user.insert(email=form.vars.email,
+	                                username=form.vars.username,
+	                                password=crypt_pass,
+	                                first_name=form.vars.fname,
+	                                last_name = form.vars.lname,
+	                                created_on = common.getISTFormatCurrentLocatTime(),
+	                                modified_on = common.getISTFormatCurrentLocatTime()
+	                                
+	                                )
+	    redirect(returnurl)
+
+    elif form.errors:
+	response.flash = 'form creat_webuser has errors'        
+
+    
+    return dict(form=form,formheader=formheader,returnurl=returnurl)    
+
+    
+    
+    
 def sitehasmoved():
     
     return dict()
@@ -61,7 +112,8 @@ def showerror():
     
     return dict(errorheader=errorheader,errormssg=errormssg,returnURL=returnURL,buttontext='Return')
 
-# IB 05292016
+@auth.requires_membership('webadmin')
+@auth.requires_login()
 def register():
     formheader = "New Member"
     formA = SQLFORM.factory(
@@ -1235,8 +1287,8 @@ def user():
         xver['_class'] = 'w3-input w3-border  w3-small'    
     submit = form.element('input',_type='submit')
     submit['_value'] = 'Reset Password'    
- 
     return dict(form=form)
+    
 
 
 def download():

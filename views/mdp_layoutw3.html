@@ -74,6 +74,7 @@
   <a href="{{=URL('default', 'index')}}" class="w3-padding"><i class="fa fa-home fa-fw"></i><b style="font-size:18px">Home</b></a>
   <a href="{{=returnurl}}" class="w3-padding"><i class="fa fa-reply fa-fw"></i><b  style="font-size:18px">Back</b></a>
   <br/>
+  <a href="{{=URL('default', 'create_webuser', vars=dict(page=1))}}" class="w3-padding"><i class="fa fa-users fa-fw"></i> <b style="font-size:18px">New User</b></a>
   <a href="{{=URL('member', 'list_webmember', vars=dict(page=1))}}" class="w3-padding"><i class="fa fa-users fa-fw"></i> <b style="font-size:18px">Enrollment Status</b></a>
   <a href="{{=URL('member', 'new_webmember')}}" class="w3-padding"><i class="fa fa-users fa-fw"></i> <b style="font-size:18px">New Member</b></a>
   <a href="{{= URL('member', 'list_member')}}" class="w3-padding"><i class="fa fa-users fa-fw"></i> <b style="font-size:18px">Member List</b></a>
