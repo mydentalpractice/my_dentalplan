@@ -74,7 +74,7 @@ def list_roles():
     
     orderby = (db.role_default.role)
         
-    exportlist = dict( csv_with_hidden_cols=False,  html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)    
+    exportlist =dict( csv_with_hidden_cols=False,  html=False,tsv_with_hidden_cols=False, tsv=False, json=False,csv=False,xml=False)    
 
     returnurl=URL('default','index')
     
@@ -181,7 +181,7 @@ def list_specialities():
     
     orderby = (db.speciality_default.speciality)
         
-    exportlist = dict( csv_with_hidden_cols=False,  html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)    
+    exportlist = dict( csv=False,csv_with_hidden_cols=False,  html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)    
 
     returnurl = URL('admin', 'providerhome')
     

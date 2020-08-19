@@ -593,7 +593,7 @@ def list_provider():
     #maxtextlengths = {'provider.email':50,'provider.cell':15,'provider.registration':20}
     
     orderby = (db.provider.provider)
-    exportlist = dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)
+    exportlist = dict( csv=False,csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)
     links = [lambda row: A('Update',_href=URL("provider","update_provider",vars=dict(page=common.getgridpage(request.vars)),args=[row.id])),\
              lambda row: A('Assigned',_href=URL("report","assignedmembersreportparam",vars=dict(providerid=row.id))),\
              #lambda row: A('Captiation Report',_href=URL("report","providercapitationreportparam",vars=dict(providerid=row.id))),\
@@ -649,7 +649,7 @@ def list_assigned():
         'company.company':'Group(Company)',
              }
 
-    exportlist = dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False, csv=False)
+    exportlist =  dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False, csv=False)
 
 
     links = [lambda row: A('View',_href=URL("plan","view_plancopay",args=[row.copay.id,planid])),lambda row: A('Update',_href=URL("plan","update_plancopay",args=[row.copay.id,planid])), lambda row: A('Delete',_href=URL("plan","delete_plancopay",args=[row.copay.id,planid]))]
@@ -937,7 +937,7 @@ def view_provider():
         'company.company':'Group(Company)',
              }
 
-    exportlist = dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False, csv=False)
+    exportlist =  dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False, csv=False)
 
 
     links = [lambda row: A('View',_href=URL("plan","view_plancopay",args=[row.copay.id,planid])),lambda row: A('Update',_href=URL("plan","update_plancopay",args=[row.copay.id,planid])), lambda row: A('Delete',_href=URL("plan","delete_plancopay",args=[row.copay.id,planid]))]

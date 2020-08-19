@@ -96,7 +96,7 @@ def list_rlgvoucher():
            'rlgvoucher.lname' : 'Last Name'
            }    
 
-    exportlist = dict( csv_with_hidden_cols=False,  html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)    
+    exportlist =  dict( csv=False, csv_with_hidden_cols=False,  html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)    
     
     links = [lambda row: A('Update',_href=URL("religare","update_rlgvoucher",vars=dict(page=page,voucherid=row.id))),\
              lambda row: A('Delete',_href=URL("religare","delete_rlgvoucher",vars=dict(page=page,voucherid=row.id)))\

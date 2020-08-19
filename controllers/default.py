@@ -169,7 +169,7 @@ def preregisterlookup():
       }    
 
     #exportlist = dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False, xml=False)
-    exportlist = dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)
+    exportlist = dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,csv=False,xml=False)
 	
     links = [\
              lambda row: A('Dental Case Sheet',_href=URL("default","dentalcasesheet",vars=dict(preregid=row.preregister.id))),\

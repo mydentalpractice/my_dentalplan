@@ -358,7 +358,7 @@ def export_members():
 
 
 
-    exportlist = dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)
+    exportlist = dict( csv=False,csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)
 
     #IB 05292016
     links = None
@@ -482,7 +482,7 @@ def list_member():
 
 
 
-    exportlist = dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)
+    exportlist = dict( csv=False,csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)
 
     #IB 05292016
     links = [lambda row: A('Member Card',_href=URL("member","member_card_links",vars=dict(page=common.getgridpage(request.vars),memberid=row.patientmember.id),args=[row.patientmember.id])),lambda row: A('Welcome Kit',_href=URL("default","emailwelcomekit_0",vars=dict(page=common.getgridpage(request.vars)),args=[row.patientmember.id])),lambda row: A('Update',_href=URL("member","update_member",vars=dict(page=common.getgridpage(request.vars)), args=[row.patientmember.id])), lambda row: A('Delete',_href=URL("member","delete_member",args=[row.patientmember.id]))]
@@ -1612,7 +1612,7 @@ def update_webmember_0():
              'webmemberdependants.relation':'Relation'
              }
 
-    exportlist = dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False, csv=False)
+    exportlist =  dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False, csv=False)
 
     left  = None
     links = [lambda row: A('Update',_href=URL("member","update_webdependant_0",args=[row.id,webmemberid,0])), lambda row: A('Delete',_href=URL("member","delete_webdependant_0",args=[row.id,webmemberid,0]))]
@@ -1722,7 +1722,7 @@ def create_webdependant_1():
              'webmemberdependants.relation':'Relation'
              }
 
-    exportlist = dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False, csv=False)
+    exportlist =  dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False, csv=False)
 
     left  = None
     links = None
@@ -1827,7 +1827,7 @@ def create_webdependant_0():
              'webmemberdependants.relation':'Relation'
              }
 
-    exportlist = dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False, csv=False)
+    exportlist =  dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False, csv=False)
 
     left  = None
     links = None
@@ -2859,7 +2859,7 @@ def member_card_current():
              'patientmemberdependants.relation':'Relation'
              }
 
-    exportlist = dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False, csv=False)
+    exportlist =  dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False, csv=False)
 
 
     query = (db.patientmemberdependants.patientmember == memberid) & (db.patientmemberdependants.is_active==True)
