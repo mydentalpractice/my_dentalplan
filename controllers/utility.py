@@ -1212,11 +1212,15 @@ def importplanrates():
             
             strsql = "insert into companyhmoplanrate (covered, premium, capitation, companypays, company, hmoplan, is_active, created_on, created_by, modified_on, modified_by, relation,groupregion)"
             strsql = strsql + " select covered, premium, capitation, companypays, companyid, planid, 'T', Now(), 1, now(), 1, relation,regionid from importplanrates" 
+	    
             db.executesql(strsql)
             db.commit()
         
         except Exception as e:
-            error = "Import Plan Rates Exception Error - " + str(e)        
+	    
+            error = "Import Plan Rates Exception Error - " + str(e) 
+	    logger.loggerpms2.info(error)
+	    logger.loggerpms2.info("SQL Query\n" + strsql)	    
     
         
     return dict(form=form, count=count,error=error)
