@@ -3013,6 +3013,8 @@ def new_webmember():
       
     planid = 1
     regionid = 1
+    #widget = lambda field, value:SQLFORM.widgets.options.widget(field, value,_class='form-control')
+    #Field('duration', widget = lambda field, value:SQLFORM.widgets.options.widget(field, value,  _class='form-control',_style='width:100%'), default='30', label='Doctor',requires=IS_IN_SET(['30','45','60'])),#
 
     formA = SQLFORM.factory(
         Field('webmember', 'string',label='Member ID', default=''),
@@ -3038,6 +3040,7 @@ def new_webmember():
         Field('pin2','string',default='',label='Pin Choice 2'),
         Field('pin3','string',default='',label='Pin Choice 3'))
 
+    
     if formA.process().accepted:
         memberid = db.webmember.insert(**db.webmember._filter_fields(formA.vars))
         db(db.webmember.id == memberid).update(webmember = memberid,status = "Attempting", webenrollcompletedate=db.webmember.webenrolldate)

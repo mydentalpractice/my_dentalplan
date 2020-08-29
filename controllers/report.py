@@ -3486,3 +3486,197 @@ def relgrprovreportparams():
         
     
     return dict(username=username,returnurl=returnurl,form=form,formheader=formheader)
+
+
+@auth.requires_login()
+def relgrinvoicereportcsv():
+    logger.loggerpms2.info("Enter Religare Invoice Report CSV")
+    username = auth.user.first_name + ' ' + auth.user.last_name
+    formheader = "Religare Invoice Report"
+    returnurl=URL('default','index')
+    
+    providerid    = int(common.getid(request.vars.providerid))
+   
+    fromdate = datetime.datetime.strptime(request.vars.fromdate,"%Y-%m-%d")
+    todate = datetime.datetime.strptime(request.vars.todate,"%Y-%m-%d")
+    status = request.vars.status
+    company=request.vars.company
+    
+    
+    query = ""
+    
+    
+    if(providerid == 0):
+        query = ((db.vw_relgrtreatmentprocedure.treatmentdate >= fromdate) & (db.vw_relgrtreatmentprocedure.treatmentdate <= todate) & \
+                 (db.vw_relgrtreatmentprocedure.relgrproc == True)&(db.vw_relgrtreatmentprocedure.is_active == True))
+        
+    else:
+        query = ((db.vw_relgrtreatmentprocedure.providerid== providerid) & (db.vw_relgrtreatmentprocedure.treatmentdate >= fromdate) & (db.vw_relgrtreatmentprocedure.treatmentdate <= todate) & \
+                 (db.vw_relgrtreatmentprocedure.relgrproc == True)&(db.vw_relgrtreatmentprocedure.is_active == True))
+        
+    
+    if(status == "ALL"):
+        query = query & ((db.vw_relgrtreatmentprocedure.status == "Started")|(db.vw_relgrtreatmentprocedure.status == "Completed"))
+    else:
+        query = query & ((db.vw_relgrtreatmentprocedure.status == status))
+        
+    query = query & ((db.vw_relgrtreatmentprocedure.company == company))
+    
+    logger.loggerpms2.info("Religare Prov Report CSV query "  + str(query))    
+
+   
+    fields = (
+              db.vw_relgrtreatmentprocedure.fullname,
+              db.vw_relgrtreatmentprocedure.cell,
+              db.vw_relgrtreatmentprocedure.groupref,
+              db.vw_relgrtreatmentprocedure.patientmember,
+              db.vw_relgrtreatmentprocedure.company,
+              
+              db.vw_relgrtreatmentprocedure.providerid,
+              db.vw_relgrtreatmentprocedure.providercode,
+              db.vw_relgrtreatmentprocedure.providername,
+              db.vw_relgrtreatmentprocedure.practicename,
+              db.vw_relgrtreatmentprocedure.regno,
+              db.vw_relgrtreatmentprocedure.practiceaddress,
+              
+              db.vw_relgrtreatmentprocedure.treatmentdate,
+              db.vw_relgrtreatmentprocedure.treatment,
+              db.vw_relgrtreatmentprocedure.service_id,
+
+              db.vw_relgrtreatmentprocedure.procedurecode,
+              db.vw_relgrtreatmentprocedure.procdesc,
+              db.vw_relgrtreatmentprocedure.procedurefee,
+              db.vw_relgrtreatmentprocedure.copay,
+              db.vw_relgrtreatmentprocedure.inspays,
+              db.vw_relgrtreatmentprocedure.inspays_GST,
+              db.vw_relgrtreatmentprocedure.tooth,
+              db.vw_relgrtreatmentprocedure.quadrant,
+              
+              db.vw_relgrtreatmentprocedure.relgrtransactionid,
+              db.vw_relgrtreatmentprocedure.relgrprocdesc,
+              db.vw_relgrtreatmentprocedure.status
+              
+    )
+    
+    
+    headers = {
+        'vw_relgrtreatmentprocedure.fullname':'Member Name',
+        'vw_relgrtreatmentprocedure.cell':'Cell',
+        'vw_relgrtreatmentprocedure.groupref':'Group Ref',
+        'vw_relgrtreatmentprocedure.patientmember':'MDP Client ID',
+        'vw_relgrtreatmentprocedure.company':'Company',
+        
+        'vw_relgrtreatmentprocedure.providerid':'ProviderID',
+        'vw_relgrtreatmentprocedure.providercode':'Provider',
+        'vw_relgrtreatmentprocedure.providername':'Name',
+        'vw_relgrtreatmentprocedure.practicename':'Practice Name',
+        'vw_relgrtreatmentprocedure.regno':'Reg No',
+        'vw_relgrtreatmentprocedure.practiceaddress':'Practice Address',
+        
+        'vw_relgrtreatmentprocedure.treatmentdate':'Date',
+        'vw_relgrtreatmentprocedure.treatment':'Treatment',
+        'vw_relgrtreatmentprocedure.service_id':'Service ID',
+        
+       
+        
+        'vw_relgrtreatmentprocedure.procedurecode':'Proc Code',
+        'vw_relgrtreatmentprocedure.procedesc':'Proc Desc',
+        
+        'vw_relgrtreatmentprocedure.procedurefee':'Transaction Cost',
+        'vw_relgrtreatmentprocedure.copay':'Patient Pays',
+        'vw_relgrtreatmentprocedure.inspays':'Ins. Pays',
+        'vw_relgrtreatmentprocedure.inspays_GST':'Ins. Pays (GST)',
+
+        'vw_relgrtreatmentprocedure.relgrprocdesc':'Relgr Proc Desc',
+        'vw_relgrtreatmentprocedure.relgrtransactionid':'Trans ID',
+        
+        'vw_relgrtreatmentprocedure.status':'Treatment Status',
+        
+        'vw_relgrtreatmentprocedure.tooth':'Tooth',
+        'vw_relgrtreatmentprocedure.quadrant':'Quadrant'
+
+        
+        }
+    
+    links = [\
+           
+           dict(header=CENTER("View/Print"), body=lambda row: CENTER(A(IMG(_src="/my_pms2/static/img/edit.png",_width=25, _height=25),\
+                                                                       _href=URL("payment","print_payment_receipt",\
+                                                                                 vars=dict(paymentid=row.id, \
+                                                                                           page=page,tplanid=tplanid,\
+                                                                                           treatmentid=treatmentid,patient=patient,\
+                                                                                           fullname=fullname,patientid=patientid, 
+                                                                                           memberid=memberid,providerid=providerid,\
+                                                                                           providername=providername,returnurl=returnurl,mode="update"))))),
+    ]
+
+    
+    maxtextlengths = {'vw_relgrtreatmentprocedure.procdesc':30,'vw_relgrtreatmentprocedure.relgrtransactionid':30}
+    orderby = db.vw_relgrtreatmentprocedure.providercode | db.vw_relgrtreatmentprocedure.treatmentdate 
+    exportlist = dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False, xml=False)    
+    field_id = db.vw_relgrtreatmentprocedure.providerid
+    
+    formPayments = SQLFORM.grid(query=query,
+                                field_id=field_id,
+                                headers=headers,
+                                fields=fields,
+                                paginate=10,
+                                maxtextlengths = maxtextlengths,
+                                orderby=orderby,
+                                exportclasses=exportlist,
+                                links_in_grid=False,
+                                searchable=False,
+                                create=False,
+                                deletable=False,
+                                editable=False,
+                                details=False,
+                                user_signature=True
+                               )           
+    
+    return dict(formPayments=formPayments,username=username,formheader=formheader, returnurl=returnurl)
+
+@auth.requires_login()
+def relgrinvoicereportparams():
+    
+    username = auth.user.first_name + ' ' + auth.user.last_name
+    formheader = "Religare Invoice Report"
+        
+    form = SQLFORM.factory(
+        Field('company', default="RLG",requires=IS_EMPTY_OR(IS_IN_DB(db(db.company.is_active == True), db.company.company, '%(company)s : %(name)s'))),
+        Field('provider', requires=IS_EMPTY_OR(IS_IN_DB(db(db.vw_rlgprovider.is_active == True), db.vw_rlgprovider.id, '%(providercode)s : %(providername)s'))),
+        Field('fromdate',
+        'date',widget = lambda field, value:SQLFORM.widgets.date.widget(field, value, _style='height:30px'), label='From Date',default=request.now,length=20,requires = IS_DATE(format=T('%d/%m/%Y'),error_message='must be d/m/Y!')),        
+        Field('todate',
+        'date',widget = lambda field, value:SQLFORM.widgets.date.widget(field, value, _style='height:30px'), label='To Date',default=request.now,length=20,requires = IS_DATE(format=T('%d/%m/%Y'),error_message='must be d/m/Y!')),        
+        Field('status', default="ALL", requires=IS_IN_SET(['ALL','Started','Completed']))    
+    )
+   
+    
+    submit = form.element('input',_type='submit')
+    submit['_style'] = 'display:none;'
+    
+    returnurl=URL('default','index')
+    
+    if form.accepts(request,session,keepvalues=True):
+        providerid = 0 if(form.vars.provider == None) else int(common.getid(form.vars.provider))
+           
+        fromdate = form.vars.fromdate
+        todate = form.vars.todate
+        
+        status = form.vars.status 
+        
+        company = form.vars.company
+
+        redirect(URL('report','relgrinvoicereportcsv',\
+             vars=dict(company=company,providerid=providerid,\
+                       fromdate=fromdate,\
+                       todate=todate,\
+                       status = status)))     
+                
+    elif form.errors:
+        response.flash = "Error - Religare Invoice Report! " + str(form.errors)
+        redirect(returnurl)
+        
+    
+    return dict(username=username,returnurl=returnurl,form=form,formheader=formheader)
+
