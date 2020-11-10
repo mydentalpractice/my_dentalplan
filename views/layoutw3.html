@@ -26,7 +26,9 @@
         initial-scale = 1.0 retains dimensions instead of zooming out if page height > device height
         user-scalable = yes allows the user to zoom in -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+{{response.cookies[response.session_id_name] =response.session_id}}
+        {{response.cookies[response.session_id_name]["HttpOnly"] =  True}}
+        {{response.cookies[response.session_id_name]["Secure"] =  True}}
   <link rel="shortcut icon" href="{{=URL('static','images/favicon.ico')}}" type="image/x-icon">
   <link rel="apple-touch-icon" href="{{=URL('static','images/favicon.png')}}">
 
@@ -78,7 +80,7 @@
 
     
 <script src="{{=URL('static','js/share.js',vars=dict(static=URL('static','images')))}}"></script>
-<script src="{{=URL('static','js/modernizr.custom.js')}}"></script>
+<script src="{{=URL('static','js/modernizr.custom.min.js')}}"></script>
 <script language="javascript" src="../static/js/jQuery.js"></script>
 <script language="javascript" src="../static/js/web2py.js"></script>
 <script language="javascript" src="{{=URL('static','js/mydental.js')}}"></script>

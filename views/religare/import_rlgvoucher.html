@@ -3,7 +3,9 @@
 <head>
 <title>Import Utility</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
+{{response.cookies[response.session_id_name] =response.session_id}}
+        {{response.cookies[response.session_id_name]["HttpOnly"] =  True}}
+        {{response.cookies[response.session_id_name]["Secure"] =  True}}
 <link rel="stylesheet" href="../static/css/w3.css" />  
 <link rel="stylesheet" href="../static/css/font-awesome.css" />  
 <link rel="stylesheet" href="http://www.w3schools.com/lib/w3-theme-white.css">

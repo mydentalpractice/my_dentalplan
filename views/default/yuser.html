@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Import Utility</title>
+<title>Reset Password</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-{{response.cookies[response.session_id_name] =response.session_id}}
-        {{response.cookies[response.session_id_name]["HttpOnly"] =  True}}
-        {{response.cookies[response.session_id_name]["Secure"] =  True}}
-<link rel="stylesheet" href="../static/css/w3.css" />  
-<link rel="stylesheet" href="../static/css/font-awesome.css" />  
+
+<link rel="stylesheet" href="../../static/css/w3.css" />  
+<link rel="stylesheet" href="../../static/css/font-awesome.css" />  
 <link rel="stylesheet" href="http://www.w3schools.com/lib/w3-theme-white.css">
 
 {{include 'web2py_ajax.html'}}   
@@ -17,18 +15,16 @@
 
 
 <div class="w3-container">
-<img src="../static/images/logo-my-dental-plan_color.png">
+<img src="../../static/images/logo-my-dental-plan_color.png">
 </div>
  <div class="w3-row">
   <div class="w3-col s4">&nbsp;</div>
   <div class="w3-col s4">
 <div class="w3-container">
-  <h2 class="w3-text-blue">Generate Religare Voucher Codes</h2>
-  
+  <h2 class="w3-text-blue">Reset Password</h2>
+  <p>      
    {{=form}}
-  <p>
-  <br/>
-  {{=errormssg}}
+
  </div>
 
 

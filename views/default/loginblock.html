@@ -1,0 +1,37 @@
+{{extend 'mdp_layoutw3.html'}}
+
+<header class="w3-container w3-dark-grey ">
+   <h4>Rate Limit/h4>
+</header>
+
+{{=form.custom.begin}}
+  
+  <table>
+       
+        <tr>
+            <td >
+                User Name
+            </td>
+            <td >
+                {{=form.custom.widget.user_name}}
+            </td>
+         </tr>            
+         <tr>
+            <td >
+                IP Address
+            </td>
+            <td >
+                {{=form.custom.widget.ip_address}}
+            </td>
+         </tr>            
+         
+    </table>
+    {{=form.custom.submit}}
+    
+
+    <a href="{{=returnurl}}">Cancel </a>
+                                                                         
+
+  {{=form.custom.end}}  
+</div>
+

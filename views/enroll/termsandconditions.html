@@ -6,6 +6,9 @@
 	<title>My Dental Plan - Register New User</title>
 	<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
     <meta name="viewport" content="width=device-width" />
+{{response.cookies[response.session_id_name] =response.session_id}}
+	{{response.cookies[response.session_id_name]["HttpOnly"] =  True}}
+	{{response.cookies[response.session_id_name]["Secure"] =  True}}    
     <link href="../static/assets/css/bootstrap.min.css" rel="stylesheet" />
     <link href="../static/assets/css/styles.css" rel="stylesheet" />
     <link href="../static/assets/css/font-awesome.css" rel="stylesheet">  

@@ -10,7 +10,7 @@ CRYPT = current.globalenv["CRYPT"]
 from gluon.tools import Crud
 crud = Crud(db)
 
-
+from gluon.contrib.login_methods.email_auth import email_auth
 
 
 from decimal import Decimal
@@ -43,7 +43,39 @@ from applications.my_pms2.modules import logger
 #########################################################################
 
 
+def loginblock():
+    
+    formheader = "New WebAdmin User"
+    username = ""
+    returnurl = URL('default','index')
+    
+    form = SQLFORM.factory(
+        Field('user_name', 'string',  label='User Name'),
+        Field('ip_address', 'string',  label='IP Address')
+    )
+    
+    xusername = form.element('input',_id='no_table_user_name')
+    xusername['_class'] =  'form-control'
+    xusername['_placeholder'] =  'Username'
+    xusername['_autocomplete'] =  'off'
 
+    xip = form.element('input',_id='no_table_ip_address')
+    xip['_class'] =  'form-control'
+    xip['_placeholder'] =  'Username'
+    xip['_autocomplete'] =  'off'
+    
+    if form.process().accepted:
+	user_name = form.vars.user_name
+	ip_address = form.vars.ip_address
+	
+	db((db.loginblock.username == user_name) | (db.loginblock.ip_address == ip_address)).delete()
+	
+	redirect(returnurl)
+   
+    
+    return dict(form=form,returnurl = returnurl,username=username)
+
+    
 
 @auth.requires_membership('webadmin')
 @auth.requires_login()
@@ -661,7 +693,13 @@ def member_resetpassword():
     xusername =form.element('input',_id='auth_user_username')
     xusername['_value'] =  username
     xusername['_class'] = 'w3-input w3-border  w3-small'
-
+    xusername['_pattern'] = "[a-zA-Z0-9-_.]+"
+    
+    xpassword = form.element('input',_id='auth_user_password')
+    xpassword['_class'] =  'form-control'
+    xpassword['_placeholder'] =  'Password'
+    xpassword['_autocomplete'] =  'off'
+    xpassword['_pattern'] = "[a-zA-Z0-9-_.!@#$%^&*]+"    
     
         
     return dict(form=form)
@@ -687,7 +725,21 @@ def index():
     else:
         #redirect(URL('my_dentalplan','default','user'))
         formlogin = auth.login()
-        return dict(formlogin=formlogin)
+	
+	xusername = formlogin.element('input',_id='auth_user_username')
+	xusername['_class'] =  'form-control'
+	xusername['_placeholder'] =  'Username'
+	xusername['_autocomplete'] =  'off'
+	xusername['_pattern'] = "[a-zA-Z0-9-_.]+"
+
+
+	xpassword = formlogin.element('input',_id='auth_user_password')
+	xpassword['_class'] =  'form-control'
+	xpassword['_placeholder'] =  'Password'
+	xpassword['_autocomplete'] =  'off'	
+	xpassword['_pattern'] = "[a-zA-Z0-9-_.!@#$%^&*]+"
+	
+	return dict(formlogin=formlogin)
 
     #auth.settings.login_onaccept.append(redirect_after_adminlogin)
     #auth.settings.login_onfail.append(login_adminerror)
@@ -1274,6 +1326,9 @@ def user():
         @auth.requires_permission('read','table name',record_id)
     to decorate functions that need access control
     """
+    auth.settings.login_methods.append(
+    email_auth("smtp.gmail.com:587", "@gmail.com"))    
+    
     auth.settings.reset_password_next = URL('default', 'member_login')  #IB 05292016
     auth.settings.prevent_password_reset_attacks = True
     auth.settings.login_onaccept.append(redirect_after_adminlogin)

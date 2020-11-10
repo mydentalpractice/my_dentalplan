@@ -139,6 +139,12 @@ use_janrain(auth, filename='private/janrain.key')
 ## >>> for row in rows: print row.id, row.myfield
 #########################################################################
 
+db.define_table('loginblock',
+                Field('ip_address','string'),
+                Field('username','string'),
+                Field('attempts','integer'),
+                Field('lastlogin','datetime', default=request.now, requires=IS_DATETIME(format=T('%d/%m/%Y %H:%M:%S'))),
+                auth.signature)
 
 db.define_table('sessionlog',
                 Field('ackid','string'),
@@ -2006,11 +2012,13 @@ db.vw_patientmember._plural   = "vw_patientmember"
 
 db.define_table('vw_treatmentlist',
                 Field('tplanid','integer',represent=lambda v, r: 0 if v is None else v, label='Treatment Plan ID'),  
-                Field('providerid','integer',represent=lambda v, r: 0 if v is None else v, label='Provider ID'),                  
+                Field('providerid','integer',represent=lambda v, r: 0 if v is None else v, label='Provider ID'),     
+                Field('companyid','integer',represent=lambda v, r: 0 if v is None else v, label='Company ID'),                  
                 Field('treatmentplan','string',represent=lambda v, r: '' if v is None else v, label='Treatment Plan'),  
                 Field('treatment','string',represent=lambda v, r: '' if v is None else v, label='Treatment'),  
                 Field('chiefcomplaint','string',represent=lambda v, r: '' if v is None else v, label='Chief Complaint'),  
                 Field('startdate','date', label='Start Date',requires=IS_DATE(format=T('%d/%m/%Y'),error_message='must be d/m/Y!')),  
+                Field('enddate','date', label='End Date',requires=IS_DATE(format=T('%d/%m/%Y'),error_message='must be d/m/Y!')),  
                 Field('status','string',represent=lambda v, r: '' if v is None else v,label='Status'),  
                 Field('title','string',represent=lambda v, r: '' if v is None else v,label='Title'),  
                 Field('patientname','string',represent=lambda v, r: '' if v is None else v, label='Patient'),  
@@ -2023,6 +2031,11 @@ db.define_table('vw_treatmentlist',
                 Field('doctorname','string'),  
                 Field('pattern','string'),  
                 Field('pattreatment','string'),  
+                Field('groupref','string'),  
+                Field('patientmember','string'),  
+                Field('tooth','string'),  
+                Field('quadrant','string'),  
+                Field('notes','string'),  
                 Field('is_active','boolean', default=True),
                 Field('modified_on','datetime'),
                 migrate = False
@@ -2946,7 +2959,9 @@ db.define_table('vw_appointments',
                 Field('groupsms', 'boolean'),
                 Field('groupemail', 'boolean'),
                 Field('provtel', 'string'),
-                
+                Field('companyid', 'integer'),
+                Field('groupref', 'string'),
+                Field('membercode', 'string'),
                 auth.signature
     )
 
