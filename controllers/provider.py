@@ -591,6 +591,8 @@ def list_provider():
         'provider.pa_approved': 'Apr'
         }    
     #maxtextlengths = {'provider.email':50,'provider.cell':15,'provider.registration':20}
+    db.provider.address1.searchable = False
+    db.provider.address1.listable = False
     
     orderby = (db.provider.provider)
     exportlist = dict( csv=False,csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)
