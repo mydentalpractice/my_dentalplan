@@ -4,15 +4,19 @@ db = current.globalenv['db']
 
 import datetime
 from datetime import timedelta
+from datetime import datetime
 
 
 #import sys
 #sys.path.append('modules')
+
 from applications.my_pms2.modules import account
 from applications.my_pms2.modules  import common
 from applications.my_pms2.modules  import mail
 from applications.my_pms2.modules  import cycle
 from applications.my_pms2.modules  import logger
+
+from applications.my_pms2.modules  import mdpabhicl
 
 #from gluon.contrib import account
 #from gluon.contrib import mail
@@ -3679,4 +3683,62 @@ def relgrinvoicereportparams():
         
     
     return dict(username=username,returnurl=returnurl,form=form,formheader=formheader)
+
+
+#@auth.requires_login()
+def abhiclreport():
+    
+ 
+    username = auth.user.first_name + ' ' + auth.user.last_name
+    formheader = "ABHICL MIS Report"
+        
+    form = SQLFORM.factory(
+        Field('abhiclid', default=""),
+        
+        Field('company', default="ABHI",requires=IS_EMPTY_OR(IS_IN_DB(db(db.company.is_active == True), db.company.company, '%(company)s : %(name)s'))),
+        Field('provider', requires=IS_EMPTY_OR(IS_IN_DB(db(db.vw_rlgprovider.is_active == True), db.vw_rlgprovider.id, '%(providercode)s : %(providername)s'))),
+        Field('fromdate',
+        'date',widget = lambda field, value:SQLFORM.widgets.date.widget(field, value, _style='height:30px'), label='From Date',default=request.now,length=20,requires = IS_DATE(format=T('%d/%m/%Y'),error_message='must be d/m/Y!')),        
+        Field('todate',
+        'date',widget = lambda field, value:SQLFORM.widgets.date.widget(field, value, _style='height:30px'), label='To Date',default=request.now,length=20,requires = IS_DATE(format=T('%d/%m/%Y'),error_message='must be d/m/Y!')),        
+        Field('status', default="Completed", requires=IS_IN_SET(['ALL','Started','Completed']))    
+    )
+   
+    
+    submit = form.element('input',_type='submit')
+    submit['_style'] = 'display:none;'
+    
+    returnurl=URL('default','index')
+    
+    if form.accepts(request,session,keepvalues=True):
+        providerid = 0 if(form.vars.provider == None) else int(common.getid(form.vars.provider))
+    
+        abhiclid  = form.vars.abhiclid
+        fromdate = (form.vars.fromdate).strftime("%d/%m/%Y")
+        todate = (form.vars.todate).strftime("%d/%m/%Y")
+        
+        status = form.vars.status 
+        
+        company = form.vars.company
+        
+        abhiclobj = mdpabhicl.ABHICL(db, None, providerid)
+
+        avars = {}
+        avars["ABHICLID"] = abhiclid
+        avars["company"] = company
+ 
+        avars["from_date"] = fromdate
+        avars["to_date"] = todate
+        avars["status"] = status
+           
+        treatments = abhiclobj.get_treatments(avars)
+        
+    elif form.errors:
+        response.flash = "Error - Religare Invoice Report! " + str(form.errors)
+        redirect(returnurl)
+        
+    
+    return dict(username=username,returnurl=returnurl,form=form,formheader=formheader)
+
+
 
