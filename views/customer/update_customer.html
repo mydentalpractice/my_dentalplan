@@ -1,0 +1,352 @@
+{{extend 'mdp_layoutw3.html'}}
+
+
+<form  method="post" name="frmNewMember" id="frmNewMember">
+{{=formA.custom.begin}}
+
+<div class="w3-container w3-padding-16">
+ <header class="w3-container w3-dark-grey ">
+   <h4>{{=formheader}}</h4>
+ </header>
+ <br/>
+
+<div class="w3-container w3-hide">
+{{=formA.custom.widget.planid}}
+{{=formA.custom.widget.regionid}}
+</div>
+
+<header class="w3-container w3-dark-grey ">
+ <h5>Details</h5>
+ </header>
+
+
+<table>
+  <tr style="display:none;">
+       <td class="form_details ">
+           Customer ID
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.customer}}
+        </td>
+  </tr>
+  <tr>
+       <td class="form_details ">
+           Customer Reference
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.customer_ref}}
+        </td>
+  </tr>
+           <tr>
+            <td class="form_details " >
+                Provider
+            </td>
+            
+            <td>
+                    {{=formA.custom.widget.providerid}}
+            </td>
+         </tr>           
+  
+ <tr>
+       <td >
+           Company
+       </td>
+       <td >
+        {{=formA.custom.widget.companyid}}
+        </td>
+    </tr>  
+  
+ <tr>
+       <td class="form_details ">
+           Region
+       </td>
+       
+       <td class="form_details">
+             <select class="form_details " id="regions" onchange="changeRegions()">
+                    {{ for region in regions: }}
+                        {{if (region.id == regionid):}}
+                          <option selected="selected" value={{=region.id}}>{{=region.region}}({{=region.groupregion}})</option>
+                        {{else:}}
+                        <option value={{=region.id}}>{{=region.region}}({{=region.groupregion}})</option>
+                        {{pass}}
+                    {{pass}}
+                </select>         
+             
+        </td>
+        
+       
+    </tr>  
+  
+ <tr>
+       <td class="form_details ">
+           Plan
+       </td>
+   <td class="form_details " >
+<div id='plansdiv'>
+
+                <select class="form_details " id="plans" onchange="changePlans()">
+                    <option value='1'>--Select--</option>
+            
+                    {{for plan in plans:}}
+                        {{if (plan.id == planid):}}
+                          <option selected="selected" value={{=plan.id}}>{{=plan.name}} ({{=plan.hmoplancode}})</option>
+                        {{else:}}
+                        <option value={{=plan.id}}>{{=plan.name}} ({{=plan.hmoplancode}})</option>
+                        {{pass}}
+                    {{pass}}				  
+                </select>
+                
+                
+            </div>    
+             
+        </td>
+    </tr>  
+  
+</table>
+</br>
+<header class="w3-container w3-dark-grey ">
+ <h5>Personal Details</h5>
+ </header>
+
+
+<table>
+  <tr>
+       <td class="form_details ">
+           First Name <span style="color:red">*</span>
+       </td>
+       <td class="form_details " >
+        {{=formA.custom.widget.fname}}
+        </td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+           Middle Name
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.mname}}
+        </td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+          Last Name <span style="color:red">*</span>
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.lname}}
+        </td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+       Enter your DOB
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.dob}}
+        </td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+           Gender
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.gender}}
+        </td>
+    </tr>
+
+
+</table>
+
+
+
+
+
+ </br>
+<header class="w3-container w3-dark-grey ">
+ <h5>Contact Details</h5>
+ </header>
+
+<table>
+  <tr>
+       <td class="form_details ">
+          Mobile Number
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.cell}}
+        </td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+           Telephone Number
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.telephone}}
+        </td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+           Email <span style="color:red">*</span>
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.email}}
+        </td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+           Address -1 <span style="color:red">*</span>
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.address1}}
+        </td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+           Address -2 <span style="color:red">*</span>
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.address2}}
+        </td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+          Address -3
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.address3}}
+        </td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+           City <span style="color:red">*</span>
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.city}}
+        </td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+           State <span style="color:red">*</span>
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.st}}
+        </td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+           Pin <span style="color:red">*</span>
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.pin}}
+        </td>
+    </tr>
+  
+
+
+</table>
+
+</br>
+<header class="w3-container w3-dark-grey ">
+ <h5>Appoinment</h5>
+ </header>
+<table>
+  <tr>
+       <td class="form_details ">
+           Appointment ID
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.appointment_id}}
+        </td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+           Appointment Date 
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.appointment_datetime}}
+        </td>
+    </tr>
+</table>  
+</br>
+<header class="w3-container w3-dark-grey ">
+ <h5>Area Dentist Choices</h5>
+ </header>
+<table>
+  <tr>
+       <td class="form_details ">
+           Area of dentist choice 1 (pincode)
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.pin1}}
+        </td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+           Area of dentist choice 2 (pincode)
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.pin2}}
+        </td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+           Area of dentist choice 3 (pincode)
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.pin3}}
+        </td>
+    </tr>
+
+
+</table>
+
+</br>
+<header class="w3-container w3-dark-grey ">
+ <h5>Notes</h5>
+ </header>
+<table>
+  <tr>
+       
+       <td class="form_details ">
+        {{=formA.custom.widget.notes}}
+        </td>
+    </tr>
+  
+
+
+
+</table>
+
+</br>
+{{=formA.custom.submit}}
+<input  type="button" class="form_details_button" onclick="window.location='{{=enrollcustomer}}';return false" value="Enroll Customer">
+<input  type="button" class="form_details_button" onclick="window.location='{{=returnurl}}';return false" value="Return Customer List">
+</div>
+{{=formA.custom.end}}
+</form>
+
+
+<script>
+function changeRegions(){
+var regionopts = document.getElementById("regions");
+var region = regionopts.options[regionopts.selectedIndex].value;
+var x = document.getElementById("no_table_regionid");
+    x.value = region;
+   
+ajax('{{=URL('customer','plans')}}', ['regionid','companyid'], 'plansdiv');
+    
+var y = document.getElementById("no_table_planid");
+y.value = 1;    
+   
+};
+
+function changePlans(){
+var planopts = document.getElementById("plans");
+var plan = planopts.options[planopts.selectedIndex].value;
+
+var y = document.getElementById("no_table_planid");
+
+    y.value = plan;
+
+   
+};
+
+
+
+</script>
