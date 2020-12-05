@@ -56,7 +56,7 @@ def list_customers():
     formheader = "Customer List"
     username = auth.user.first_name + ' ' + auth.user.last_name   
     
-    page = common.getpage(request.vars.page)
+    page = common.getpage1(request.vars.page)
     returnurl = URL('default', 'main')
     db.vw_customer.id.readable = False
     db.vw_customer.customerid.readable = False
@@ -101,7 +101,7 @@ def list_customers():
     links = [lambda row: A('Update',_href=URL("customer","update_customer",vars=dict(page=page,customerid=row.id))),
              lambda row: A('Enroll',_href=URL("customer","enroll_customer",
                                               vars=dict(page=page,customerid=row.id))),
-             lambda row: A('Delete',_href=URL("customer","delete_customer",vars=dict(customerid = row.id,customername=row.customername)))
+             lambda row: A('Delete',_href=URL("customer","delete_customer",vars=dict(customerid = row.id,customername=row.customername,page=page)))
              ]
     query = ((db.vw_customer.id > 0) & (db.vw_customer.is_active == True))
     
@@ -146,7 +146,8 @@ def new_customer():
     planid = 1
     regionid = 1
     providerid = 1
-   
+    page = 1
+    
     formA = SQLFORM.factory(
         Field('customer', 'string',label='Customer ID', default=''),
         Field('customer_ref', 'string',label='Customer Ref', default=''),
@@ -196,9 +197,9 @@ def new_customer():
         select(db.hmoplan.id,db.hmoplan.hmoplancode,db.hmoplan.name,\
                left=db.hmoplan.on((db.companyhmoplanrate.hmoplan == db.hmoplan.id)&(db.hmoplan.is_active==True)))    
  
-    returnurl = URL('customer', 'list_customers')
+    returnurl = URL('customer', 'list_customers',vars=dict(page=page))
 
-    return dict(formA=formA,username=username, returnurl=returnurl,formheader=formheader,regions=regions, plans=plans,page=1)
+    return dict(formA=formA,username=username, returnurl=returnurl,formheader=formheader,regions=regions, plans=plans,page=page)
 
 def update_customer():
     
@@ -209,7 +210,7 @@ def update_customer():
     
     customerid = int(common.getid(request.vars.customerid))
   
-    page = common.getpage(request.vars.page)
+    page = common.getpage1(request.vars.page)
     
     ds = db((db.customer.id == customerid) & (db.customer.is_active == True)).select()
     
@@ -349,15 +350,16 @@ def update_customer():
     returnurl = URL('customer','list_customers',vars=dict(page=page))
     enrollcustomer = URL('customer','enroll_customer',vars=dict(page=page,customerid=customerid))
 
-    return dict(formA=formA,username=username, returnurl=returnurl,enrollcustomer=enrollcustomer,formheader=formheader,regions=regions, plans=plans,regionid=regionid,planid=planid,page=1)
+    return dict(formA=formA,username=username, returnurl=returnurl,enrollcustomer=enrollcustomer,formheader=formheader,regions=regions, plans=plans,regionid=regionid,planid=planid,page=page)
     
     
 def delete_customer():
     
     customername = common.getstring(request.vars.customername)
     customerid = int(common.getid(request.vars.customerid))
+    page = common.getpage1(request.vars.page)
     
-    form = FORM.confirm('Yes?',{'No':URL('customer','list_customers')})
+    form = FORM.confirm('Yes?',{'No':URL('customer','list_customers',vars=dict(page=page))})
     
     if form.accepted:
         
@@ -365,7 +367,7 @@ def delete_customer():
                                                 modified_on = common.getISTFormatCurrentLocatTime(),
                                                 modified_by = auth.user.id)
         session.flash = 'Customer successfully deleted!'
-        redirect(URL('customer','list_customers'))
+        redirect(URL('customer','list_customers',vars=dict(page=page)))
     
     elif form.errors:
         session.flash = "Error - deleting customer" + str(formA.errors)
@@ -376,7 +378,8 @@ def delete_customer():
 
 def enroll_customer():
     
-    page = request.vars.page
+    page = common.getpage1(request.vars.page)
+    
     customerid = int(common.getid(request.vars.customerid))
     
     customer = db(db.customer.id == customerid).select()
