@@ -51,27 +51,114 @@ def my_download():
 
 
 
-def xmy_download():
-    
-    base_path = request.args(0) # /images
-    subdirectory = request.args(2) # directory
-    filename = request.args(3)
-    #s1 = os.path.join(request.args(0),request.args(1))
-    #s2 = os.path.join(s1,request.args(2))
-    
-    #filename = request.args(3)
-    
-    fullpath = os.path.join(request.folder, s2, filename)
 
-    response.stream(os.path.join(request.folder, fullpath))    
   
     
 
 def download():
-    if(len(request.args)>0):
-	filename = request.args[0]
+   
     return response.download(request, db)
+
+def upload_videofile():
     
+   
+    form = SQLFORM.factory(
+                Field('csvfile','string',label='CSV File', requires= IS_NOT_EMPTY())
+                )    
+    
+    submit = form.element('input',_type='submit')
+    submit['_value'] = 'Import'    
+    
+    xcsvfile = form.element('input',_id='no_table_csvfile')
+    xcsvfile['_class'] =  'w3-input w3-border w3-small'
+
+
+
+    error = ""
+    count = 0
+    imageurl = ""
+
+    if form.accepts(request,session,keepvalues=True):
+        try:
+            filename = request.vars.csvfile
+	    o = mdpimage.Image(db, 523)
+	    
+	    x= json.loads(o.upload_imagefile(filename, 1469, 1469, 24, "test", "1", 
+	                 "2", "03/12/2020","description", request.folder))
+	    
+	    imageid = common.getkeyvalue(x,'imageid',0)
+	    
+
+	    
+	    y = o.downloadimage(imageid)
+	    image = common.getkeyvalue(y,"image","")
+	    images = common.getkeyvalue(x,'images_subfolder',"images")
+	    provcode = common.getkeyvalue(x,'provcode_subfolder',"MDP")
+	    patmember = common.getkeyvalue(x,'patmember_subfolder',"MDP")
+	    
+	   
+	    
+	    imageurl = URL('my_dentalplan','utility','my_download',args=[images,provcode,patmember,image])
+	  
+	    
+		
+        except Exception as e:
+            error = "Upload Image File Exception Error - " + str(e)        
+    
+   
+    
+    return dict(form=form, imageurl=imageurl,count=count,error=error)    
+    
+    
+def upload_audiofile():
+    
+   
+    form = SQLFORM.factory(
+                Field('csvfile','string',label='CSV File', requires= IS_NOT_EMPTY())
+                )    
+    
+    submit = form.element('input',_type='submit')
+    submit['_value'] = 'Import'    
+    
+    xcsvfile = form.element('input',_id='no_table_csvfile')
+    xcsvfile['_class'] =  'w3-input w3-border w3-small'
+
+
+
+    error = ""
+    count = 0
+    imageurl = ""
+
+    if form.accepts(request,session,keepvalues=True):
+        try:
+            filename = request.vars.csvfile
+	    o = mdpimage.Image(db, 523)
+	    
+	    x= json.loads(o.upload_imagefile(filename, 1469, 1469, 24, "test", "1", 
+	                 "2", "03/12/2020","description", request.folder))
+	    
+	    imageid = common.getkeyvalue(x,'imageid',0)
+	    
+
+	    
+	    y = o.downloadimage(imageid)
+	    image = common.getkeyvalue(y,"image","")
+	    images = common.getkeyvalue(x,'images_subfolder',"images")
+	    provcode = common.getkeyvalue(x,'provcode_subfolder',"MDP")
+	    patmember = common.getkeyvalue(x,'patmember_subfolder',"MDP")
+	    
+	   
+	    
+	    imageurl = URL('my_dentalplan','utility','my_download',args=[images,provcode,patmember,image])
+	  
+	    
+		
+        except Exception as e:
+            error = "Upload Image File Exception Error - " + str(e)        
+    
+   
+    
+    return dict(form=form, imageurl=imageurl,count=count,error=error)    
     
 def upload_imagefile():
     
