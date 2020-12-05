@@ -30,28 +30,166 @@ from uuid import uuid4
 from applications.my_pms2.modules  import common
 from applications.my_pms2.modules  import mail
 from applications.my_pms2.modules  import mdpuser
+from applications.my_pms2.modules  import mdpimage
+from applications.my_pms2.modules  import mdpcustomer
 
 #from gluon.contrib import common
 #from gluon.contrib import mail
 
 from applications.my_pms2.modules import logger
 
+def my_download():
+    base_path = request.args(0) # /images
+    sub1 = request.args(1) # /provcode
+    sub2 = subdirectory = request.args(2) # /patmember
+    
+    filename = request.args(3)
+    
+    fullpath = os.path.join(base_path,sub1,sub2, filename)
+    #response.stream(os.path.join(request.folder, fullpath))
+    response.stream(os.path.join(request.folder, request.args(0),request.args(1), request.args(2), request.args(3)))
 
 
 
+def xmy_download():
+    
+    base_path = request.args(0) # /images
+    subdirectory = request.args(2) # directory
+    filename = request.args(3)
+    #s1 = os.path.join(request.args(0),request.args(1))
+    #s2 = os.path.join(s1,request.args(2))
+    
+    #filename = request.args(3)
+    
+    fullpath = os.path.join(request.folder, s2, filename)
 
+    response.stream(os.path.join(request.folder, fullpath))    
+  
+    
+
+def download():
+    if(len(request.args)>0):
+	filename = request.args[0]
+    return response.download(request, db)
     
     
-
-
+def upload_imagefile():
     
+   
+    form = SQLFORM.factory(
+                Field('csvfile','string',label='CSV File', requires= IS_NOT_EMPTY())
+                )    
+    
+    submit = form.element('input',_type='submit')
+    submit['_value'] = 'Import'    
+    
+    xcsvfile = form.element('input',_id='no_table_csvfile')
+    xcsvfile['_class'] =  'w3-input w3-border w3-small'
+
+
+
+    error = ""
+    count = 0
+    imageurl = ""
+
+    if form.accepts(request,session,keepvalues=True):
+        try:
+            filename = request.vars.csvfile
+	    o = mdpimage.Image(db, 523)
+	    
+	    x= json.loads(o.upload_imagefile(filename, 1469, 1469, 24, "test", "1", 
+	                 "2", "03/12/2020","description", request.folder))
+	    
+	    imageid = common.getkeyvalue(x,'imageid',0)
+	    
+
+	    
+	    y = o.downloadimage(imageid)
+	    image = common.getkeyvalue(y,"image","")
+	    images = common.getkeyvalue(x,'images_subfolder',"images")
+	    provcode = common.getkeyvalue(x,'provcode_subfolder',"MDP")
+	    patmember = common.getkeyvalue(x,'patmember_subfolder',"MDP")
+	    
+	    #imageurl = URL('my_dentalplan','utility','download',args=[image])
+	    
+	    imageurl = URL('my_dentalplan','utility','my_download',args=[images,provcode,patmember,image])
+	    #imageurl = URL('my_dentalplan','utility','my_download',args=['/my_dentalplan/images/test.png'])
+	    #<div class="col-xs-4 pt">
+	
+		#{{if ((rows[0].patientmember.image != "")  &  (rows[0].patientmember.image != None)):  }}
+		    #<img src="{{=URL('my_dentalplan', 'member', 'download', args=rows[0].patientmember.image )}}" class="img_responsive center-block" style="width:90%" />
+	
+		#{{else:}}
+		    #No Image&nbsp;
+		#{{pass}}	       
+	
+		#</div>	    
+
+	    
+		
+        except Exception as e:
+            error = "Upload Image File Exception Error - " + str(e)        
+    
+   
+    
+    return dict(form=form, imageurl=imageurl,count=count,error=error)    
+
+def upload_image():
+    
+   
+    form = SQLFORM.factory(
+                Field('csvfile','string',label='CSV File', requires= IS_NOT_EMPTY())
+                )    
+    
+    submit = form.element('input',_type='submit')
+    submit['_value'] = 'Import'    
+    
+    xcsvfile = form.element('input',_id='no_table_csvfile')
+    xcsvfile['_class'] =  'w3-input w3-border w3-small'
+
+
+
+    error = ""
+    count = 0
+    imageurl = ""
+     
+
+    if form.accepts(request,session,keepvalues=True):
+        try:
+            filename = request.vars.csvfile
+	    
+	    file_content = None
+	    with open(filename, "rb") as imageFile:
+		file_content = base64.b64encode(imageFile.read())   	    
+
+	    o = mdpimage.Image(db, 523)
+	    x= json.loads(o.uploadimage(file_content, 1469, 1469, 24, "test", "1", 
+			             "2", "03/12/2020","description", request.folder))
+			
+	    imageid = common.getkeyvalue(x,'imageid',0)
+	    
+
+	    
+	    y = o.downloadimage(imageid)
+	    image = common.getkeyvalue(y,"image","")
+	    images = common.getkeyvalue(x,'images_subfolder',"images")
+	    provcode = common.getkeyvalue(x,'provcode_subfolder',"MDP")
+	    patmember = common.getkeyvalue(x,'patmember_subfolder',"MDP")
+	    
+	    imageurl = URL('my_dentalplan','utility','my_download',args=[images,provcode,patmember,image])	    
+	    
+		
+        except Exception as e:
+            error = "Upload Image Exception Error - " + str(e)        
+    
+   
+    return dict(form=form, imageurl=imageurl,count=count,error=error)    
     
     
 
 
 def new_user(providername, email,cell, username, passw,key,registration_id,role): 
     logger.loggerpms2.info("Enter New User - Calling provider_registration API")
-    
     
     #props = db(db.urlproperties.id > 0).select(db.urlproperties.mydp_ipaddress)
     #url = props[0].mydp_ipaddress + "/my_pms2/mdpapi/mdpapi" if(len(props) > 0) else "http://127.0.0.1:8001/my_pms2/mdpapi/mdpapi"
