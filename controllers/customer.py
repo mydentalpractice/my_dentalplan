@@ -54,7 +54,7 @@ def list_customers():
     db = current.globalenv['db']
     
     formheader = "Customer List"
-    username = auth.user.first_name + ' ' + auth.user.last_name   
+    username = "Admin" 
     
     page = common.getpage1(request.vars.page)
     returnurl = URL('default', 'main')
@@ -136,7 +136,7 @@ def list_customers():
 def new_customer():
 
     formheader = "Customer"
-    username = auth.user.first_name + ' ' + auth.user.last_name
+    username = "Admin" 
 
     rows = db(db.company.company == 'B2C_NG').select()
     companyid = rows[0]['company.id'] if(len(rows) > 0) else 0
@@ -206,7 +206,7 @@ def update_customer():
     db = current.globalenv['db']
     
     formheader = "Customer"
-    username = auth.user.first_name + ' ' + auth.user.last_name
+    username = "Admin" 
     
     customerid = int(common.getid(request.vars.customerid))
   
