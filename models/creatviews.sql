@@ -8402,9 +8402,9 @@ CREATE TABLE `import_provider_region_plan` (
 
 12/03/2020
 ==========
-0. Added import_provider_region_plan  table
+0. XXXYYYZZZAdded import_provider_region_plan  table
 
-1. YYYYAdded procedurepriceplancode
+1. XXXYYYYAdded procedurepriceplancode
 
 ALTER TABLE `mydp_stg`.`provider_region_plan` 
 ADD COLUMN `procedurepriceplancode` VARCHAR(45) NULL DEFAULT NULL AFTER `plancode`;
@@ -8422,7 +8422,7 @@ group by patientmember.company,patientmember.groupregion, patientmember.hmoplan
 8/04/2020
 ==========
 
-1.  YYZZReligare Properties 
+1.  XXXYYZZReligare Properties 
 CREATE TABLE `rlgproperties` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `policy_name` varchar(256) DEFAULT NULL,
@@ -8432,14 +8432,74 @@ CREATE TABLE `rlgproperties` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 
-2, YYZZrlgdocument
+2, XXXYYZZrlgdocument
 ALTER TABLE `mydp_prod`.`rlgdocument` 
 ADD COLUMN `policy_name` VARCHAR(45) NULL AFTER `policy_number`,
 ADD COLUMN `voucher_code` VARCHAR(45) NULL AFTER `customer_id`;
 
-3. YYZZmodified import provider_region_plan to Populate provider_region_plan procedurepriceplancode
+3. XXXYYZZmodified import provider_region_plan to Populate provider_region_plan procedurepriceplancode
 
 4. YYZZPopulate procedure fee in procedurepriceplan 
 
-5. YYYZZZALTER TABLE `mydp_prod`.`treatment_procedure` 
+5. XXXYYYZZZALTER TABLE `mydp_prod`.`treatment_procedure` 
 ADD COLUMN `policy_name` VARCHAR(128) NULL DEFAULT NULL AFTER `service_id`;
+
+24/07/2020
+===========
+1. Copy PHP files from myphp folder into inetpub/wwwroot
+2. modify http://myphp.com/ to http://localhost// in encrypt & decrypt functions
+
+23/8/2020
+==========
+1. XXXZZZZModify vw_relgrtreatmentprocedure  adding GST
+2. XXXZZZCreated RLGDC company
+3. XXXZZZimported RLGDC
+
+11/9/2020
+==========
+1. YYYYZZZZAdd ABHICL errorr messages in rlgerrormessage table
+2. XXXYYYZZZAdd ABHICL Company
+3. XXXYYYZZZAdd ABHILC Plan
+4. XXXImport ProcedurePricePlan for ABHICL
+5. XXXmport provider_regions_plan for ABHIC
+6. XXXXYYYYZZZZmodify vw_treatmentlist - added companyid, groupref, patientmember, enddate,description/notes,tooth,quadrant,
+7. XXXYYYYZZZZmodify vw_appointments - added "companyid" & "groupref", "membercode"
+8.
+
+
+4/11/2020
+==========
+1.XXXYYYZZZZcreate ratelimint table
+CREATE TABLE `mydp_prod`.`ratelimit` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(45) NULL,
+  `lastlogin` DATETIME NULL,
+  `created_by` INT(11) NULL,
+  `created_on` DATETIME NULL,
+  `modified_by` INT(11) NULL,
+  `modified_on` DATETIME NULL,
+  PRIMARY KEY (`id`));
+
+
+11/29/2020
+===XX=======
+1. XXXYYYZZCreate Customer table
+2. XXYYYZZCreate vw_customer
+
+12/3/2020
+=========
+1. YYYZZZModified dentalimage table. Added uploadfolder
+
+12/6/2020
+=========
+1. YYYZZZAdded Media table 'media'
+2. XXYYYZZZmodified activity tracker table
+
+12/15/2020
+==========
+1. XXXYYZZZadded vw_customertopcount
+2. XXXYYYZZZadded vw_customerdetailcount
+
+12/17/2020
+==========
+1. ZZZModified media with dicom fields

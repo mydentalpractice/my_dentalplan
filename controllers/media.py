@@ -439,14 +439,6 @@ def upload_audio():
             x= json.loads(o.upload_media(j))            
 
             mediaid = common.getkeyvalue(x,'mediaid',0)
-
-
-
-
-
-
-
-
             mediaurl = URL('my_dentalplan','media','media_download',\
                            args=[mediaid])
 

@@ -99,8 +99,10 @@ def list_customers():
 
     
     links = [lambda row: A('Update',_href=URL("customer","update_customer",vars=dict(page=page,customerid=row.id))),
+             
              lambda row: A('Enroll',_href=URL("customer","enroll_customer",
-                                              vars=dict(page=page,customerid=row.id))),
+                                              vars=dict(page=page,customerid=row.id)))  if(row.status != 'Enrolled') else "",
+                         
              lambda row: A('Delete',_href=URL("customer","delete_customer",vars=dict(customerid = row.id,customername=row.customername,page=page)))
              ]
     query = ((db.vw_customer.id > 0) & (db.vw_customer.is_active == True))
@@ -207,6 +209,7 @@ def update_customer():
     
     formheader = "Customer"
     username = "Admin" 
+    status = "No_Attempt"
     
     customerid = int(common.getid(request.vars.customerid))
   
@@ -243,6 +246,8 @@ def update_customer():
         appointment_datetime = ds[0].appointment_datetime
         notes = ds[0].notes
         
+        status = ds[0].status
+        
     else:
         customer = ''
         customer_ref = ''
@@ -270,7 +275,8 @@ def update_customer():
         appointment_id = ''
         appointment_datetime = request.now
         notes = ''       
-
+        status = "No_Attempt"
+        
     formA = SQLFORM.factory(
         Field('customer', 'string',label='Customer ID', default=customer),
         Field('customer_ref', 'string',label='Customer Ref', default=customer_ref),
@@ -350,7 +356,7 @@ def update_customer():
     returnurl = URL('customer','list_customers',vars=dict(page=page))
     enrollcustomer = URL('customer','enroll_customer',vars=dict(page=page,customerid=customerid))
 
-    return dict(formA=formA,username=username, returnurl=returnurl,enrollcustomer=enrollcustomer,formheader=formheader,regions=regions, plans=plans,regionid=regionid,planid=planid,page=page)
+    return dict(formA=formA,username=username, returnurl=returnurl,enrollcustomer=enrollcustomer,formheader=formheader,regions=regions, plans=plans,regionid=regionid,planid=planid,status=status,page=page)
     
     
 def delete_customer():
@@ -632,3 +638,114 @@ def import_customers():
 
     count = 0 if(count==0) else count-1
     return dict(form=form, count=count,error=message)
+
+def customer_report():
+    from_date  = request.vars.from_date  #%d/%m/%Y
+    to_date = request.vars.to_date
+    
+    
+    from_date = request.vars.from_date  if(from_date != None) else \
+        common.getstringfromdate(datetime.datetime.today(),"%d/%m/%Y")
+    
+    to_date = request.vars.to_date  if(to_date != None) else \
+        common.getstringfromdate(datetime.datetime.today(),"%d/%m/%Y")
+                                                                                            
+    from_date = common.getdatefromstring(from_date,"%d/%m/%Y")
+    to_date = common.getdatefromstring(to_date,"%d/%m/%Y")
+    
+    username = "Admin"
+    formheader = "Customer Report"
+
+    form = SQLFORM.factory(
+        Field('fromdate',
+              'date',widget = lambda field, value:SQLFORM.widgets.date.widget(field, value, _style='height:30px'), label='From Date',default=from_date,length=20,requires = IS_DATE(format=T('%d/%m/%Y'),error_message='must be d/m/Y!')),        
+        Field('todate',
+              'date',widget = lambda field, value:SQLFORM.widgets.date.widget(field, value, _style='height:30px'), label='To Date',default=to_date,length=20,requires = IS_DATE(format=T('%d/%m/%Y'),error_message='must be d/m/Y!'))
+        
+    )
+
+
+    #submit = form.element('input',_type='submit')
+    #submit['_style'] = 'display:none;'
+
+    returnurl = URL('customer','list_customers',vars=dict(page=1))
+    
+    formA = None
+    formB = None
+    
+    #display the top count
+    query = (db.vw_customertopcount.id > 0)
+    fields = (
+        db.vw_customertopcount.company,
+        db.vw_customertopcount.customer_count
+    )
+
+    headers={
+        'vw_customertopcount.company':'Company',
+        'vw_customertopcount.customer_count':'Customer Count'
+    }
+    exportlist = dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False, xml=False)    
+
+    formA = SQLFORM.grid(query=query,
+
+                         headers=headers,
+                         fields=fields,
+                         paginate=10,
+
+                         exportclasses=exportlist,
+                         searchable=False,
+                         create=False,
+                         deletable=False,
+                         editable=False,
+                         details=False,
+                         user_signature=False
+                         )
+    
+    if form.accepts(request,session,keepvalues=True):
+
+        fromdate = form.vars.fromdate   #datetimeobject
+        #fromdate = common.getstringfromdate(fromdate,"%d/%m/%Y")
+        
+        todate = form.vars.todate
+        #todate = common.getstringfromdate(todate,"%d/%m/%Y")
+        
+        
+      
+        
+        queryB = ((db.vw_customerdetailcount.id > 0) & (db.vw_customerdetailcount.enrolldate >= fromdate) 
+                  & (db.vw_customerdetailcount.enrolldate <= todate))
+        
+        fieldsB = (
+               db.vw_customerdetailcount.company,
+               db.vw_customerdetailcount.enrolldate,
+               db.vw_customerdetailcount.customer_count
+               )      
+        headersB={
+          'vw_customerdetailcount.company':'Company',
+          'vw_customerdetailcount.enrolldate':'Enrolled Date',
+          'vw_customertopcount.customer_count':'Customer Count'
+        }
+        exportlistB = dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False, xml=False)    
+        
+        orderby = (db.vw_customerdetailcount.company, db.vw_customerdetailcount.enrolldate)
+        formB = SQLFORM.grid(query=queryB,
+                                
+                                    headers=headersB,
+                                    fields=fieldsB,
+                                    paginate=10,
+                                    orderby=orderby,
+                                    exportclasses=exportlistB,
+                                    searchable=False,
+                                    create=False,
+                                    deletable=False,
+                                    editable=False,
+                                    details=False,
+                                    user_signature=False
+                                    )
+        
+       
+    elif form.errors:
+        response.flash = "Error - Customer Report! " + str(form.errors)
+        redirect(returnurl)    
+
+    return dict(username=username,returnurl=returnurl,form=form,formheader=formheader,formA=formA,formB=formB)

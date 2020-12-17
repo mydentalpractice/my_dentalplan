@@ -4,7 +4,7 @@ db = current.globalenv['db']
 
 import datetime
 from datetime import timedelta
-from datetime import datetime
+
 
 
 #import sys
