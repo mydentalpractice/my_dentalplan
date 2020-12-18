@@ -58,12 +58,20 @@ def my_download():
     #response.stream(os.path.join(request.folder, fullpath))
     response.stream(os.path.join(request.folder, request.args(0),request.args(1), request.args(2), request.args(3)))
 
+def upload_media():
+    
+   
+    return dict()
 
+    
 def upload_imagefile():
 
 
     form = SQLFORM.factory(
-        Field('csvfile','string',label='CSV File', requires= IS_NOT_EMPTY())
+        Field('csvfile','string',label='CSV File', requires= IS_NOT_EMPTY()),
+        Field('icsvfile','input',label='CSV File'),
+        Field('fcsvfile','file',label='CSV File')
+        
     )    
 
     submit = form.element('input',_type='submit')
@@ -82,8 +90,9 @@ def upload_imagefile():
     if form.accepts(request,session,keepvalues=True):
         try:
             filename = request.vars.csvfile
-
-
+            ifilename = request.vars.icsvfile
+            ffilename = request.vars.fcsvfile
+            redirect(URL('my_pms2', 'mdpapi','preupload', vars=dict(imagefile=filename)))
             o = mdpmedia.Media(db, 523, 'image', 'jpg')
 
             j = {
@@ -195,14 +204,15 @@ def upload_audiofile():
     form = SQLFORM.factory(
         Field('csvfile','string',label='CSV File', requires= IS_NOT_EMPTY())
     )    
-
+ 
     submit = form.element('input',_type='submit')
     submit['_value'] = 'Import'    
 
     xcsvfile = form.element('input',_id='no_table_csvfile')
     xcsvfile['_class'] =  'w3-input w3-border w3-small'
+    xcsvfile['_type'] =  'file'
 
-
+    
 
     error = ""
     count = 0
@@ -212,7 +222,7 @@ def upload_audiofile():
     if form.accepts(request,session,keepvalues=True):
         try:
             filename = request.vars.csvfile
-
+            
 
             o = mdpmedia.Media(db, 523, 'audio', 'mp3')
             
@@ -258,7 +268,9 @@ def upload_image():
 
 
     form = SQLFORM.factory(
-        Field('csvfile','string',label='CSV File', requires= IS_NOT_EMPTY())
+        Field('csvfile','string',label='CSV File'),
+      
+        Field('imagedata','text',label='Image Data')
     )    
 
     submit = form.element('input',_type='submit')
@@ -266,8 +278,10 @@ def upload_image():
 
     xcsvfile = form.element('input',_id='no_table_csvfile')
     xcsvfile['_class'] =  'w3-input w3-border w3-small'
-
-
+ 
+    #ximgfile = form.element('input',_id='no_table_imagefile')
+    #ximgfile['_class'] =  'w3-input w3-border w3-small'
+    #ximgfile['_type'] =  'file'
 
     error = ""
     count = 0
@@ -279,8 +293,9 @@ def upload_image():
             filename = request.vars.csvfile
 
             file_content = None
-            with open(filename, "rb") as imageFile:
-                file_content = base64.b64encode(imageFile.read())   	    
+            file_content = request.vars.imagedata
+            #with open(filename, "rb") as imageFile:
+                #file_content = base64.b64encode(imageFile.read())   	    
 
             o = mdpmedia.Media(db, 523, 'image', 'jpg')
             
@@ -326,7 +341,8 @@ def upload_video():
 
 
     form = SQLFORM.factory(
-        Field('csvfile','string',label='CSV File', requires= IS_NOT_EMPTY())
+        Field('csvfile','string',label='CSV File', requires= IS_NOT_EMPTY()),
+        Field('videodata','textarea',label='Video Data')
     )    
 
     submit = form.element('input',_type='submit')
@@ -335,7 +351,9 @@ def upload_video():
     xcsvfile = form.element('input',_id='no_table_csvfile')
     xcsvfile['_class'] =  'w3-input w3-border w3-small'
 
-
+    xtextarea = form.element('input',_id='no_table_videodata')
+    xtextarea['_name'] =  'videodata'
+    xtextarea["_maxlength"] = 100000
 
     error = ""
     count = 0
@@ -347,8 +365,10 @@ def upload_video():
             filename = request.vars.csvfile
 
             file_content = None
-            with open(filename, "rb") as imageFile:
-                file_content = base64.b64encode(imageFile.read())   	    
+        
+            file_content = request.vars.videodata   
+            #with open(filename, "rb") as imageFile:
+                #file_content = base64.b64encode(imageFile.read())   	    
 
             o = mdpmedia.Media(db, 523, 'video', 'mp4')
             
@@ -393,7 +413,10 @@ def upload_audio():
 
 
     form = SQLFORM.factory(
-        Field('csvfile','string',label='CSV File', requires= IS_NOT_EMPTY())
+        Field('csvfile','string',label='CSV File'),
+        
+        Field('audiodata','textarea',label='Audio Data')
+        
     )    
 
     submit = form.element('input',_type='submit')
@@ -401,8 +424,10 @@ def upload_audio():
 
     xcsvfile = form.element('input',_id='no_table_csvfile')
     xcsvfile['_class'] =  'w3-input w3-border w3-small'
-
-
+  
+    xtextarea = form.element('input',_id='no_table_audiodata')
+    xtextarea['_name'] =  'audiodata'
+    xtextarea["_maxlength"] = 100000
 
     error = ""
     count = 0
@@ -414,8 +439,10 @@ def upload_audio():
             filename = request.vars.csvfile
 
             file_content = None
-            with open(filename, "rb") as imageFile:
-                file_content = base64.b64encode(imageFile.read())   	    
+        
+            file_content = request.vars.audiodata            
+            #with open(filename, "rb") as imageFile:
+                #file_content = base64.b64encode(imageFile.read())   	    
 
             o = mdpmedia.Media(db, 523, 'audio', 'mp3')
             

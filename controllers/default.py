@@ -358,9 +358,9 @@ def preregisterimage():
 	
     if image_form.accepts(request.vars,formname='image_form'):
 	
-	#image = db.preregister.image.store(image_form.vars.image_file.file)
-	image = 'C:\\mydp\\xray1.jpg'
-	redirect(URL('my_pms2', 'mdpapi','preupload', vars=dict(imagefile=image)))
+	image = db.preregister.image.store(image_form.vars.image_file.file)
+	imagefile =  image_form.vars.image_file.file.name
+	redirect(URL('my_pms2', 'mdpapi','preupload', vars=dict(imagefile=imagefile)))
 	
 	db(db.preregister.id == preregid).update(image = image)
 	redirect(URL('default','preregisterupdate', vars=dict(preregid=preregid)))

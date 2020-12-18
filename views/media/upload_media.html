@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<title>File Upload </title>
+<body>
+<h1 id="h1id">XXXX</h1>
+<input type="file">
+
+
+<input id = "inp1" type="text">YYY</input>
+
+</body>
+</html>
+
+
+<script>
+
+function getBase64Image(img) {
+  var canvas = document.createElement("canvas");
+  canvas.width = img.width;
+  canvas.height = img.height;
+  var ctx = canvas.getContext("2d");
+  ctx.drawImage(img, 0, 0);
+  var dataURL = canvas.toDataURL("image/png");
+  return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+}
+
+const input = document.querySelector('input[type="file"]')
+input.addEventListener('change',function(e){
+ console.log(input.files)
+ 
+ const reader = new FileReader()
+ reader.onload = function() {
+    <!--x = reader.result-->
+    <!--console.log(x)-->
+    
+    <!--y = document.getElementById("inp1")-->
+    
+    <!--alert("y=" + y)-->
+    <!--y.value = x-->
+    
+    <!--const img  = new Image()-->
+    <!--img.src  = reader.result-->
+    
+    <!--console.log(img.src)-->
+    <!--y = document.getElementById("inp1")-->
+    <!--y.value = img.src-->
+    
+    const img = new Image()
+    img.onload = function(){
+      console.log(img.width, img.height)
+      const canvas = document.createElement('canvas',img.width,img.height)    
+      const context = canvas.getContext('2d')
+      context.drawImage(img,0,0)
+      
+      const imageData = context.getImageData(0,0,img.width,img.height)
+      console.log(imageData)
+      
+    
+    }
+    img.src = reader.result
+    document.body.appendChild(img)
+    console.log(img.src)
+    
+    x = img.src.split(',')
+    console.log(x[0])
+    console.log(x[1])
+    
+ }
+ //reader.readAsText(input.files[0])
+ reader.readAsDataURL(input.files[0])
+
+},false)
+</script>
