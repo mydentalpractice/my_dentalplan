@@ -268,20 +268,21 @@ def upload_image():
 
 
     form = SQLFORM.factory(
-        Field('csvfile','string',label='CSV File'),
-      
+        #Field('csvfile','string',label='CSV File'),
         Field('imagedata','text',label='Image Data')
     )    
 
     submit = form.element('input',_type='submit')
     submit['_value'] = 'Import'    
 
-    xcsvfile = form.element('input',_id='no_table_csvfile')
-    xcsvfile['_class'] =  'w3-input w3-border w3-small'
+    #xcsvfile = form.element('input',_id='no_table_csvfile')
+    #xcsvfile['_class'] =  'w3-input w3-border w3-small'
  
     #ximgfile = form.element('input',_id='no_table_imagefile')
     #ximgfile['_class'] =  'w3-input w3-border w3-small'
     #ximgfile['_type'] =  'file'
+
+ 
 
     error = ""
     count = 0
@@ -290,7 +291,7 @@ def upload_image():
 
     if form.accepts(request,session,keepvalues=True):
         try:
-            filename = request.vars.csvfile
+            #filename = request.vars.csvfile
 
             file_content = None
             file_content = request.vars.imagedata
@@ -311,22 +312,10 @@ def upload_image():
                         "description":"XXX",
                         "appath":request.folder
                         }
-        
-                      
-            #x= json.loads(o.upload_media(file_content, 1469, 1469, 24, "test", "1", 
-                                         #"2", "03/12/2020","description", request.folder))
-            
             
             x= json.loads(o.upload_media(j)) 
             
             mediaid = common.getkeyvalue(x,'mediaid',0)
-
-
-
-
-
-
-
             mediaurl = URL('my_dentalplan','media','media_download',\
                            args=[mediaid])
 
