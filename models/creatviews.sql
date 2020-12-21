@@ -8488,7 +8488,7 @@ CREATE TABLE `mydp_prod`.`ratelimit` (
 
 12/3/2020
 =========
-1. YYYZZZModified dentalimage table. Added uploadfolder
+1. XXXYYYZZZModified dentalimage table. Added uploadfolder
 
 12/6/2020
 =========
@@ -8502,4 +8502,46 @@ CREATE TABLE `mydp_prod`.`ratelimit` (
 
 12/17/2020
 ==========
-1. ZZZModified media with dicom fields
+1. YYYZZZModified media with dicom fields
+ALTER TABLE `mydp_prod`.`media` 
+ADD COLUMN `dicomUserUuid` VARCHAR(128) NULL DEFAULT NULL AFTER `modified_by`,
+ADD COLUMN `dicomAcctUuid` VARCHAR(128) NULL DEFAULT NULL AFTER `dicomUserUuid`,
+ADD COLUMN `dicomInstUuid` VARCHAR(128) NULL DEFAULT NULL AFTER `dicomAcctUuid`,
+ADD COLUMN `dicomPatName` VARCHAR(128) NULL DEFAULT NULL AFTER `dicomInstUuid`,
+ADD COLUMN `dicomPatUuid` VARCHAR(128) NULL DEFAULT NULL AFTER `dicomPatName`,
+ADD COLUMN `dicomPatid` VARCHAR(128) NULL DEFAULT NULL AFTER `dicomPatUuid`,
+ADD COLUMN `dicomPatOrderUuid` VARCHAR(128) NULL DEFAULT NULL AFTER `dicomPatid`,
+ADD COLUMN `dicomProcDesc` VARCHAR(128) NULL DEFAULT NULL AFTER `dicomPatOrderUuid`,
+ADD COLUMN `dicomPerformedDate` VARCHAR(128) NULL DEFAULT NULL AFTER `dicomProcDesc`,
+ADD COLUMN `dicomURL` VARCHAR(255) NULL DEFAULT NULL AFTER `dicomPerformedDate`,
+ADD COLUMN `mediacol` VARCHAR(45) NULL AFTER `dicomURL`;
+
+2. YYZZTransfer dentalimage -> Media
+   copy all files from uploads folder to media\image\MDP_PROV\MDP_Member
+3. YYZZrun this SQL script by changing the uploadfolder
+   insert into media (title,media,uploadfolder,tooth,quadrant,
+mediadate,description,treatmentplan,treatment,
+patientmember,patient,patienttype,patientname,provider,
+mediatype,mediaformat,
+dicomUserUuid, dicomAcctUuid, dicomInstUuid,
+dicomPatName,dicomPatUuid,dicomPatid, dicomPatOrderUuid,
+dicomProcDesc, dicomPerformedDate,dicomURL,
+is_active,created_on,created_by,modified_on,modified_by)
+SELECT title,image,"c:\\inetpub\\wwwroot\\media\\image\\MDP_PROV\\MDP_MEMBER",
+tooth,quadrant,imagedate,
+description,treatmentplan,treatment,patientmember,patient,
+patienttype,patientname,provider,'Image','jpg',
+dicomUserUuid, dicomAcctUuid, dicomInstUuid,
+dicomPatName,dicomPatUuid,dicomPatid, dicomPatOrderUuid,
+dicomProcDesc, dicomPerformedDate,dicomURL,
+is_active,created_on,created_by,modified_on,modified_by
+from dentalimage
+
+12/20/2020
+===========
+1. YYYZZModify dentalimage table
+   ALTER TABLE `mydp_prod`.`dentalimage` 
+ADD COLUMN `mediafile` VARCHAR(1024) NULL DEFAULT NULL AFTER `treatmentplan`,
+ADD COLUMN `mediatype` VARCHAR(45) NULL DEFAULT 'audio' AFTER `mediafile`,
+ADD COLUMN `mediaformat` VARCHAR(45) NULL DEFAULT 'mp3' AFTER `mediatype`,
+ADD COLUMN `mediasize` DOUBLE NULL DEFAULT '0' AFTER `mediaformat`;

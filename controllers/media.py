@@ -43,8 +43,8 @@ from applications.my_pms2.modules import logger
 
 def media_download():
     mediaid = int(common.getid(request.args(0)))
-    ms = db(db.media.id == mediaid).select(db.media.uploadfolder,db.media.media)
-    fullpath = "" if (len(ms) == 0) else os.path.join(ms[0].uploadfolder,ms[0].media)
+    ms = db(db.dentalimage.id == mediaid).select(db.dentalimage.uploadfolder,db.dentalimage.image)
+    fullpath = "" if (len(ms) == 0) else os.path.join(ms[0].uploadfolder,ms[0].image)
     response.stream(fullpath)
 
 def my_download():
