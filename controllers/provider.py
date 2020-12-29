@@ -114,11 +114,11 @@ def emailcredentials():
 	db.commit()
 	logger.loggerpms2.info("Email Credentidal after UPDATE_1")  	
 	retval = mail.emailProviderLoginDetails(db,request,sitekey,email,username,provider)
-	message = "Provider " + providername + " (" + provider + ") " + "- Username and Password emailed to registered email"
+	message = "Provider " + providername + " (" + provider + ") " + "- Username and Password emailed to registered email " + email
     
     
     returnurl = URL('provider', 'list_provider', vars=dict(page=page))
-    return dict(username=username, returnurl=returnurl, retval=retval, providername=providername,message=message)
+    return dict(username=username, returnurl=returnurl, retval=retval, providername=providername,email=email,message=message)
     
     
 def emailregister():
