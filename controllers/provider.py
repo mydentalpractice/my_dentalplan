@@ -5,6 +5,7 @@ db = current.globalenv['db']
 from gluon.tools import Crud
 crud = Crud(db)
 
+CRYPT = current.globalenv["CRYPT"]
 
 import string
 import random
@@ -15,6 +16,8 @@ import random
 from applications.my_pms2.modules  import account
 from applications.my_pms2.modules  import common
 from applications.my_pms2.modules  import mail
+from applications.my_pms2.modules  import logger
+
 
 #from gluon.contrib import account
 #from gluon.contrib import common #IB 05292016
@@ -72,6 +75,52 @@ def random_password(self):
         #password += random.choice(specials)
     return ''.join(random.sample(password,len(password)))
 
+#users = db((db.auth_user.email==email) & (db.auth_user.sitekey == sitekey)).select()
+    #if users:
+	##logger.loggerpms2.info("before CRYPT_1")
+	#my_crypt = CRYPT(key=auth.settings.hmac_key)
+	##logger.loggerpms2.info("after CRYPT_1")
+	#crypt_pass = my_crypt(str(password))[0]  
+	##logger.loggerpms2.info("after CRYPT_PASS_1")
+	#db(db.auth_user.id == users[0].id).update(first_name=providername,username=username,password=crypt_pass)
+	#db.commit()
+	##logger.loggerpms2.info("after UPDATE_1")  
+def emailcredentials():
+    
+    username = auth.user.first_name + ' ' + auth.user.last_name
+    providerid = int(common.getid(request.vars.providerid))    
+    page = common.getpage1(request.vars.page)
+    
+    p = db((db.provider.id == providerid)&(db.provider.is_active == True)).select()
+    sitekey = p[0].sitekey if(len(p)==1) else ""
+    provider = p[0].provider if(len(p) == 1) else ""
+    email = p[0].email if(len(p) == 1) else ""
+    providername = p[0].providername if(len(p) == 1) else ""
+    
+    a = db((db.auth_user.email==email) & (db.auth_user.sitekey == sitekey)).select()
+    username = a[0].username if(len(a) == 1) else None
+    
+    if(username == None):
+	
+	message = "Provider " + providername + " (" + provider + ") " + " is not registered with MDP"
+    else:
+	i = 0
+	logger.loggerpms2.info("Email Credentidal before CRYPT_1")
+	my_crypt = CRYPT(key=auth.settings.hmac_key)
+	logger.loggerpms2.info("Email Credentidal after CRYPT_1")
+	crypt_pass = my_crypt(str(provider))[0]  
+	logger.loggerpms2.info("Email Credentidal after CRYPT_PASS_1")
+	db(db.auth_user.id == a[0].id).update(username=username,password=crypt_pass)
+	db.commit()
+	logger.loggerpms2.info("Email Credentidal after UPDATE_1")  	
+	retval = mail.emailProviderLoginDetails(db,request,sitekey,email,username,provider)
+	message = "Provider " + providername + " (" + provider + ") " + "- Username and Password emailed to registered email"
+    
+    
+    returnurl = URL('provider', 'list_provider', vars=dict(page=page))
+    return dict(username=username, returnurl=returnurl, retval=retval, providername=providername,message=message)
+    
+    
 def emailregister():
     username = auth.user.first_name + ' ' + auth.user.last_name
     providerid = int(common.getid(request.vars.providerid))
@@ -82,6 +131,7 @@ def emailregister():
     retval = mail.emailRegistrationLink(db, request, r[0].sitekey, r[0].email)
     returnurl = URL('provider', 'list_provider')
     return dict(username=username, returnurl=returnurl, retval=retval, providername=r[0].providername)
+
 
 def emailpa():
     username = auth.user.first_name + ' ' + auth.user.last_name
@@ -558,6 +608,8 @@ def list_provider():
     username = auth.user.first_name + ' ' + auth.user.last_name
     formheader = "Provider List"
     selectable = None
+    page = common.getpage1(request.vars.page)
+    
     query = (db.provider.is_active==True)
     fields=(db.provider.provider,
             db.provider.providername,
@@ -602,6 +654,7 @@ def list_provider():
              lambda row: A('Register',_href=URL("provider","emailregister",vars=dict(providerid=row.id))),\
              lambda row: A('EmailPA',_href=URL("provider","emailpa",vars=dict(providerid=row.id))),\
              lambda row: A('ApprovePA',_href=URL("provider","viewprovideragreement",vars=dict(providerid=row.id))),\
+             lambda row: A('Login Details',_href=URL("provider","emailcredentials",vars=dict(providerid=row.id,page=page))),\
              lambda row: A('Bank',_href=URL("provider","providerbankdetails",vars=dict(page=common.getgridpage(request.vars)),args=[row.id])),
              lambda row: A('Delete',_href=URL("provider","delete_provider",vars=dict(providerid=row.id))),\
             ]
