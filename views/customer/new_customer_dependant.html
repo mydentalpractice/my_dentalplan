@@ -1,0 +1,101 @@
+{{extend 'mdp_layoutw3.html'}}
+
+
+<form  method="post" name="frmNewMember" id="frmNewMember">
+{{=formA.custom.begin}}
+
+<div class="w3-container w3-padding-16">
+ <header class="w3-container w3-dark-grey ">
+   <h4>Dependant for Customer {{=customer_name}} (Customer Ref: {{=customer_ref}})</h4>
+ </header>
+ <br/>
+
+
+
+<header class="w3-container w3-dark-grey ">
+ <h5>Persoal Details</h5>
+ </header>
+
+
+
+<table>
+ 
+   <tr>
+       <td class="form_details ">
+           Customer ID
+       </td>
+       <td class="form_details " >
+        {{=formA.custom.widget.customer_id}}
+        </td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+           First Name <span style="color:red">*</span>
+       </td>
+       <td class="form_details " >
+        {{=formA.custom.widget.fname}}
+        </td>
+    </tr>
+    
+  <tr>
+       <td class="form_details ">
+           Middle Name
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.mname}}
+        </td>
+    </tr>
+    
+  <tr>
+       <td class="form_details ">
+          Last Name <span style="color:red">*</span>
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.lname}}
+        </td>
+    </tr>
+    
+  <tr>
+       <td class="form_details ">
+       Enter DOB
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.depdob}}
+        </td>
+    </tr>
+    
+  <tr>
+       <td class="form_details ">
+           Gender
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.gender}}
+        </td>
+    </tr>
+ 
+  <tr>
+       <td class="form_details ">
+           Relation
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.relation}}
+        </td>
+    </tr>
+  
+
+  
+
+  
+</table>
+
+
+{{=formA.custom.submit}}
+<input  type="button" class="form_details_button" onclick="window.location='{{=returnurl}}';return false" value="Cancel">
+
+</div>
+
+
+{{=formA.custom.end}}
+</form>
+
+

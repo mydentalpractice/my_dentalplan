@@ -99,6 +99,7 @@ def emailcredentials():
     
     a = db((db.auth_user.email==email) & (db.auth_user.sitekey == sitekey)).select()
     username = a[0].username if(len(a) == 1) else None
+    retval = False
     
     if(username == None):
 	

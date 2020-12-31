@@ -102,7 +102,8 @@ def list_customers():
              
              lambda row: A('Enroll',_href=URL("customer","enroll_customer",
                                               vars=dict(page=page,customerid=row.id)))  if(row.status != 'Enrolled') else "",
-                         
+             
+             lambda row: A('Dependants',_href=URL("customer","list_customer_dependants",vars=dict(customer_id = row.id,page=page))),
              lambda row: A('Delete',_href=URL("customer","delete_customer",vars=dict(customerid = row.id,customername=row.customername,page=page)))
              ]
     query = ((db.vw_customer.id > 0) & (db.vw_customer.is_active == True))
@@ -129,6 +130,124 @@ def list_customers():
                          )
 
     return dict(formB = formB, username = username, formheader=formheader, page=page, returnurl = returnurl)
+
+
+def list_customer_dependants():
+    
+    db = current.globalenv['db']
+    
+    formheader = "Customer Dependant List"
+    username = "Admin" 
+    
+    customer_id = int(request.vars.customer_id)
+    page = common.getpage1(request.vars.page)
+    returnurl = URL('customer', 'list_customers', vars=dict(page=page))
+    
+    
+    fields=(
+           
+            db.customerdependants.fname,
+            db.customerdependants.lname,
+            
+            db.customerdependants.dependant_ref,
+            db.customerdependants.depdob,
+            db.customerdependants.gender,
+            db.customerdependants.relation
+            )
+    
+    headers={
+             
+             'customerdependants.fname':'First Name',
+             'customerdependants.fname':'LLast Nmae',
+             'customerdependants.dependant_ref':'Ref',
+             'customerdependants.depdob':'DOB',
+             'customerdependants.gender':'Gender',
+             
+             'customerdependants.relation':'Relation'
+             }
+    
+    
+    exportlist = dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False, xml=False)
+    
+    
+
+    
+    links = [lambda row: A('Update',_href=URL("customer","update_customer_dependant",vars=dict(page=page,dependant_id=row.id))),
+             
+          
+             
+                         
+             lambda row: A('Delete',_href=URL("customer","delete_customer_dependant",vars=dict(dependant_id = row.id,page=page)))
+             ]
+    query = ((db.customerdependants.customer_id == customer_id) & (db.customerdependants.is_active == True))
+    
+    maxtextlength = 40
+    
+                      
+    orderby = ~(db.customerdependants.id)    
+
+    formB = SQLFORM.grid(query=query,
+                         headers=headers,
+                         fields=fields,
+                         links=links,
+                      
+                         orderby=orderby,
+                         exportclasses=exportlist,
+                         links_in_grid=True,
+                         searchable=True,
+                         create=False,
+                         deletable=False,
+                         editable=False,
+                         details=False,
+                         user_signature=False
+                         )
+
+    return dict(formB = formB, username = username, formheader=formheader, customer_id=customer_id,page=page, returnurl = returnurl)
+
+def new_customer_dependant():
+    
+    formheader = "Dependant"
+    username = "Admin"  
+    
+    page = common.getpage1(request.vars.page)
+    customer_id = int(request.vars.customer_id)
+    
+    returnurl = URL('customer','list_customer_dependants', vars=dict(page=page,customer_id=customer_id))
+
+   
+    c = db((db.customer.id == customer_id) & (db.customer.is_active == True)).select(db.customer.customer_ref, db.customer.fname, db.customer.lname)
+    
+    if(len(c)!=1):
+        redirect(returnurl)
+     
+    customer_ref = c[0].customer_ref  
+    customer_name = c[0].fname + " " + c[0].lname
+   
+    formA = SQLFORM.factory(
+     
+       
+        Field('fname', 'string',label='First Name', default='', requires=IS_NOT_EMPTY()),
+        Field('mname', 'string',label='Middle Name', default=''),
+        Field('lname', 'string',label='Last Name', default='', requires=IS_NOT_EMPTY()),
+        Field('gender', 'string',label='Gender', default='Male', requires = IS_IN_SET(GENDER)),
+        Field('depdob', 'date',label='DOB', default=request.now,  requires=IS_DATE(format=('%d/%m/%Y')),length=20),
+        Field('relation', 'string',label='Relation', default='Spouse', requires = IS_IN_SET(RELATIONS)),
+    )
+    
+    if formA.process().accepted:
+        dependant_id = db.customerdependants.insert(**db.customerdependants._filter_fields(formA.vars))
+        
+        db(db.customerdependants.id == dependant_id).update(dependant=str(dependant_id), customer_id = customer_id,dependant_ref = customer_ref + "_" + formA.vars.relation)
+        
+        redirect(returnurl)
+
+    elif formA.errors:
+        response.session.flash = "Error - Creating new customer dependant" + str(formA.errors)
+
+        
+    
+    return dict(formA=formA,username=username, returnurl=returnurl,formheader=formheader,page=page,customer_ref=customer_ref,customer_name = customer_name,customer_id=customer_id)
+
 
 #this function helps the customer support to record the 
 #customer profile details and appointment time from TPA
@@ -344,7 +463,7 @@ def update_customer():
         redirect(URL('customer','list_customers',vars=dict(page=page)))
 
     elif formA.errors:
-        response.session.flash = "Error - updating customer" + str(formA.errors)
+        response.session = "Error - updating customer" + str(formA.errors)
 
  
 

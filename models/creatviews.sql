@@ -8539,9 +8539,14 @@ from dentalimage
 
 12/20/2020
 ===========
-1. YYYZZModify dentalimage table
+1. XXXXYYYZZModify dentalimage table
    ALTER TABLE `mydp_prod`.`dentalimage` 
 ADD COLUMN `mediafile` VARCHAR(1024) NULL DEFAULT NULL AFTER `treatmentplan`,
 ADD COLUMN `mediatype` VARCHAR(45) NULL DEFAULT 'audio' AFTER `mediafile`,
 ADD COLUMN `mediaformat` VARCHAR(45) NULL DEFAULT 'mp3' AFTER `mediatype`,
 ADD COLUMN `mediasize` DOUBLE NULL DEFAULT '0' AFTER `mediaformat`;
+
+12/28/2020
+===========
+1. ZZZAdd CustomerDependants
+2. 
