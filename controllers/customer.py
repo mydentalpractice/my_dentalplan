@@ -27,6 +27,8 @@ from applications.my_pms2.modules  import mail
 from applications.my_pms2.modules  import mdpappointment
 from applications.my_pms2.modules  import mdpcustomer
 
+
+
 def plans():
     
     regionid = 1
@@ -103,7 +105,7 @@ def list_customers():
              lambda row: A('Enroll',_href=URL("customer","enroll_customer",
                                               vars=dict(page=page,customerid=row.id)))  if(row.status != 'Enrolled') else "",
              
-             lambda row: A('Dependants',_href=URL("customer","list_customer_dependants",vars=dict(customer_id = row.id,page=page))),
+             lambda row: A('Dependants',_href=URL("customer","list_customer_dependants",vars=dict(customer_id = row.id,page=page))) if(row.status != 'Enrolled') else "" ,
              lambda row: A('Delete',_href=URL("customer","delete_customer",vars=dict(customerid = row.id,customername=row.customername,page=page)))
              ]
     query = ((db.vw_customer.id > 0) & (db.vw_customer.is_active == True))
@@ -249,6 +251,90 @@ def new_customer_dependant():
     return dict(formA=formA,username=username, returnurl=returnurl,formheader=formheader,page=page,customer_ref=customer_ref,customer_name = customer_name,customer_id=customer_id)
 
 
+def update_customer_dependant():
+    
+    db = current.globalenv['db']
+    
+    formheader = "Customer Dependant"
+    username = "Admin" 
+  
+    dependant_id = int(common.getid(request.vars.dependant_id))
+    page = common.getpage1(request.vars.page)
+    
+    ds = db((db.customerdependants.id == dependant_id) & (db.customerdependants.is_active == True)).select()
+    customer_id = ds[0].customer_id if(len(ds)==1) else 0
+    
+    c = db((db.customer.id == customer_id) & (db.customer.is_active == True)).select()
+    customer_name = c[0].fname + " " + c[0].lname if len(c)==1 else ""
+    customer_ref = c[0].customer_ref if len(c)==1 else ""
+    
+    returnurl = URL('customer','list_customer_dependants', vars=dict(page=page,customer_id=customer_id))
+
+    if(len(ds) == 1):
+        dependant = ds[0].dependant
+        dependant_ref = ds[0].dependant_ref
+       
+        fname = ds[0].fname
+        mname = ds[0].mname
+        lname = ds[0].lname
+        gender = ds[0].gender
+        depdob = ds[0].depdob
+        relation = ds[0].relation
+    else:
+        dependant = ''
+        dependant_ref = ''
+       
+        fname = ''
+        mname = ''
+        lname = ''
+        gender = 'Male'
+        depdob = request.now
+        relation = "Spouse"
+        
+    formA = SQLFORM.factory(
+        Field('dependant', 'string',label='Dependant ID', default=dependant),
+        Field('dependant_ref', 'string',label='Dependant Ref', default=dependant_ref),
+        Field('fname', 'string',label='First Name', default=fname, requires=IS_NOT_EMPTY()),
+        Field('mname', 'string',label='Middle Name', default=mname),
+        Field('lname', 'string',label='Last Name', default=lname, requires=IS_NOT_EMPTY()),
+        Field('gender', 'string',label='Gender', default=gender, requires = IS_IN_SET(GENDER)),
+        Field('depdob', 'date',label='DOB', default=depdob,  requires=IS_DATE(format=('%d/%m/%Y')),length=20),
+        Field('relation', 'string',label='Relation', default=relation, requires = IS_IN_SET(RELATIONS)),
+        
+    )
+
+   
+
+    
+    if formA.process().accepted:
+        db(db.customerdependants.id == dependant_id).update(
+            
+            fname = formA.vars.fname,
+            mname = formA.vars.mname,
+            lname = formA.vars.lname,
+            gender = formA.vars.gender,
+            depdob = formA.vars.depdob,
+            relation = formA.vars.relation,
+
+            modified_on = common.getISTFormatCurrentLocatTime(),
+            modified_by =  1 if(auth.user == None) else auth.user.id
+                                    
+            
+        ) 
+        
+        redirect(returnurl)
+
+    elif formA.errors:
+        response.session = "Error - updating customer dependant" + str(formA.errors)
+
+ 
+
+    
+    return dict(formA=formA,username=username, returnurl=returnurl,formheader=formheader,page=page,customer_ref=customer_ref,customer_name = customer_name,dependant_id=dependant_id)
+    
+   
+
+
 #this function helps the customer support to record the 
 #customer profile details and appointment time from TPA
 #Once all items are confirmed, the customer is enrolled
@@ -321,6 +407,8 @@ def new_customer():
     returnurl = URL('customer', 'list_customers',vars=dict(page=page))
 
     return dict(formA=formA,username=username, returnurl=returnurl,formheader=formheader,regions=regions, plans=plans,page=page)
+
+
 
 def update_customer():
     
@@ -457,7 +545,12 @@ def update_customer():
             pin3 = formA.vars.pin3,
             appointment_id = formA.vars.appointment_id,
             appointment_datetime = formA.vars.appointment_datetime,
-            notes = formA.vars.notes
+            notes = formA.vars.notes,
+
+            modified_on = common.getISTFormatCurrentLocatTime(),
+            modified_by =  1 if(auth.user == None) else auth.user.id
+            
+            
         ) 
         
         redirect(URL('customer','list_customers',vars=dict(page=page)))
@@ -474,10 +567,49 @@ def update_customer():
  
     returnurl = URL('customer','list_customers',vars=dict(page=page))
     enrollcustomer = URL('customer','enroll_customer',vars=dict(page=page,customerid=customerid))
+    viewprovidercalendar = URL('my_pms2', 'appointment','customer_appointment',vars=dict(page=page,providerid = providerid,customerid=customerid))
 
-    return dict(formA=formA,username=username, returnurl=returnurl,enrollcustomer=enrollcustomer,formheader=formheader,regions=regions, plans=plans,regionid=regionid,planid=planid,status=status,page=page)
+    return dict(formA=formA,username=username, returnurl=returnurl,enrollcustomer=enrollcustomer,viewprovidercalendar=viewprovidercalendar,\
+                formheader=formheader,regions=regions, plans=plans,regionid=regionid,planid=planid,status=status,page=page)
     
     
+def delete_customer_dependant():
+    
+    db = current.globalenv['db']
+    
+    formheader = "Delete Dependant"
+    username = "Admin" 
+  
+    dependant_id = int(common.getid(request.vars.dependant_id))
+    page = common.getpage1(request.vars.page)
+    
+    ds = db((db.customerdependants.id == dependant_id) & (db.customerdependants.is_active == True)).select()
+    customer_id = ds[0].customer_id if(len(ds)==1) else 0
+    dependant_name =  ds[0].fname if(len(ds)==1) else "" + " " + ds[0].lname if(len(ds)==1) else ""
+    
+    c = db((db.customer.id == customer_id) & (db.customer.is_active == True)).select()
+    customer_name = c[0].fname + " " + c[0].lname if len(c)==1 else ""
+    customer_ref = c[0].customer_ref if len(c)==1 else ""
+    
+    returnurl = URL('customer','list_customer_dependants', vars=dict(page=page,customer_id=customer_id))
+    
+    form = FORM.confirm('Yes?',{'No':returnurl})
+    
+    if form.accepted:
+        
+        db(db.customerdependants.id == dependant_id).update(is_active = False,
+                                                modified_on = common.getISTFormatCurrentLocatTime(),
+                                                modified_by = auth.user.id)
+        session.flash = 'Customer Dependant successfully deleted!'
+        redirect(returnurl)
+    
+    elif form.errors:
+        session.flash = "Error - deleting customer dependant" + str(formA.errors)
+        
+        
+            
+    return dict(form=form, dependant_name = dependant_name, customername=customer_name)
+
 def delete_customer():
     
     customername = common.getstring(request.vars.customername)
