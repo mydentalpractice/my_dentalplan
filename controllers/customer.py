@@ -391,6 +391,8 @@ def new_customer():
         db(db.customer.id == customerid).update(customer = str(customerid))
         if(formA.vars.customer_ref == ""):
             db(db.customer.id == customerid).update(customer_ref = str(customerid).zfill(3))
+        else:
+            db(db.customer.id == customerid).update(customer_ref = formA.vars.customer_ref + ":" + str(customerid))
         
         redirect(URL('customer','update_customer', vars=dict(customerid=customerid)))
 
