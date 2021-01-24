@@ -1063,6 +1063,16 @@ db.define_table('dentalimage',
 db.dentalimage._singular = "DentalImage"
 db.dentalimage._plural = "DentalImage"
 
+db.define_table('dentalimage_ref',
+                Field('ref_code', 'string',default='RST'),
+                Field('ref_id', 'integer'),
+                Field('media_id', 'integer')
+                )
+db.dentalimage_ref._singular = "DentalImage"
+db.dentalimage_ref._plural = "DentalImage"
+
+                
+                
 
 db.define_table('t_appointment',
     Field('id','id',

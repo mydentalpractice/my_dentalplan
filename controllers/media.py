@@ -303,15 +303,18 @@ def upload_image():
             
             j = {
                         "mediadata":file_content,
-                        "memberid":str(1469),
-                        "patientid":str(1469),
-                        "treatmentid":str(24),
+                        "xmemberid":str(1469),
+                        "xpatientid":str(1469),
+                        "xtreatmentid":str(24),
                         "title":"test",
-                        "tooth":"1",
-                        "quadrant":"1",
+                        "xtooth":"1",
+                        "xquadrant":"1",
                         "mediadate":common.getstringfromdate(datetime.datetime.today(),"%d/%m/%Y"),
                         "description":"XXX",
-                        "appath":request.folder
+                        "appath":request.folder,
+                        "ref_code":"DOC",
+                        "ref_id":str(26)
+                        
                         }
             
             x= json.loads(o.upload_media(j)) 
@@ -435,20 +438,23 @@ def upload_audio():
                 #file_content = base64.b64encode(imageFile.read())   	    
 
             o = mdpmedia.Media(db, 523, 'audio', 'mp3')
-            
             j = {
                 "mediadata":file_content,
-                "memberid":str(1469),
-                "patientid":str(1469),
-                "treatmentid":str(24),
+                "xmemberid":str(1469),
+                "xpatientid":str(1469),
+                "xtreatmentid":str(24),
                 "title":"test",
-                "tooth":"1",
-                "quadrant":"1",
+                "xtooth":"1",
+                "xquadrant":"1",
                 "mediadate":common.getstringfromdate(datetime.datetime.today(),"%d/%m/%Y"),
                 "description":"XXX",
-                "appath":request.folder
-                }
-
+                "appath":request.folder,
+                "ref_code":"DOC",
+                "ref_id":str(25)
+                
+                }            
+            
+           
             
             #x= json.loads(o.upload_media(file_content, 1469, 1469, 24, "test", "1", 
                                          #"2", "03/12/2020","description", request.folder))

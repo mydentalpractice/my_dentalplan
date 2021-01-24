@@ -244,7 +244,7 @@ def new_customer_dependant():
         redirect(returnurl)
 
     elif formA.errors:
-        response.session.flash = "Error - Creating new customer dependant" + str(formA.errors)
+        response.flash = "Error - Creating new customer dependant" + str(formA.errors)
 
         
     
@@ -397,7 +397,7 @@ def new_customer():
         redirect(URL('customer','update_customer', vars=dict(customerid=customerid)))
 
     elif formA.errors:
-        response.session.flash = "Error - Creating new customer" + str(formA.errors)
+        response.flash = "Error - Creating new customer" + str(formA.errors)
 
     regionid = 0
 
@@ -602,11 +602,11 @@ def delete_customer_dependant():
         db(db.customerdependants.id == dependant_id).update(is_active = False,
                                                 modified_on = common.getISTFormatCurrentLocatTime(),
                                                 modified_by = auth.user.id)
-        session.flash = 'Customer Dependant successfully deleted!'
+        response.flash = 'Customer Dependant successfully deleted!'
         redirect(returnurl)
     
     elif form.errors:
-        session.flash = "Error - deleting customer dependant" + str(formA.errors)
+        response.flash = "Error - deleting customer dependant" + str(formA.errors)
         
         
             
@@ -625,11 +625,11 @@ def delete_customer():
         db(db.customer.id == customerid).update(is_active = False,
                                                 modified_on = common.getISTFormatCurrentLocatTime(),
                                                 modified_by = auth.user.id)
-        session.flash = 'Customer successfully deleted!'
+        response.flash = 'Customer successfully deleted!'
         redirect(URL('customer','list_customers',vars=dict(page=page)))
     
     elif form.errors:
-        session.flash = "Error - deleting customer" + str(formA.errors)
+        response.flash = "Error - deleting customer" + str(formA.errors)
         
         
             

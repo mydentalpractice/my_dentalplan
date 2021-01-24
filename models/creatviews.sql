@@ -8548,5 +8548,22 @@ ADD COLUMN `mediasize` DOUBLE NULL DEFAULT '0' AFTER `mediaformat`;
 
 12/28/2020
 ===========
-1. ZZZAdd CustomerDependants
-2. 
+1. YYYZZZAdd CustomerDependants
+2. YYZZZAdd view Customer Dependants
+
+1/16/2021
+=========
+0. Renamed old Media to xmedia
+1. New - Clinic
+2. xNew - Media 
+3. New - operational_timing
+4. New - clinic_timing
+5. New - doctor_doctor
+
+7. New - bank_details
+8. New - prov_clinic
+9. New - doctor_timing
+
+11. New - bank_details
+
+13. New dentalimage_ref
