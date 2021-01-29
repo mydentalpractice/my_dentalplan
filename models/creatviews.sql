@@ -8554,16 +8554,23 @@ ADD COLUMN `mediasize` DOUBLE NULL DEFAULT '0' AFTER `mediaformat`;
 1/16/2021
 =========
 0. Renamed old Media to xmedia
-1. New - Clinic
-2. xNew - Media 
-3. New - operational_timing
-4. New - clinic_timing
-5. New - doctor_doctor
+1. Remove Media, xMedia, DentalImage_1
+2. New dentlaimage_ref
+
+1. New - Clinic,clinic_ref   (need to add owner flag in Clinic)
+
+3. New - ops_timing,ops_timing_ref
+
+
+5. New - doctor, doctor_ref
 
 7. New - bank_details
-8. New - prov_clinic
-9. New - doctor_timing
 
-11. New - bank_details
+8  Modify Provider to add Provider status   varchar(45)
 
-13. New dentalimage_ref
+9.  New - provider_prospect, prospect_ref
+
+10. New activity_log, activity_log_ref
+
+11. New travel_log, travel_log_ref
+

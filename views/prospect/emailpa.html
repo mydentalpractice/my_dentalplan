@@ -1,0 +1,15 @@
+{{extend 'layoutenroll2.html'}}
+
+
+<div>
+     
+    <h3>Provider Service Agreemeent</h3><br/>
+    
+    {{if(retval == True):}}
+    <h5>Provider Service Agreement link sent to  {{=prospectname}} email address!</h5>
+    {{else:}}
+    <h5>Error in sending Provider Service Agreement link to {{=prospectname}} email address!</h5>
+    {{pass}}
+    <button class="form_details_button" onclick="window.location='{{=returnurl}}';return false">Return</button>&nbsp;&nbsp;
+
+</div>

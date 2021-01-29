@@ -139,6 +139,176 @@ use_janrain(auth, filename='private/janrain.key')
 ## >>> for row in rows: print row.id, row.myfield
 #########################################################################
 
+
+
+
+db.define_table('travel_log',
+                
+                Field('travel_code','string'),
+                Field('description','string'),
+                Field('notes','string'),
+                Field('origin','string'),
+                Field('destination','string'),
+                Field('origin_time','datetime'),
+                Field('destination_time','datetime'),
+                Field('expenses','double'),
+                Field('expenses_notes','text'),
+                Field('is_active','boolean',default=True),
+                auth.signature
+)
+db.travel_log._singular = "travel_log"
+db.travel_log._plural   = "travel_log"
+
+
+db.define_table('travel_log_ref',
+                Field('ref_code', 'string',default='AGN'),
+                Field('ref_id', 'integer'),
+                Field('travel_id', 'integer')
+                )
+db.travel_log_ref._singular = "travel_log_ref"
+db.travel_log_ref._plural = "travel_log_ref"
+
+
+db.define_table('activity_log',
+                
+                Field('activity_code','string'),
+           
+                Field('notes','text'),
+         
+              
+                Field('start_time','datetime'),
+                Field('end_time','datetime'),
+              
+                
+                Field('is_active','boolean',default=True),
+                auth.signature
+)
+db.activity_log._singular = "activity_log"
+db.activity_log._plural   = "activity_log"
+
+db.define_table('activity_log_ref',
+                Field('ref_code', 'string',default='AGN'),
+                Field('ref_id', 'integer'),
+                Field('activity_id', 'integer')
+                )
+db.activity_log_ref._singular = "activity_log_ref"
+db.activity_log_ref._plural = "activity_log_ref"
+
+db.define_table('clinic',
+                
+                Field('clinic_ref','string'),
+                
+                Field('name','string'),
+                Field('address1','string'),
+                Field('address2','string'),
+                Field('address3','string'),
+                Field('city', 'string',default='None',label='City',length=50,requires = IS_IN_SET(CITIES)),
+                Field('st', 'string',default='',label='State',length=50,requires = IS_IN_SET(STATES)),
+                Field('pin','string'),
+                
+                Field('cell','string'),
+                Field('telephone','string'),
+                Field('email','string'),
+
+                Field('website','string'),
+                Field('gps_location','string'),
+                Field('whatsapp','string'),
+                Field('facebook','string'),
+                Field('twitter','string'),
+
+                Field('status','string'),
+                Field('primary_clinic','boolean'),
+                
+                Field('mdp_registration','string'),
+                Field('dentalchairs','string'),
+                Field('auto_clave','string'),
+                Field('implantology','string'),
+                Field('instrument_sterilization','string'),
+                Field('waste_displosal','string'),
+                Field('suction_machine','string'),
+                Field('laser','string'),
+                Field('RVG_OPG','string'),
+                
+                Field('radiation_protection','string'),                
+                Field('computers','string'),                
+                Field('network','string'),                
+                Field('internet','string'),                
+                Field('air_conditioned','string'),                
+                Field('waiting_area','string'),                
+                Field('backup_power','string'),                
+                Field('toilet','string'),                
+                Field('water_filter','string'),                
+                Field('parking_facility','string'),                
+                Field('receptionist','string'),                
+                Field('credit_card','string'),                
+                Field('certifcates','string'),                
+                Field('emergency_drugs','string'),                
+                Field('infection_control','string'),                
+                Field('daily_autoclaved','string'),                
+                Field('patient_records','string'),                
+                Field('patient_consent','string'),                
+                Field('patient_traffic','string'),                
+                Field('nabh_iso_certifcation','string'),     
+                Field('intra_oral_camera','string'),     
+                Field('rotary_endodontics','string'),     
+                Field('bank_id','integer'), 
+                
+                auth.signature                
+                )
+
+db.clinic._singular = "clinic"
+db.clinic._plural   = "clinic"
+db.define_table('clinic_ref',
+                Field('ref_code', 'string',default='PRV'),
+                Field('ref_id', 'integer'),
+                Field('clinic_id', 'integer')
+                )
+db.clinic_ref._singular = "clinic_ref"
+db.clinic_ref._plural = "clinic_ref"
+
+db.define_table('bank_details',
+                Field('bankname','string'),
+                Field('bankbranch','string'),
+                Field('bankaccountname','string'),
+                Field('bankaccountno','string'),
+                Field('bankaccounttype','string'),
+                Field('bankmicrno','string'),
+                Field('bankifsccode','string'),
+                Field('address1','string'),
+                Field('address2','string'),
+                Field('address3','string'),
+                Field('city', 'string',default='None',label='City',length=50,requires = IS_IN_SET(CITIES)),
+                Field('st', 'string',default='',label='State',length=50,requires = IS_IN_SET(STATES)),
+                Field('pin','string'),
+                auth.signature
+                )
+db.bank_details._singular = "bank_details"
+db.bank_details._plural   = "bank_details"
+
+db.define_table('ops_timing',
+                Field('calendar_date','date'),
+                Field('day_of_week','string'),
+                Field('open_time','time'),
+                Field('close_time','time'),
+                Field('is_lunch','boolean',default=False),
+                Field('is_holiday','boolean',default=False),
+                Field('is_saturday','boolean',default=False),
+                Field('is_sunday','boolean',default=False),
+                auth.signature
+                )
+
+db.ops_timing._singular = "ops_timing"
+db.ops_timing._plural   = "ops_timing"
+
+db.define_table('ops_timing_ref',
+                Field('ref_code', 'string',default='RST'),
+                Field('ref_id', 'integer'),
+                Field('ops_timing_id', 'integer')
+                )
+db.ops_timing_ref._singular = "ops_timing_ref"
+db.ops_timing_ref._plural = "ops_timing_ref"
+
+
 db.define_table('loginblock',
                 Field('ip_address','string'),
                 Field('username','string'),
@@ -685,6 +855,8 @@ db.define_table('provider',
                 Field('groupsms', 'boolean', default=True),
                 Field('groupemail', 'boolean', default=True),
                 
+                Field('status', 'string', default='New'),
+                
                 Field('bankid','reference providerbank'),                
                 
                 auth.signature,
@@ -708,6 +880,87 @@ db.define_table('provider_region_plan',
 db.provider_region_plan._singular = "Provider"
 db.provider_region_plan._plural = "Provider"
 
+
+db.define_table('prospect',
+                Field('provider', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'),label='Provider Code',default='',length=20),
+                Field('title','string',represent=lambda v, r: '' if v is None else v,default=' ',label='Title',length=10,requires = IS_EMPTY_OR(IS_IN_SET(DOCTITLE))),
+                Field('providername', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'), default='', label='Provider Name ',length=512),
+                Field('practicename', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'), default='', label='Pratice Name',length=512),
+                Field('address1', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'),label='Address 1',default='',length=512),
+                Field('address2', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'), default='',label='Address 2',length=512),
+                Field('address3', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'), default='',label='Address 3',length=512),
+                Field('city', 'string',represent=lambda v, r: '' if v is None else v, default='None',label='City',length=50,requires=IS_IN_SET(CITIES)),
+                Field('st', 'string',represent=lambda v, r: '' if v is None else v, default='None',label='State',length=50,requires = IS_IN_SET(STATES)),
+                Field('pin', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'),label='Pin',default='',length=20),
+                Field('p_address1', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'),label='Address 1',default='',length=512),
+                Field('p_address2', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'), default='',label='Address 2',length=512),
+                Field('p_address3', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'), default='',label='Address 3',length=512),
+                Field('p_city', 'string',represent=lambda v, r: '' if v is None else v, default='None',label='City',length=50,requires=IS_EMPTY_OR(IS_IN_SET(CITIES))),
+                Field('p_st', 'string',represent=lambda v, r: '' if v is None else v, default='None',label='State',length=50,requires = IS_EMPTY_OR(IS_IN_SET(STATES))),
+                Field('p_pin', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'),label='Pin',default='',length=20),
+
+                Field('telephone', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'), default='',label='Telephone',length=20),
+                Field('cell', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'), default='',label='Cell',length=20),
+                Field('fax', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'), default='',label='Fax',length=20),
+                Field('email', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'), default='',label='Email',length=50),
+                Field('taxid', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'),default='',label='PAN',readable=False, writable=False,length=20),
+                Field('enrolleddate',
+'date',widget = lambda field, value:SQLFORM.widgets.date.widget(field, value, _style='height:30px'),label='Enrolled Date',default=request.now,length=20),
+                Field('assignedpatientmembers', 'integer',represent=lambda v, r: 0 if v is None else v,widget = lambda field, value:SQLFORM.widgets.integer.widget(field, value, _class='form_details'),default=0,label='Assigned Members'),
+                Field('captguarantee', 'double',represent=lambda v, r: 0.00 if v is None else v,widget = lambda field, value:SQLFORM.widgets.double.widget(field, value, _class='form_details'),default=0.00,label='Capitation Guarantee'),
+                Field('schedulecapitation', 'double',represent=lambda v, r: 0.00 if v is None else v,widget = lambda field, value:SQLFORM.widgets.double.widget(field, value, _class='form_details'),default=0.00,label='Schedule Guarantee'),
+                Field('capitationytd', 'double',represent=lambda v, r: 0.00 if v is None else v,widget = lambda field, value:SQLFORM.widgets.double.widget(field, value, _class='form_details'),default=0.00,label='Capitation YTD'),
+                Field('captiationmtd', 'double',represent=lambda v, r: 0.00 if v is None else v,widget = lambda field, value:SQLFORM.widgets.double.widget(field, value, _class='form_details'),default=0.00,label='Capitation MTD'),
+                Field('languagesspoken', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'),default='',label='Languages Spoken',length=32),
+                Field('speciality',  'reference speciality', widget = lambda field, value:SQLFORM.widgets.options.widget(field, value, _style="width:100%;height:35px",_class='form-control')),
+                Field('specialization', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'),default='',label='Specialization',length=64),
+                Field('sitekey','string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'),label='Web Enrollment Key', default='1234', length=20),
+                Field('registration','string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'),label='Registration', default='', length=128),
+                Field('registered','boolean', default='False'),
+                Field('pa_providername', 'string', default='', label=''),
+                Field('pa_practicename', 'string', default='', label=''),
+                Field('pa_parent', 'string', default='', label=''),
+                Field('pa_address', 'string', default='', label=''),
+                Field('pa_practiceaddress', 'string', default='', label=''),
+                Field('pa_pan', 'string', default='', label=''),
+                Field('pa_regno', 'string', default='', label=''),
+                Field('pa_dob', 'date', label=''),
+                Field('pa_date', 'datetime', default=request.now, label=''),
+                Field('pa_accepted', 'boolean', default=False),
+                Field('pa_approved', 'boolean', default=False),
+                Field('pa_approvedon', 'datetime', default=request.now, label=''),
+                Field('pa_approvedby', 'integer'),
+                Field('pa_day', 'string', default='', label=''),
+                Field('pa_month', 'string', default='', label=''),
+                Field('pa_location', 'string', default='', label=''),
+                Field('pa_practicepin', 'string', default='', label=''),
+                
+                Field('pa_hours', 'string', default='', label=''),
+                Field('pa_longitude', 'string', default='', label=''),
+                Field('pa_latitude', 'string', default='', label=''),
+                Field('pa_locationurl', 'string', default='', label=''),
+
+                Field('groupregion','reference groupregion'),
+                Field('groupsms', 'boolean', default=True),
+                Field('groupemail', 'boolean', default=True),
+                
+                Field('status', 'string', default='New'),
+                
+                Field('bankid','reference providerbank'),                
+                
+                auth.signature,
+                format='%(providername)s (%(provider)s')
+               
+db.prospect._singular = "prospect"
+db.prospect._plural = "prospect"
+
+db.define_table('prospect_ref',
+                Field('ref_code', 'string',default='AGN'),
+                Field('ref_id', 'integer'),
+                Field('prospect_id', 'integer')
+                )
+db.prospect_ref._singular = "prospect_ref"
+db.prospect_ref._plural = "prospect_ref"
 
 ## Member Table
 db.define_table('patientmember',
@@ -1068,8 +1321,8 @@ db.define_table('dentalimage_ref',
                 Field('ref_id', 'integer'),
                 Field('media_id', 'integer')
                 )
-db.dentalimage_ref._singular = "DentalImage"
-db.dentalimage_ref._plural = "DentalImage"
+db.dentalimage_ref._singular = "DentalImageRef"
+db.dentalimage_ref._plural = "DentalImageRef"
 
                 
                 
@@ -2329,6 +2582,37 @@ db.speciality_default._singular = "speciality_default"
 db.speciality_default._plural   = "speciality_default"
 
 
+
+#Columns:
+#id int(11) AI PK 
+# varchar(45) 
+# varchar(128) 
+# int(11) 
+# int(11) 
+# int(11) 
+# char(1) 
+# varchar(128) 
+# varchar(45) 
+# varchar(45) 
+# varchar(45) 
+# varchar(45) 
+# varchar(45) 
+# varchar(45) 
+# varchar(45) 
+# varchar(45) 
+#approval_date date 
+#doctorcol varchar(45) 
+# text 
+# char(1) 
+# char(1) 
+# char(1) 
+# char(1) 
+# char(1) 
+# int(11) 
+# datetime 
+# int(11) 
+# datetim
+
 db.define_table('doctor',
                 Field('title','string',represent=lambda v, r: '' if v is None else v,default=' ',label='Title',length=10,requires = IS_EMPTY_OR(IS_IN_SET(DOCTITLE))),
                 Field('name','string',represent=lambda v, r: '' if v is None else v,requires=IS_NOT_EMPTY(),length=64),  
@@ -2341,17 +2625,37 @@ db.define_table('doctor',
                 Field('registration','string',represent=lambda v, r: '' if v is None else v,requires=IS_NOT_EMPTY(),length=64),  
                 Field('color','string',represent=lambda v, r: '' if v is None else v,requires=IS_NOT_EMPTY(),length=32),  
                 Field('stafftype','string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.options.widget(field, value, _style="width:100%;height:35px",_class='form-control'),default='Doctor',label='Type',length=10,requires = IS_IN_SET(OFFICESTAFF)),
+
+                Field('state_registration','string'),
+                Field('pan','string'),
+                Field('adhaar','string'),
+                Field('status','string'),
+                
+
+
                 Field('notes','text',represent=lambda v, r: '' if v is None else v),  
                 Field('docsms','boolean', default = True),
                 Field('docemail','boolean', default = True),
                 Field('groupsms','boolean', default = False),
                 Field('groupemail','boolean', default = False),
+                Field('practice_owner','boolean', default = False),
+                
+                Field('approval_date','datetime'),
+                
                 Field('is_active','boolean', default = True),
+                
                 auth.signature
                 )
 db.doctor._singular = "doctor"
 db.doctor._plural   = "doctor"
 
+db.define_table('doctor_ref',
+                Field('ref_code', 'string',default='PRV'),
+                Field('ref_id', 'integer'),
+                Field('doctor_id', 'integer')
+                )
+db.doctor_ref._singular = "doctor_ref"
+db.doctor_ref._plural = "doctor_ref"
 
 db.define_table('doctortiming',
                 Field('mon_day_chk','boolean', default = False),

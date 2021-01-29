@@ -1,0 +1,312 @@
+{{extend 'mdp_layoutw3.html'}}
+
+
+
+<header class="w3-container w3-dark-grey ">
+   <h4>{{=formheader}}</h4>
+</header>
+
+
+<h4 class="head-line"></h4>
+{{=formA.custom.begin}}
+
+
+<header class="w3-container w3-light-grey ">
+<h5>Prospect Details</h5>
+</header>
+
+<table>
+<tr>
+<td class="form_details">
+  Provider Code
+</td>
+<td class="form_details">
+  {{=formA.custom.widget.provider}}
+</td>
+<td class="form_details">
+ Provider Name
+</td>
+<td class="form_details">
+ {{=formA.custom.widget.providername}}
+</td>
+<td class="form_details">
+Practice Name
+</td>
+<td class="form_details">
+{{=formA.custom.widget.practicename}}
+</td>
+</tr>
+
+
+<tr>
+<td class="form_details">
+Web Key
+</td>
+<td class="form_details">
+{{=formA.custom.widget.sitekey}}
+</td>
+<td class="form_details">
+Region
+</td>
+<td class="form_details">
+{{=formA.custom.widget.groupregion}}
+</td>
+<td class="form_details">
+Assigned Members
+</td>
+
+
+</tr>
+
+<tr>
+<td class="form_details">
+Speciality
+</td>
+<td class="form_details">
+{{=formA.custom.widget.speciality}}
+</td>
+<td class="form_details">
+Speciality Description
+</td>
+<td class="form_details">
+{{=formA.custom.widget.specialization}}
+</td>
+</tr>
+
+</table>
+
+
+<header class="w3-container w3-light-grey ">
+<h5>Contact Details</h5>
+</header>
+
+<table>
+<tr>
+<td class="form_details">
+Address 1
+</td>
+<td class="form_details">
+{{=formA.custom.widget.address1}}
+</td>
+<td class="form_details">
+Address 2
+</td>
+<td class="form_details">
+{{=formA.custom.widget.address2}}
+</td>
+<td class="form_details">
+Address 3
+</td>
+<td class="form_details">
+{{=formA.custom.widget.address3}}
+</td>
+</tr>
+
+
+<tr>
+<td class="form_details">
+City
+</td>
+<td class="form_details">
+{{=formA.custom.widget.city}}
+</td>
+<td class="form_details">
+State
+</td>
+<td class="form_details">
+{{=formA.custom.widget.st}}
+</td>
+<td class="form_details">
+PIN
+</td>
+<td class="form_details">
+{{=formA.custom.widget.pin}}
+</td>
+</tr>
+
+<tr>
+
+<td class="form_details">
+Cell
+</td>
+<td class="form_details">
+{{=formA.custom.widget.cell}}
+</td>
+<td class="form_details">
+Telephone
+</td>
+<td class="form_details">
+{{=formA.custom.widget.telephone}}
+</td>
+<td class="form_details">
+Fax
+</td>
+
+</tr>
+
+<tr>
+
+<td class="form_details">
+Email
+</td>
+<td class="form_details">
+{{=formA.custom.widget.email}}
+</td>
+</tr>
+</table>
+
+
+<header class="w3-container w3-light-grey ">
+<h5>Others</h5>
+</header>
+
+<table>
+<tr>
+<td>
+PA Acceptance Date
+</td>
+<td>
+{{=formA.custom.widget.pa_date}}&nbsp;&nbsp;{{=formA.custom.widget.pa_accepted}}
+</td>
+<td>
+PA Approval Date
+</td>
+<td>
+{{=formA.custom.widget.pa_approvedon}}&nbsp;&nbsp;{{=formA.custom.widget.pa_approved}}
+</td>
+
+<td>
+PA Approved By
+</td>
+<td>
+{{=formA.custom.widget.pa_approvedby}}
+</td>
+
+</tr>
+
+<tr>
+<td>
+Registration
+</td>
+<td>
+{{=formA.custom.widget.registration}}
+</td>
+<td>
+PAN
+</td>
+<td>
+{{=formA.custom.widget.taxid}}
+</td>
+<td class="form_details">
+Group SMS / Group Email
+</td>
+<td class="form_details">
+{{=formA.custom.widget.groupsms}}&nbsp;&nbsp;{{=formA.custom.widget.groupemail}}
+</td>
+</tr>
+
+</table>
+
+
+
+
+<header class="w3-container w3-light-grey ">
+<h5>Bank Details</h5>
+</header>
+{{=formBank.custom.begin}}
+
+
+ 
+<table>
+<tr>
+<td class="form_details">
+  Bank Name
+</td>
+<td class="form_details">
+  {{=formBank.custom.widget.bankname}}
+</td>
+
+<td class="form_details">
+ Branch Name
+</td>
+<td class="form_details">
+ {{=formBank.custom.widget.bankbranch}}
+</td>
+<td class="form_details">
+Account No
+</td>
+<td class="form_details">
+{{=formBank.custom.widget.bankaccountno}}
+</td>
+</tr>
+<tr>
+<td class="form_details">
+Account Type
+</td>
+<td class="form_details">
+{{=formBank.custom.widget.bankaccounttype}}
+</td>
+<td class="form_details">
+MICR No
+</td>
+<td class="form_details">
+{{=formBank.custom.widget.bankmicrno}}
+</td>
+<td class="form_details">
+IFS Code
+</td>
+<td class="form_details">
+{{=formBank.custom.widget.bankifsccode}}
+</td>
+</tr>
+
+</table>
+
+
+
+<br/>
+{{=formA.custom.submit}}
+<button class="form_details_button" onclick="window.location='{{=returnurl}}';return false">Return</button>&nbsp;&nbsp;
+
+
+
+
+</div>
+
+
+
+
+<div style="display:none">
+
+<div style="display:none">
+{{=formA.custom.widget.languagesspoken}}
+
+{{=formA.custom.widget.enrolleddate}}
+{{=formA.custom.widget.registered}}
+{{=formA.custom.widget.title}}
+{{=formA.custom.widget.p_address1}}
+{{=formA.custom.widget.p_address2}}
+{{=formA.custom.widget.p_address3}}
+{{=formA.custom.widget.p_city}}
+{{=formA.custom.widget.p_st}}
+{{=formA.custom.widget.p_pin}}
+{{=formA.custom.widget.pa_providername}}
+{{=formA.custom.widget.pa_practicename}}
+{{=formA.custom.widget.pa_practiceaddress}}
+{{=formA.custom.widget.pa_dob}}
+{{=formA.custom.widget.pa_parent}}
+{{=formA.custom.widget.pa_address}}
+{{=formA.custom.widget.pa_pan}}
+{{=formA.custom.widget.pa_regno}}
+
+
+{{=formA.custom.widget.pa_day}}
+{{=formA.custom.widget.pa_month}}
+
+
+
+</div>
+
+{{=formA.custom.end}}
+{{=formBank.custom.end}}
+
