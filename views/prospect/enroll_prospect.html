@@ -1,0 +1,15 @@
+{{extend 'layoutenroll2.html'}}
+
+
+<div>
+     
+    <h3>Provider Enrollment</h3><br/>
+    
+    {{if(retval == True):}}
+    <h5>Successfull Enrollment of {{=providername}}&nbsp;&nbsp;{{=practicename}}</h5>
+    {{else:}}
+    <h5>Error in Enrollment of {{=providername}}&nbsp;&nbsp;{{=practicename}}</h5>
+    {{pass}}
+    <button class="form_details_button" onclick="window.location='{{=returnurl}}';return false">Return</button>&nbsp;&nbsp;
+
+</div>

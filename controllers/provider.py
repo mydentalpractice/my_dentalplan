@@ -7,6 +7,7 @@ crud = Crud(db)
 
 CRYPT = current.globalenv["CRYPT"]
 
+import json
 import string
 import random
 
@@ -16,6 +17,8 @@ import random
 from applications.my_pms2.modules  import account
 from applications.my_pms2.modules  import common
 from applications.my_pms2.modules  import mail
+from applications.my_pms2.modules  import states
+from applications.my_pms2.modules  import mdpbank
 from applications.my_pms2.modules  import logger
 
 
@@ -1062,14 +1065,117 @@ def import_provider():
 
     return dict()
 
-#bankname varchar(255) 
-#bankbranch varchar(512) 
-#bankaccountno varchar(45) 
-#bankaccounttype varchar(45) 
-#bankmicrno varchar(45) 
-#bankifsccode
-
 def providerbankdetails():
+    
+    auth = current.auth
+    
+    username = auth.user.first_name + ' ' + auth.user.last_name
+   
+    formheader = "Bank Details"    
+
+    authuser = ""
+    f = lambda name: name if ((name != "") & (name != None)) else ""
+    authuser = f(auth.user.first_name)  + " " + f(auth.user.last_name)
+
+
+    page=common.getgridpage(request.vars)
+    
+    if(len(request.args)>0):   # called with providerid as URL params
+	providerid = int(request.args[0])
+	session.providerid = providerid
+    elif (len(request.vars)>0): # called on grid next page, get the providerid from session.
+	providerid = session.providerid    
+	 
+
+    
+    provdict = common.getproviderfromid(db, providerid)
+    providername = provdict["providername"]
+    provider = provdict["provider"]
+    
+    returnurl = URL('provider','list_provider',vars=dict(page=page))
+    ds = db((db.provider.id == providerid) & (db.provider.is_active == True)).select(db.provider.bankid)
+    bankid = 0 if(len(ds)!=1) else common.getid(ds[0].bankid)
+    obj = mdpbank.Bank(db)
+    banks = json.loads(obj.get_account({"bankid":str(bankid)}))
+    
+    
+
+    
+    bankname = common.getkeyvalue(banks,"bankname","")
+    bankbranch = common.getkeyvalue(banks,"bankbranch","")
+    bankaccountname = common.getkeyvalue(banks,"bankaccountname","")
+    bankaccountno = common.getkeyvalue(banks,"bankaccountno","")
+    bankaccounttype = common.getkeyvalue(banks,"bankaccounttype","")
+    bankmicrno = common.getkeyvalue(banks,"bankmicrno","")
+    bankifsccode = common.getkeyvalue(banks,"bankifsccode","")
+    address1 = common.getkeyvalue(banks,"address1","")
+    address2 = common.getkeyvalue(banks,"address2","")
+    address3 = common.getkeyvalue(banks,"address3","")
+    city = common.getkeyvalue(banks,"city","--Select City--")
+    st = common.getkeyvalue(banks,"st","--Select State--")
+    pin = common.getkeyvalue(banks,"pin","")
+
+    
+    formA = SQLFORM.factory(
+        Field('bankname','string',  default=bankname,label='Bank Name'),
+        Field('bankbranch','string',  default=bankbranch,label='Bank Branch'),
+        Field('bankaccountname','string',  default=bankaccountname,label='Bank Account'),
+        Field('bankaccountno','string',  default=bankaccountno,label='Account No'),
+        Field('bankaccounttype','string',  default=bankaccounttype,label='Account Type'),
+        Field('bankmicrno','string',  default=bankmicrno,label='MICR'),
+        Field('bankifsccode','string',  default=bankifsccode,label='IFS'),
+        
+        Field('address1','string',  default=address1,label='ADDR1'),
+        Field('address2','string',  default=address2,label='ADDR2'),
+        Field('address3','string',  default=address3,label='ADDR3'),
+        Field('city', 'string', widget = lambda field, value:SQLFORM.widgets.options.widget(field, value,_class='form-control '), default=city,label='City',requires = IS_EMPTY_OR(IS_IN_SET(states.CITIES))),
+        Field('st', 'string', widget = lambda field, value:SQLFORM.widgets.options.widget(field, value,_class='form-control '), default=st,label='State',requires = IS_EMPTY_OR(IS_IN_SET(states.STATES))),
+        Field('pin','string',  default=bankifsccode,label='PIN'),
+    
+    
+    )
+    
+    if formA.accepts(request,session,keepvalues=True):
+	
+	
+	requestobj = {}
+	requestobj["bankid"] = str(bankid)
+        requestobj["bankname"] = formA.vars.bankname
+        requestobj["bankbranch"] = formA.vars.bankbranch
+	requestobj["bankaccountname"] = formA.vars.bankaccountname
+        requestobj["bankaccountno"] = formA.vars.bankaccountno
+        requestobj["bankaccounttype"] = formA.vars.bankaccounttype
+        requestobj["bankmicrno"] = formA.vars.bankmicrno
+        requestobj["bankifsccode"] = formA.vars.bankifsccode
+        
+	requestobj["address1"] = formA.vars.address1
+	requestobj["address2"] = formA.vars.address2
+	requestobj["address3"] = formA.vars.address3
+	requestobj["city"] = formA.vars.city
+	requestobj["st"] = formA.vars.st
+	requestobj["pin"] = formA.vars.pin
+        
+        if(bankid == 0):
+	    rsp = json.loads(obj.new_account(requestobj))
+	    result = common.getkeyvalue(rsp,"result","fail")
+	    if(result == "success"):
+		bankid = int(common.getkeyvalue(rsp,"bankid","0"))
+		db(db.provider.id == providerid).update(bankid=bankid,
+		                                        modified_on = common.getISTFormatCurrentLocatTime(),
+		                                        modified_by =1 if(auth.user == None) else auth.user.id        
+		                                        )
+        else:
+	    rsp = json.loads(obj.update_account(requestobj))
+
+        redirect(returnurl)
+        
+    elif formA.errors:
+        response.flash = 'Error adding a Provider Bank Details' + str(formA.errors)        
+        
+    return dict(username=username,formA=formA,formheader=formheader,page=page,returnurl=returnurl,\
+                providerid=providerid,provider=provider,providername=providername,authuser=authuser)
+
+def xproviderbankdetails():
     
     auth = current.auth
     

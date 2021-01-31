@@ -1,0 +1,321 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script type="text/javascript">
+        $("#btnPrint").live("click", function () {
+            var divContents = $("#dvContainer").html();
+            var printWindow = window.open('', '', 'height=400,width=800');
+            printWindow.document.write('<html><head><title>MY DENTAL PLAN HEALTHCARE PRIVATE LIMITED</title>');
+            printWindow.document.write('</head><body >');
+            printWindow.document.write(divContents);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.print();
+
+        });
+    </script>
+    
+        
+    
+{{
+  response.files.insert(0,URL('static','css/w3.css'))
+  response.files.insert(0,URL('static','css/web2py.css'))
+  response.files.insert(1,URL('static','css/web2py_bootstrap.css'))
+  
+  response.files.insert(2,URL('static','assets/css/bootstrap.min.css'))
+  response.files.insert(3,URL('static','assets/css/bootstrap-responsive.min.css'))
+
+  response.files.insert(4,URL('static','assets/css/ionicons.css'))
+  response.files.insert(5,URL('static','assets/css/font-awesome.css'))
+  response.files.insert(6,URL('static','assets/css/style.css'))
+  response.files.insert(6,URL('static','css/mydental.css'))
+  
+  }}
+      
+    
+    <style>
+
+.container-fluid{width:80%;margin:0px auto;}
+.txt_left{text-align:left;}
+@media print { 
+ /* All your print styles go here */
+ .button{ display: none !important; } 
+ a{display: none !important}
+ table tr td {border: 1px solid #000 !important;}
+}
+table tr td {border: 1px solid grey;}
+td input{width: 100% !important;}
+td textarea{width: 100% !important;}
+    </style>
+</head>
+<body>
+<!--<form id="form1">-->
+{{=form.custom.begin}} 
+    <div id="dvContainer">
+                <div class="container-fluid">
+                        <div class="row"><center><h3>SERVICE PROVIDER AGREEMENT</h3>
+
+                        </div>
+                </div>
+                 <div class="container-fluid">
+                <center><p>THIS SERVICE PROVIDER AGREEMENT is made and executed on this Dated {{=form.custom.widget.pa_date}}  at <span style="text-decoration:underline;">{{=form.custom.widget.pa_location}} City</span></p></center>
+                <p><center><strong style="margin-top:15px !important;">Between</strong></center></p>
+                <center><p><strong>M/s MY DENTAL PLAN HEALTHCARE PRIVATE LIMITED </strong><br>(a company duly registered under the provisions of the Companies Act, 1956) having its Corporate office <br>at #324, 7th Cross Road, Defence Layout, Sahakar Nagar, Bengaluru, Karnataka 560092, INDIA <br>(Hereinafter, referred to as 
+                  <strong>"The Company"</strong> which expression shall include directors, share holders, agents, merchants, nominees, attorneys etc. of the company) of the One Part . </p>
+                </center>
+               <p><center><strong>AND</strong></center></p>
+                  <table>
+                    <tr>
+                      <td>Dr. / Mr./ Mrs.</td>
+                      <td>{{=xpa_providername}}</td>
+                    </tr>
+                    <tr>
+                      <td>D.O.B</td>
+                      <td>{{=form.custom.widget.pa_dob}}</td>
+                    </tr>
+                     <tr>
+                      <td>S/o / D/o</td>
+                      <td>{{=form.custom.widget.pa_parent}}</td>
+                    </tr>
+                    <tr>
+                      <td>Resident of</td>
+                      <td>{{=form.custom.widget.pa_address}}</td>
+                    </tr>
+                    <tr>
+                      <td>PAN</td>
+                      <td>{{=form.custom.widget.pa_pan}}</td>
+                    </tr>
+                    <tr>
+                      <td>State Dental Council Registration number</td>
+                      <td>{{=form.custom.widget.pa_regno}}</td>
+                    </tr>
+                    <tr>
+                      <td>Clinic Name</td>
+                      <td>{{=form.custom.widget.pa_practicename}}</td>
+                    </tr>
+                    <tr>
+                      <td>Clinic Address</td>
+                      <td>{{=form.custom.widget.pa_practiceaddress}}</td>
+                    </tr>
+                    <tr>
+                      <td>Pin code</td>
+                      <td> {{=form.custom.widget.pa_practicepin}}</td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">(Hereinafter, referred  to as <strong>"Provider"</strong> Which expression shall include his/her, administrators, legal representatives, successors and permitted assigns);</td>
+                      
+                    </tr>
+
+
+
+                  </table>
+
+
+
+
+
+             
+                </div>
+
+
+
+
+<div class="container-fluid"><h3 >INTRODUCTION:</h3>
+                    <p class="text-justify">WHEREAS M/s My Dental Plan Healthcare Pvt. Ltd. herein have represented to Provider that they are engaged in the business of healthcare and as such they are providing dental healthcare plans to their various prospective as well as existing clients / subscribers including individuals, companies or corporate houses for the purposes to provide dental care and treatments / procedures etc.for their employees / individuals at the fee / cost / price as may be agreed by the Company with their said clients. The Company operates prepaid as well as claim based payment specialized health care service plan individually and through medical health insurance companies for the provision of Covered Dental Services to corporate house for their employees / individuals enrolled in such plan. </p>
+
+                  <p> WHEREAS Provider herein, has not entered into any Agreement / Arrangement like the present one with any person / company / firm etc. whosoever and shall also not enter into in future till the continuation of these presents and the provider being duly qualified dental specialist engaged in the practice of dentistry, is desirous to provide their services, as per terms of the Plan and copayments as may be provided by 
+                  </p>
+                   <p>M/s My Dental Plan Healthcare Pvt. Ltd. to their clients, for dental care / check ups / treatments / procedures etc. to the clients / individual / corporate houses / members / Enrolees / subscribers and with the said intent and the company hereto are entering into this present agreement with the terms and conditions set out herein.</p></div>
+
+             
+
+                
+       
+                  <div class="container-fluid">    <h1 >DEFINITIONS</h1>
+                    <p>Certain words whenever used in this Agreement, the following terms shall have the definitions contained in this Definition clause; rest of the words shall have their true sense and meanings as per common knowledge. Singular includes plural and gender includes vice versa in the same sense. </p>
+
+                      <P ><strong>Agreement </strong>is this Provider Agreement between M/s My Dental Plan Healthcare Pvt. Ltd. and Provider and any amendments, exhibits and attachments thereto.</P>
+
+                      <P><strong>Associate Dentists and Practitioners </strong> are the persons / individuals who are working with and under instructions of the Provider.</P>
+
+                      <P><strong>Capitation Fee </strong> is the predetermined monthly portion of the Subscriber premium which may be payable to Provider (where applicable) by the company in consideration of services that may be provided under this agreement.  </P>
+
+                      <P><strong> Commencement Date  </strong> is the commencement date of this Agreement will be as dated above.</P>
+
+                      <P><strong> Copayment  </strong> is a fee that may be charged to subscribers for certain dental services and collected by Provider at the time covered dental services are provided, as set forth in the dental plans under copayment. Provider shall charge and retain copayments for those specified covered dental services. </P>
+
+                      <P><strong> Corporate House / Group  </strong> means any employer, company, institution, agency, trust, fund, firm or any other organization entering into an Agreement with the Company for availing services as mentioned in this agreement and for which the provider is obliged and committed under this present agreement.</P>
+
+                      <P><strong>  Covered Dental Services </strong> are those dental services which are required by a client / person referred by the Company, under dental plan chosen by client / person.</P>
+
+                      <P><strong>  Dentist </strong> is any person or entity licensed to practice dentistry which includes the provider himself and any person employed by or associated with provider.</P>
+
+                      <P><strong> Employee  </strong>  means any person who is under employment of any corporate house.</P>
+
+                      <P><strong> Emergency Services  </strong> are covered services for the sudden and unexpected onset or occurrence of a symptom, illness, or dental condition or injury which requires immediate diagnosis and/or treatment in order to alleviate or attempt to prevent severe pain, permanent disability, or dental complication.</P>
+
+                      <P><strong>  Individual </strong>means any person or employee of any corporate house enrolled with M/s My Dental Plan Healthcare Pvt. Ltd.  </P>
+
+                      <P><strong> Plan  </strong> is any one of the dental healthcare plans or products administered by M/s My Dental Plan Healthcare Pvt. Ltd.</P>
+
+                      <P><strong> Provider Management Software (PMS) </strong> is a cloud-based software exclusively developed as well as managed by the Company and to use in the office of the provider to maintain entire data related to M/s My Dental Plan Healthcare Pvt. Ltd.customers and transaction purposes.</P>
+
+                      <P ><strong> Patient / Client  </strong> is an individual who is or whose employer is enrolled with the Company and as such he/she approached Provider for his/her dental healthcare.</P>
+
+                      <P><strong> Provider </strong>includes Provider, its employees, associates, partners, contractors, franchise, members or any other individuals / persons as may be engaged by the provider in any manner whatsoever.  </P>
+
+                      <P ><strong>Provider Agreement   </strong> is the present service provider agreement and amendments or addendums incorporated into this Agreement, and may be updated from time to time by the Company. Any of the instructions / manuals / communications etc. as may be sent by the Company in connection to the services under this agreement shall remain part and parcel of these present and shall have a binding force unless so intended specifically by the Company in writing. </P>
+
+                      <P><strong>Subscriber   </strong>is an individual / corporate house who has contracted with M/s My Dental Plan Healthcare Pvt. Ltd. for dental healthcare under any of the plan and who is enrolled to the provider.  </P>
+
+                      <P><strong>Client   </strong> is an individual, person, member, enrollees, subscribers, and corporate houses, groups, enrolled with the Company.</P>
+
+                      <P><strong>Subscriber Agreement  </strong>is the agreement between M/s My Dental plan Healthcare Pvt. Ltd. and any client / individual / corporate houses / members / subscribers which describes the services to be provided under the said agreement and for providing the said services Provider hereby make them obliged and committed. </P>
+
+                      <P ><strong>Software   </strong> Means the exclusive software provided by M/s My Dental plan Healthcare Pvt. Ltd. to Provider to maintain detailed information record of clients/ individual/ corporate houses / members / Enrollees / subscribers etc.</P>
+
+                    
+
+
+                    </ol></div>
+
+
+
+
+
+
+
+ <div class="container-fluid"> 
+<center  ><strong>WHEREAS based on the aforesaid representations and assurances given by Provider, the Parties hereto are entering into this present service provider agreement as under;</strong></center>
+
+
+
+                 
+                   
+
+                      <p>1. That the Provider hereby specifically agrees to provide Dental Healthcare Services to the clients of M/s My Dental plan Healthcare Pvt. Ltd., as set forth in the applicable Addendum or communicated otherwise by the Company, in accordance with the terms of this Agreement (Provider agrees to abide by the discounts, benefits and coverage's, and exclusions and limitation as may be set forth by the Company in any Addendum or communicated otherwise. The primary concern of Provider shall be the quality, as per satisfaction of the Company, of the Services provided to the patients. Nothing stated in this Agreement shall be interpreted to diminish this responsibility. The provider shall provide all the services by duly licensed, certified or otherwise authorized professional personnel and shall maintain high standards of discipline while abiding by all the norms, regulations, guidelines and applicable law. </p>
+
+
+
+                      <p>2. That the provider may sell individual plans from their office / clinic to any individual, when M/s My Dental Plan Healthcare Pvt. Ltd., decides and authorizes the provider to do so. </p>
+
+                      <P>3. Provider Management Software (PMS) developed by M/s My Dental Plan Healthcare Pvt. Ltd. shall be installed in the office / clinic of the provider and the provider shall always maintain the entire patients data / record on the said software program as installed by the Company. As long as the provider remains in relation with the Company under these presents will not be charged Rs 24,000 per annum, but instead this will be added in the administration / maintenance fee, along with billing, account receivables etc.</P>
+
+                      <P>4. That the introductory administration fee / service charges of 15% for the first year inclusive of transaction fees of the total amount charged from any individual / patient. The entire payment from any patient / individual shall be received in bank accounts of the Company through payment gateway in the PMS provided by the Company which after deduction of the administration fee / services charges and applicable taxes shall reimburse the entire remaining amount to the Provider within 7 working days.</P>
+
+                      <P>5. That the Provider will be seeing patients who have Dental Insurance from either a part of Medical Insurance or some amount covered by their corporations with different limits of procedures covered and amounts. For these patients, Provider will first take prior Authorization from M/s My Dental Plan Healthcare Pvt. Ltd., through PMS. After receiving the approval, provider will do the needful and submit the claim form through the PMS for Reimbursement, which will be made payable within 30days of submitting the claim</P>
+
+                      <P >6. That Provider shall not receive any payment in cash and since there will be no cash transactions all the payments shall be received only through payment gateway provided by the Company for the said purposes which shall carry introductory transaction fee of 2.5% in addition and except from that there will be no monthly / minimum / hidden / machine rental charges / fee shall be payable at all. This fee is inclusive in the administration fees /  service charges in the first year</P>
+
+                      <P >7. That Provider can use the Company's PMS and Payment Gateway for Providers other patients also. There will not be any Administration fees / services charges, for those patients but only transaction fees of 2.5% will be deducted and payment will be made within 4 working days.</P>
+
+                      <P>8. That the provider may charge copayments from the concerned patient as per the copayments of dental plans as may be communicated by M/s My Dental plan Healthcare Pvt. Ltd. in writing from time to time or as per reflected on PMS billing system. The Company shall at its own discretion and without any interruption solely perform administrative, accounting, enrollment, eligibility verification, fixation of charges / fees and other functions necessary for the administration and operation of any of its Plan.</P>
+
+                      <P >9. That the Provider shall perform dental services for clients of M/s My Dental Plan Healthcare Pvt. Ltd., which are enrolled with it. In such cases, the charge shall not exceed the amount(s) as set forth by the Company, Provider shall receive by himself complete payment of the copayment through PMS and Payment gateway and shall allow the discounts as may be required / communicated by the Company and no additional amount shall be charged. Here it is made clear that these charges are not the responsibility of the Company and shall be paid, by the patient directly to the Provider rendering the service through PMS and Payment gateway. The Company shall not be responsible to entertain or provide any claim forms from non-insurance patients and or payments in lieu of any treatment rendered by the provider.</P>
+
+                      <P>10. That the Company will make reasonable efforts to market the Plan. Provider agrees that M/s My Dental Plan Healthcare Pvt. Ltd., in its discretion, may use Provider's information which may include but not be limited to name, address and telephone number as well as the names, addresses and telephone numbers and specialties of Provider in Plan's marketing and informational materials including, without limitation, Plan's directory of Participating Dentists. Nothing in this Agreement shall be deemed to require the Company to conduct any specific marketing activities on behalf of Provider or to identify Provider in any specific marketing or informational materials. It is only M/s My Dental Plan Healthcare Pvt. Ltd. who shall be responsible for enrollment of clients to any plan at its sole discretion and the provider shall not interfere in the said matter and the provider shall be providing their services to fulfill commitments made by M/s My Dental Plan Healthcare Pvt. Ltd. to any client. Nothing in this Agreement shall be construed to require the Company to assign any minimum or maximum number of patients to the Provider. The Company hereto shall solely be responsible for establishing benefits, premiums and Copayments and for interpreting the terms of and making final coverage determinations under each Subscriber Agreement. Changes in any terminology or procedure codes shall not alter the scope of benefits, applicable copayments, or render services not covered. It is specifically understood by Provider that the benefits, terms and conditions of the Plan may be changed from time to time during the term of this Agreement and that M/s My Dental Plan Healthcare Pvt. Ltd. may enter into any number of Subscriber Agreements for new Plans during the term of this Agreement and that Provider may be required to provide Services to any number of new subscribers enrolled by the Company. </P>
+
+                      <P>11. That this Agreement applies to all programs provided for clients under contracts entered into with M/s My Dental Plan Healthcare Pvt. Ltd. This Agreement will become effective on the commencement date and will remain in effect for an initial term of 60 consecutive months and may be renewed on such terms and conditions and for such further duration as may specifically be agreed between the parties. However, either party may terminate this Agreement for cause after giving the defaulting party notice of said default by registered post to the addresses as mentioned above while categorically mentioning the said intent to terminate and granting said defaulting party a minimum period. In case of M/s My Dental Plan Healthcare Pvt. Ltd.
+                        <p > if intending to terminate these presents, the Company shall give a notice of minimum 15 (Fifteen) days to cure the default. In case such default is not cured within the said period this agreement will automatically come to an end on expiry of the said notice period. Here it is made clear that Provider's obligations under this Section/ Agreement shall survive the termination of this Agreement with respect to Services provided during or after the term of this Agreement, regardless of the cause-giving rise to such termination. In the event of termination of this Agreement for any reason, Provider shall continue to provide Services to clients of M/s My Dental Plan Healthcare Pvt. Ltd. beginning on the effective date of termination and continuing until the termination, at the defined copayment amounts, unless the Company transferred the Members to another Provider. However, in case of Provider if intending to terminate these presents, Provider shall give a notice of minimum three (3) months in writing and in the said event M/s My Dental Plan Healthcare Pvt. Ltd. shall withhold the said three months' capitation fee to ensure, provide gives quality care to subscribers. The said fee will be paid at the end of three months or thereafter.</p></P>
+
+                      <P>12.That Provider shall allow the Company, for making and affixing the sign board of the Company, on their Clinic/Hospital.</P>
+
+                      <P >13. The parties hereto agree that the following criteria and shall be required to be maintained by the provider and their associates.
+
+                  
+
+                              <P>a. Provider and their associate are holding requisite qualification, eligibility, permissions, approvals or licenses as are required under the law for the performance of their obligation / duty / job / services during the course of performing any act pursuant to this present agreement.</P>
+
+                               <P>b. Provider's clinic / hospital is easy to locate and its entrance is well marked. Provider's office / clinic / hospital shall be available to clients of the Company at all times during working hours.</P>
+
+                               <P >c. Provider shall have less than three days accessibility available to all clients and the waiting time generally not to exceed 15 minutes. Emergency patients shall be seen by the provider or associate on the same day. </P>
+
+                               <P>d. In case the Plan requires providers to have a timely recall system for any client. The said client should be recalled within the specified time.</P>
+
+                               <P>e. Documents related to a particular Plan shall be furnished to the provider from time to time either in hard copy or through electronic communications such as mails.</P>
+
+                               <P>f. The Company can Audit physically, Provider's Dental premises/ office/ clinic/ hospital record/patient records etc. at any time during the term of this agreement.</P>
+
+                                <P>g. Provider shall obtain adequate liability insurance and shall maintain the same during the entire tenure.</P>
+
+                                <P>h. Provider shall always remain responsible for all the acts and liabilities whatsoever for the services they have provided.</P>
+
+                                
+                             
+                       
+                        
+
+
+                
+
+                      <P>14. That Provider shall remain responsible for possessing all the Dental / Medical as well as other equipments and the same shall always be kept in good and well-maintained conditions. The provider shall be responsible for taking adequate measures with respect to mercury safety and to the protection from X-Ray or from any other harmful radiation as per applicable standards. The provider shall keep the exterior of the building well maintained, providing clean entrances and hallways. The clinic / hospital shall remain clean in its appearance and proper hygiene shall be maintained as per the applicable norms and standards. The waiting area must be comfortable, clean, and professional in appearance. It must have adequate seating and the office staff must exhibit a professional and courteous attitude towards the patients.</P>
+
+                      <P >15. That Provider shall always use adequate and prescribed methods of sterilization as per the current prevailing norms and recent scientific recommendations. Provider will use of biological monitors for the sterilization unit. Provider may, as per the requirement, use Autoclave / dry heat sterilizer / chemical soak / cold sterilization solution containing 2% glutaraldehyde solution. Provider shall take due care of verification of ultrasonic unit, verification of sealed, non-punctured, color indicator activated and dated sterilization bags for all surgical instruments, verification of sealed, non-punctured, color indicator activated and dated sterilization bags for all periodontal instruments, verification of sealed, non-punctured, color indicator sterilization bags for all basic, non-surgical instruments, verification of dated sterilization bags (30 day limit for sterilized seal), verification of utility glove use for sterilization, verification of tray breakdown procedures used by office staff.</P>
+
+                      <P >16. That Provider shall always keep and maintain the clinic / hospital well equipped and follow disinfection process from time to time. The provider shall always ensure measures for patient safety precautions, barrier techniques such as use of gloves, gowns, masks and eye protection covers/Barrier tape on chair and equipment for each patient. The provider shall take every precaution and follow norms regarding medical, infectious and every other kind of waste disposal.</P>
+
+                      <P>17. That the provider shall maintain adequate staff, laboratory facilities and equipment, and to properly perform services required hereunder. The provider shall always maintain its clinic / hospital in consonance with the applicable local municipal law with respect to building, construction, use of the premises, fire fighting and other requirements / guidelines / norms. Any kind of medical emergency shall also be meted out by the provider solely. </P>
+
+                      <P >18. That the Provider hereby assures M/s My Dental Plan Healthcare Pvt. Ltd. that Services shall be provided to patients / members in the same manner and same quality care, as such Services are provided to any other patients in their clinic, except as required pursuant to this Agreement. Provider shall not unlawfully discriminate against any patient Member on the basis of source of payment or in any other manner in regard to access to, and the provision of, Services. Provider shall not unlawfully discriminate against any Member, employee or applicant for employment on the basis of race, religion, color, national origin, ancestry, physical handicap, medical condition, marital status, age, sex or sexual orientation.</P>
+
+                      <P >19. That provider shall maintain proper medical records and history of patients / clients as may be sent by the Company including the date of examinations / treatments / sittings etc., name of physician, phone number, date of last physical examination, and whether patient is under physician's care. Nature of treatments or medications that the patient is given / advised / taking and the amount so charged in lieu of the same from the concerned individual client / patient. If patient has ever been pre-medicated with antibiotics for dental treatment. Patient allergies to penicillin, tetracycline, sulfa drugs, aspirin, codeine, or other drugs, should be documented. Whether patient having had heart surgery, joint replacement, or use of a cardiac pacemaker. Whether there is current pregnancy and its duration or patient takes birth control pills or past history of menstrual problems.</P>
+
+                      <P>20. That in addition to the above the patient / client record must show his/her dental history including date and reason of last dental treatment, reason of the patient's dental visit and patient's major complaint types of previous dental treatment complications, tempromandibular Joint Dysfunction history, sensitivity of teeth, current or past reaction to dental anesthetics or any other medical alert information.</P>
+
+                      <P >21. That the provider shall maintain dental examination record of patient / client providing his/her clinical observations including the information related to missing teeth, existing restorations and prosthetic appliances, their age and condition, defective restorations, oral cancer check, blood pressure readings, problems of Temporo mndibular Joint Dysfunction, problems with clenching, grinding of teeth, and/or clicking of jaw joints, evaluation of all soft tissues of the head, neck, palate, tongue, and lips, frequency of radiation based on national or state dental associations' recommendations, oral hygiene instructions, impacted teeth. Periodontal evaluations should be made at initial visit. Patient's periodontal health should be assessed, pocket probing, tooth mobility, as well as moderate or advanced periodontal disease should be specified.</P>
+
+                      <P >The record of any patient / client should have a specific mentioning about periodontal probing, furcation's, mobility, gingival recession, and gingival conditions. Failed endodontic procedures should be mentioned. All referrals to specialists in oral surgery, pedodontics, endodontics, periodontics, prosthodontics, oral pathology, oral medicine, oral Radialogy and orthodontics should be mentioned. Provider shall be doing all such referrals only after having written consent M/s My Dental Plan Healthcare Pvt. Ltd. with respect to any such referral to a particular specialist. Optional treatment or upgraded treatment should be discussed with the patient and approved by him accordingly. The patient should be aware of all costs and all future visits in choosing one type of treatment over another. Consent and signature of patient's choice of treatment should be documented in his/her file.</P>
+
+                      <P >22. That the Provider, at its sole cost and expense, shall maintain throughout the term of this Agreement and for a period of four years following termination of this Agreement, a professional liability insurance i.e., medical mal-practice insurance covering adequate amount with respect to any claim or claims that may arise out of, or as a result of any alleged malpractice, negligence, acts or omissions caused or alleged to have been caused by Provider, its staff, agents or employees in the performance of, or omission of, any duty assumed by Provider, its staff, agents or employees and Associate Dentists hereunder or in connection herewith. Provider, at its sole cost and expense, shall also maintain throughout the term of this Agreement, adequate worker's compensation insurance as required and general liability insurance, including but not limited to premises, personal injury and contractual liability insurance. </P>
+
+
+                      <P >23. That the Provider shall provide access at reasonable times upon demand by M/s My Dental Plan Healthcare Pvt. Ltd. or its authorized representatives / officers for inspection or to periodically audit or inspect the facilities, offices, equipment, books, documents and records of Provider relating to the performance of this Agreement and the Services provided to Members, including, without limitation, all phases of professional and ancillary dental care provided to clients / individual / corporate houses / members / Enrollees / subscribers etc. sent by Provider, member / patient dental records and financial records pertaining to the cost of operations and income received by Provider for Services rendered to members / patient. Provider shall comply with any requirements or directives issued by M/s My Dental Plan Healthcare Pvt. Ltd., as a result of such evaluation, inspection or audit of Provider. The provisions of this Section shall survive termination of this Agreement. All the wrongful billings or over billings or receipts of any payment apart from the payments as shown in the records of PMS or any of the cash / unbilled transactions or any of the transactions / payments not processed through the gateway of the Company shall be treated as fraud for which the Provider shall remain solely responsible and shall be liable to pay the entire received amount related to the said payments / transaction and will be expelled from the provider network. </P>
+
+                      <P>24. That Provider shall defend, indemnify and hold harmless, and shall cause indemnify and hold harmless M/s My Dental Plan Healthcare Pvt. Ltd. and its directors, officers, employees, affiliates and agents against any claim, loss, damage, cost, expense or liability arising out of or related to the performance or nonperformance or negligence or any deficiency in service committed by Provider or Associate Dentists or their respective employees or agents of any Services to be performed or arranged by Provider under this Agreement. All the disputes or controversies or claims between Provider and a patient arising out of any of the acts of the Provider or Associate Dentists, other than claims for benefits shall be sole responsibility of the provider only. M/s My Dental Plan Healthcare Pvt. Ltd. shall defend, indemnify and hold harmless Provider and its directors, officers, employees, affiliates and agents against any claim, loss, damage, cost, expense or liability arising out of or related to the performance or nonperformance by M/s My Dental Plan Healthcare Pvt. Ltd., its employees or agents of any services to be performed by M/s My Dental Plan Healthcare Pvt. Ltd. under this Agreement.</P>
+
+                      <P>25. That all the disputes, controversies, or claims arising out of the interpretation, performance or breach of this Agreement or any other differences arising out of this agreement or any part thereof or in relation to any transaction arising out of this agreement shall be referred to any person / sole arbitrator appointed by M/s My Dental Plan Healthcare Pvt. Ltd. whose decision shall remain final and binding on both the parties. The arbitration proceedings will be governed by the provisions of the Arbitration and Conciliation Act, 1996 with all the modifications for the time being in force. The arbitration proceedings will be conducted in English language at Jaipur city only. The courts of Jaipur city shall only have jurisdiction in case of disputes of any kind whatsoever.</P>
+
+
+                      <P >26. That Mr. Lokesh Atrey, Advocate having office at 305, 3rd Floor, 'Paradise', Behind Hotel Park Prime Near Statue Circle, Sarojini Marg, C Scheme, Jaipur, is the counsel for M/s My Dental Plan Healthcare Pvt. Ltd. or the professionals or experts as may be engaged from time to time.</P>
+
+                      <p>27 That the Provider shall maintain confidential all information provided to it by the Company while performing under this agreement including the Eligibility List and any other information containing the names, addresses and telephone numbers of clients / individual / corporate houses / members / Enrollees / subscribers of M/s My Dental Plan Healthcare Pvt. Ltd., lists or documents compiled by the Company which include the names, addresses and telephone numbers of employees and employers, any manual or any Plan or any financial arrangements between M/s My Dental Plan Healthcare Pvt. Ltd. and Provider. Provider shall not disclose or use any of the Confidential Information for his/her own benefit or gain either during the term of this Agreement or after the date of termination of this Agreement</p>
+
+
+                      <P>29. That any waiver by either party to this Agreement of a breach or violation of any provision of this Agreement shall not operate as or be construed to be a waiver of any subsequent breach or violation thereof. </P>
+
+                      <P>30. That this Agreement, including all exhibits, attachments and amendments hereto, contains all the terms and conditions agreed upon by the parties regarding the subject matter of this Agreement. Any prior agreements, promises, negotiations or representations of or between the parties, either oral or written, relating to the subject matter of this Agreement, which are not expressly set forth in this Agreement are null and void and of no further force or effect. However, any subsequent communications sent or generated by M/s My Dental Plan Healthcare Pvt. Ltd. and the exhibits and attachments to this Agreement and the Provider Manual are an integral part of this Agreement and are incorporated in full herein by this reference.</P>
+
+
+                      <P>31. That in case of any complaint by the subscriber regarding treatment, provision for second opinion, audits etc. the same shall be referred to the peer review committee established for this purpose and Provider shall abide by all the decision may be taken by any of them.</P>
+
+                      <P >32. That the provider shall regularly, i.e. on completion of end of each day, upload all the details including the treatments rendered to the any clients / individual / corporate houses / members / Enrollees / subscribers etc., along with all the radiographs as well as all the details of charged money/ payments/ fees etc. to the software as provided by M/s My Dental Plan Healthcare Pvt. Ltd.</P>
+
+
+                      <P> 33. That the software will be provided to Provider at no initial cost, but its regular maintenance cost as may be specified from time to time shall have to be paid by Provider on a monthly or yearly basis, as may be decided by the company, if Provider does not remain with the company.</P>
+
+                      <P>34. That the Company and Provider both shall bear equally the expenses of registration of these presents</P>
+
+                     
+               <center><strong>HENCE both the parties hereto now hereby set and subscribe their respective hands and seals on this SERVICE PROVIDER AGREEMENT on this day, month and the year as mentioned.</strong></center>
+
+             
+                </div>
+       
+</div>
+
+
+          <div class="container-fluid">
+            <br><center>{{=form.custom.widget.pa_approved}}<button type="submit" class="btn btn-Success color">Approve</button></center>
+            
+            <input type="button" value="Print Div Contents" id="btnPrint" />
+          </div>
+          
+<div style="display:none">
+{{=form.custom.widget.pa_accepted}}
+{{=form.custom.widget.submit}}
+</div>          
+{{=form.custom.end}}           
+    <!--</form>-->
+</body>
+</html>
