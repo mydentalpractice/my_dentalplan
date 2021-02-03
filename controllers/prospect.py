@@ -11,7 +11,9 @@ import datetime
 
 from applications.my_pms2.modules  import common
 from applications.my_pms2.modules  import mail
+from applications.my_pms2.modules  import mdpuser
 from applications.my_pms2.modules  import mdpprospect
+from applications.my_pms2.modules  import mdpprovider
 from applications.my_pms2.modules  import logger
 
 
@@ -389,7 +391,7 @@ def prospectagreement():
     
     if form.accepts(request,session,keepvalues=True):
         
-        id = db.provider.update_or_insert(db.provider.id == providerid, \
+        id = db.prospect.update_or_insert(db.prospect.id == prospectid, \
                                      pa_providername = common.getstring(form.vars.pa_providername),\
                                      pa_parent = common.getstring(form.vars.pa_parent),\
                                      pa_address = common.getstring(form.vars.pa_address),\
@@ -639,15 +641,43 @@ def enroll_prospect():
     ppt = mdpprospect.Prospect(db)
     rspobj = json.loads(ppt.get_prospect({"prospectid":str(prospectid)}))
     rspobj = json.loads(ppt.enroll_prospect(rspobj))
+    
+    providerid = int(common.getkeyvalue(rspobj,"providerid","0"))
+    
+    
+    prv = mdpprovider.Provider(db,providerid)
+    rspobj = prv.get_provider({"providerid":str(providerid)})
+    rspobj = json.loads(rspobj)
+    
+    if(rspobj["result"] == "fail"):
+        rspobj["error_message"] = rspobj["error_message"] + "\n" + "Error in Enroll Prospect - get Provider"
+        return json.dumps(rspobj)
+    
+    sitekey = common.getkeyvalue(rspobj,"sitekey","")
+    email = common.getkeyvalue(rspobj,"email","")
+    username = common.getkeyvalue(rspobj,"provider","")
+    password = common.getkeyvalue(rspobj,"provider","")
+
+    usr = mdpuser.User(db, auth, rspobj["provider"], rspobj["provider"])
+    rspobj = usr.provider_registration(request, rspobj["providername"], rspobj["sitekey"], rspobj["email"], 
+                                      rspobj["cell"], 
+                                      rspobj["registration"],
+                                      rspobj["provider"],
+                                      rspobj["provider"],
+                                      "Provider")
+    
+    rspobj = json.loads(rspobj)
     returnurl = URL('prospect', 'list_prospect')
     retval = False
-    
+    error_message = ""
+
     if(rspobj["result"] == "success"):
         retval = True
-        redirect(URL('prospect','emailregister',vars=dict(prospectid=prospectid)))
+        retval = mail.emailProviderLoginDetails(db,request,siteky,email,username,password)
+       
     else:
         retval = False
-        error_message = "Error in enrolling the Prospect \n"+ rspobj["error_message"]
+        error_message = rspobj["error_message"]
     
     return dict(username=username,returnurl=returnurl,providername=providername, practicename=practicename,retval=retval,error_message=error_message)
 
