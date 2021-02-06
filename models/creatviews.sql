@@ -8566,11 +8566,28 @@ ADD COLUMN `mediasize` DOUBLE NULL DEFAULT '0' AFTER `mediaformat`;
 
 7. New - bank_details
 
-8  Modify Provider to add Provider status   varchar(45)
+8  Modify Provider to add Provider status   varchar(45),, modify foreign key constraint of providerbank
 
-9.  New - provider_prospect, prospect_ref
+9.  New -  prospect_ref,
 
 10. New activity_log, activity_log_ref
 
 11. New travel_log, travel_log_ref
 
+12. migrate providerbank to bank_details;
+
+truncate bank_details;
+
+INSERT INTO bank_details(providerid,bankname,bankbranch,bankaccountno,bankaccounttype,bankmicrno,bankifsccode)
+SELECT providerid,bankname,bankbranch,bankaccountno,bankaccounttype,bankmicrno,bankifsccode FROM providerbank;
+
+UPDATE provider AS p INNER JOIN bank_details AS b ON p.id = b.providerid SET p.bankid = b.id
+
+
+5/2/2021
+=========
+
+1. ZZZvw_prescription_groupby_treattment
+2. ZZZZvw_procedure_groupby_treatment
+3. ZZZZvw_abhicl_report_group
+4. vw_abhicl_report

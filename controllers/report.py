@@ -18,14 +18,9 @@ from applications.my_pms2.modules  import logger
 
 from applications.my_pms2.modules  import mdpabhicl
 
-#from gluon.contrib import account
-#from gluon.contrib import mail
-#from gluon.contrib import common
-#from gluon.contrib import cycle
-#from gluon.contrib import logger
+from cStringIO import StringIO
 
-
-
+import csv 
 import os
 import urllib2
 import calendar
@@ -33,6 +28,39 @@ import time
 
 months = ['January','February','March','April','May','June','July','August','September','October','November','December']
 
+
+
+class CSVExporter(object):
+    """This class is used when grid's table contains reference key id.
+       Exported CSV should contain reference key name of reference
+       key not ids"""
+    file_ext = "csv"
+    content_type = "text/csv"
+
+    def __init__(self, rows):
+        self.rows = rows
+
+    def export(self):
+        db = current.db
+        if self.rows:
+            s = StringIO()
+            csv_writer = csv.writer(s)
+            # obtain column names of current table
+            col = self.rows.colnames
+            # col contains list of column names
+            # e.g: ["employee.id", "employee.name",
+            #       "employee.email", "employee.company"]
+            # get only attribute names i.e id, name, email, company
+            heading = [c.split('.')[-1].upper() for c in col]
+            # Write explicitly the heading in CSV
+            csv_writer.writerow(heading)
+            # don't write default colnames
+            self.rows.export_to_csv_file(
+                s, represent=True, write_colnames=False)
+            return s.getvalue()
+        else:
+            return ''
+        
 def migrate_dependants(webmemberid, companyid, planid, regionid):
     
     logger.logger.info("===================Enter migrate_dependants=======================================")
@@ -3683,6 +3711,187 @@ def relgrinvoicereportparams():
         
     
     return dict(username=username,returnurl=returnurl,form=form,formheader=formheader)
+
+@auth.requires_login()
+def abhiclreportparams():
+    
+    username = auth.user.first_name + ' ' + auth.user.last_name
+    formheader = "ABHICL  Report"
+        
+    form = SQLFORM.factory(
+        Field('company', default="ABHI",requires=IS_EMPTY_OR(IS_IN_DB(db(db.company.is_active == True), db.company.company, '%(company)s : %(name)s'))),
+        Field('provider', requires=IS_EMPTY_OR(IS_IN_DB(db(db.vw_rlgprovider.is_active == True), db.vw_rlgprovider.id, '%(providercode)s : %(providername)s'))),
+        Field('fromdate',
+        'date',widget = lambda field, value:SQLFORM.widgets.date.widget(field, value, _style='height:30px'), label='From Date',default=request.now,length=20,requires = IS_DATE(format=T('%d/%m/%Y'),error_message='must be d/m/Y!')),        
+        Field('todate',
+        'date',widget = lambda field, value:SQLFORM.widgets.date.widget(field, value, _style='height:30px'), label='To Date',default=request.now,length=20,requires = IS_DATE(format=T('%d/%m/%Y'),error_message='must be d/m/Y!')),        
+        Field('status', default="ALL", requires=IS_IN_SET(['ALL','Started','Completed']))    
+    )
+   
+    
+    submit = form.element('input',_type='submit')
+    submit['_style'] = 'display:none;'
+    
+    returnurl=URL('default','index')
+    
+    if form.accepts(request,session,keepvalues=True):
+        providerid = 0 if(form.vars.provider == None) else int(common.getid(form.vars.provider))
+           
+        fromdate = form.vars.fromdate
+        todate = form.vars.todate
+        
+        status = form.vars.status 
+        
+        company = form.vars.company
+
+        redirect(URL('report','abhiclreportcsv',\
+             vars=dict(company=company,providerid=providerid,\
+                       fromdate=fromdate,\
+                       todate=todate,\
+                       status = status)))     
+                
+    elif form.errors:
+        response.flash = "Error - ABHICL Report! " + str(form.errors)
+        redirect(returnurl)
+        
+    
+    return dict(username=username,returnurl=returnurl,form=form,formheader=formheader)
+
+#View: vw_abhicl_report_group
+#Columns:
+#id int(11) 
+#treatmentid int(11) 
+#treatment varchar(64) 
+#startdate date 
+#enddate date 
+#status varchar(45) 
+#chiefcomplaint varchar(128) 
+#Attending_Doctor varchar(128) 
+#procedure_code text 
+#tooth text 
+#quadrant text 
+#description text 
+#prescription text 
+#providerid int(11) 
+#providercode varchar(20) 
+#is_active char(1) 
+#memberid int(11) 
+#companyid int(11) 
+#company varchar(24)
+
+def abhiclreportcsv():
+    logger.loggerpms2.info("Enter ABHICL Report CSV")
+    username = auth.user.first_name + ' ' + auth.user.last_name
+    formheader = "ABHICL Report"
+    returnurl=URL('default','index')
+    
+    providerid    = int(common.getid(request.vars.providerid))
+    
+   
+    
+    fromdate = datetime.datetime.strptime(request.vars.fromdate,"%Y-%m-%d")
+    todate = datetime.datetime.strptime(request.vars.todate,"%Y-%m-%d")
+ 
+    status = request.vars.status
+    company=request.vars.company
+    
+    
+   
+    
+    
+    if(providerid == 0):
+        query = ((db.vw_abhicl_report_group.startdate >= fromdate) & (db.vw_abhicl_report_group.startdate <= todate)&\
+               (db.vw_abhicl_report_group.is_active == True))
+        
+    else:
+        query = ((db.vw_abhicl_report_group.providerid== providerid) & (db.vw_abhicl_report_group.startdate >= fromdate) & (db.vw_abhicl_report_group.startdate <= todate) & \
+                (db.vw_abhicl_report_group.is_active == True))
+        
+    
+    if(status == "ALL"):
+        query = query & ((db.vw_abhicl_report_group.status == "Started")|(db.vw_abhicl_report_group.status == "Completed"))
+    else:
+        query = query & ((db.vw_abhicl_report_group.status == status))
+        
+    query = query & ((db.vw_abhicl_report_group.company == company))
+    
+    logger.loggerpms2.info("ABHICL CSV query "  + str(query))    
+
+   
+   
+    fields = (
+              db.vw_abhicl_report_group.treatmentid,
+              db.vw_abhicl_report_group.treatment,
+              db.vw_abhicl_report_group.startdate,
+              db.vw_abhicl_report_group.enddate,
+              db.vw_abhicl_report_group.status,
+              
+              db.vw_abhicl_report_group.chiefcomplaint,
+              db.vw_abhicl_report_group.Attending_Doctor,
+              db.vw_abhicl_report_group.procedure_code,
+              db.vw_abhicl_report_group.procedure_name,
+              db.vw_abhicl_report_group.tooth,
+              db.vw_abhicl_report_group.quadrant,
+              
+              db.vw_abhicl_report_group.doctor_notes,
+              db.vw_abhicl_report_group.prescription
+              
+    )
+    
+    
+    headers = {
+        'vw_abhicl_report_group.treatmentid':'Unique ID',
+        'vw_abhicl_report_group.treatment':'Treatment ID',
+        'vw_abhicl_report_group.startdate':'Treatment Start',
+        'vw_abhicl_report_group.enddate':'Treatment Completed',
+        'vw_abhicl_report_group.status':'Status',
+        
+        'vw_abhicl_report_group.chiefcomplaint':'Chief Complaint',
+        'vw_abhicl_report_group.Attending_Doctor':'Attending Doctor',
+        'vw_abhicl_report_group.procedure_code':'Procedure Code',
+        'vw_abhicl_report_group.procedure_name':'Procedure Name',
+        'vw_abhicl_report_group.tooth':'Tooth',
+        'vw_abhicl_report_group.quadrant':'Quadrant',
+        
+        'vw_abhicl_report_group.doctor_notes':'Doctor Notes',
+        
+        'vw_abhicl_report_group.prescription':'Prescriptiion'
+        
+        
+        }
+    
+   
+
+    
+    maxtextlengths = {'vw_abhicl_report_group.procedure_name':100,'vw_abhicl_report_group.doctor_notes':100}
+    orderby = None #db.vw_abhicl_report_group.treatment | db.vw_abhicl_report_group.startdate 
+    exportlist = dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False, xml=False)    
+    
+    
+    export_classes = dict(csv=(CSVExporter, 'CSV'), json=False, html=False,
+                          tsv=False, xml=False, csv_with_hidden_cols=False,
+                          tsv_with_hidden_cols=False)    
+
+    
+    formPayments = SQLFORM.grid(query=query,
+
+                                headers=headers,
+                                fields=fields,
+                                paginate=10,
+                                maxtextlength = 20,
+                                csv=True,
+                                exportclasses=export_classes,
+                                links_in_grid=False,
+                                searchable=False,
+                                create=False,
+                                deletable=False,
+                                editable=False,
+                                details=False,
+                                user_signature=True
+                               )           
+    
+    return dict(formPayments=formPayments,username=username,formheader=formheader, returnurl=returnurl)
+
 
 
 #@auth.requires_login()
