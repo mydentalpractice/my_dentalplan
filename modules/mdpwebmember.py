@@ -55,6 +55,10 @@ class Webmember:
       
       return json.dumps(propobj)  
 
+
+  def getrelationsbycompanyplan(self,companyid,planid):
+    db = self.db
+    
   def getplansbyregion(self, regionid,companyid):
     db = self.db
     
@@ -234,7 +238,7 @@ class Webmember:
         webmemobj["pin2"] = common.getstring(webmem[0].pin2)
         webmemobj["pin3"] = common.getstring(webmem[0].pin3)
         webmemobj["memberorder"] = "1" if(common.getstring(webmem[0].memberorder) == None) else str(int(common.getid(webmem[0].memberorder)))
-        
+        webmemobj["relations"] = False if(relations < 1) else True
 
         regionlist = []
 	regionobj  = {}
@@ -250,8 +254,9 @@ class Webmember:
 	     "region":region.region
 	  }
 	  regionlist.append(regionobj)
-	  
-
+	
+	webmemobj["regions"] = regionlist
+	
 	planlist=[]
 	planobj = {}
 	
@@ -269,8 +274,21 @@ class Webmember:
 	  }
 	  planlist.append(planobj)
 	
-	webmemobj["regions"] = regionlist
 	webmemobj["plans"] = planlist
+	
+	relationlist=[]
+	relationobj={}
+	relations = db((db.companyhmoplanrate.company == companyid) & \
+		               (db.companyhmoplanrate.hmoplan == planid) & \
+	                       (db.companyhmoplanrate.groupregion == regionid) & \
+		               (db.companyhmoplanrate.relation != 'Self') & \
+		               (db.companyhmoplanrate.is_active == True)).select(db.companyhmoplanrate.relation)
+	             
+	for rel in relations:
+	  relationlist.append(rel.relation)
+	  
+	webmemobj["relationlist"] = relationlist
+	
         
        
 	
@@ -736,8 +754,8 @@ class Webmember:
 	responsecode = "Premium Payment"
 	txid = db.paymenttxlog.insert(txno=txno,txdatetime=txdatetime,webmember=webmemberid,txamount=totyoupay,total=total,servicetax=servicetaxes,swipecharge=swipecharges,responsecode=responsecode,responsemssg=paymentdetails )
 	
-	db(db.webmember.id == webmemberid).update(webenrollcompletedate = datetime.date.today(),paid=True,status='Completed')
-	db(db.webmemberdependants.webmember == webmemberid).update(paid=True)
+	db(db.webmember.id == webmemberid).update(webenrollcompletedate = datetime.date.today(),status='Attempting')
+	#db(db.webmemberdependants.webmember == webmemberid).update(paid=True)
 	
 	
 	ppobj = {
@@ -1111,6 +1129,7 @@ class Webmember:
 	payobj["error_message"] = ""
 	
 	#update payment txlog
+	#logger.loggerpms2.info("Capture Webmember Razor Payment  updating payment tx log")
 	txid = int(common.getid(newpayment["txid"]))
 	db(db.paymenttxlog.id == txid).update(\
 	  
@@ -1126,15 +1145,19 @@ class Webmember:
 	  modified_on = common.getISTFormatCurrentLocatTime(),
 	  modified_by =1 if(auth.user == None) else auth.user.id    	)
 	
+	#logger.loggerpms2.info("Capture Webmember Razor Payment updated payment tx log")
 	#update webmember 
 	webmemberid = int(common.getid(newpayment["webmemberid"]))
 	db(db.webmember.id == webmemberid).update(\
-	  
+	  status = "Completed",
 	  paid = True,
 	  modified_on = common.getISTFormatCurrentLocatTime(),
 	  modified_by =1 if(auth.user == None) else auth.user.id    	
 	
 	)
+	#logger.loggerpms2.info("Capture Webmember Razor Payment updated payment webmember")
+	db(db.webmemberdependants.webmember == webmemberid).update(paid=True)	
+	#logger.loggerpms2.info("Capture Webmember Razor Payment updated payment webmemberdependants")
 	
 	jsonresp = payobj
       else:

@@ -411,6 +411,134 @@ def new_customer():
     return dict(formA=formA,username=username, returnurl=returnurl,formheader=formheader,regions=regions, plans=plans,page=page)
 
 
+def new_customer_activity():
+    db = current.globalenv['db']
+    formheader = "Customer Activity" 
+    username = "Admin" 
+    status = "Scheduled"    
+    customerid = int(common.getid(request.vars.customerid))
+    page = common.getpage1(request.vars.page)
+    
+    ds = db((db.customer.id == customerid) & (db.customer.is_active == True)).select()
+    customer = "" if len(ds) != 1 else ds[0].fname + " " + ds[0].lname
+
+    ds = db((db.customeractivity.customerid == customerid) & (db.customeractivity.is_active == True)).select()
+    customer_ref = "" if len(ds) != 1 else ds[0].customer_ref
+    activitydate = datetime.datetime.today() if len(ds) != 1 else ds[0].activitydate
+    status = "" if len(ds) != 1 else ds[0].status
+        
+
+    
+        
+        
+    formA = SQLFORM.factory(
+      Field('customer_id', 'string', default=customerid ),
+      Field('customer', 'string', default=customer),
+      Field('customer_ref', 'string',label='Customer Ref'),
+      Field('activitydate', widget = lambda field, value:SQLFORM.widgets.datetime.widget(field, value, _style='height:30px'),default=datetime.datetime.today(),requires=IS_DATETIME(format=T('%d/%m/%Y %H:%M'))),
+      Field('status','string',represent=lambda v, r: '' if v is None else v, default='Scheduled',label='Status',requires = IS_IN_SET(CUSTACTIVITY)),
+      Field('activity', 'text',represent=lambda v, r: '' if v is None else v, default='', label='Middle',length=50)
+      )
+
+    xcustomerid = formA.element('#no_table_customer_id')
+    xcustomerid['_class'] = 'form-control'
+    xcustomerid['_placeholder'] = 'Title'
+    xcustomerid['_autocomplete'] = 'off'      
+
+    xcustomer = formA.element('#no_table_customer')
+    xcustomer['_class'] = 'form-control'
+    xcustomer['_placeholder'] = 'Title'
+    xcustomer['_autocomplete'] = 'off'   
+
+    xactivitydate = formA.element('#no_table_activitydate')
+    xactivitydate['_class'] = 'form-control'
+    xactivitydate['_placeholder'] = 'Date'
+    xactivitydate['_autocomplete'] = 'off'   
+
+    xstatus = formA.element('#no_table_status')
+    xstatus['_class'] = 'form-control'
+    xstatus['_placeholder'] = 'Date'
+    xstatus['_autocomplete'] = 'off'   
+
+    returnurl = URL('customer','list_customers',vars=dict(page=page))
+ 
+    if formA.process().accepted:
+        activityid = db.customeractivity.insert(**db.customeractivity._filter_fields(formA.vars))
+        db(db.customeractivity.id == activityid).update(customerid = customerid)
+        if(formA.vars.customer_ref == ""):
+            db(db.customeractivity.id == activityid).update(customer_ref = str(activityid).zfill(3))
+        else:
+            db(db.customeractivity.id == activityid).update(customer_ref = formA.vars.customer_ref + ":" + str(activityid))
+        
+        redirect(returnurl)
+
+    elif formA.errors:
+        response.flash = "Error - Creating new customer activity" + str(formA.errors)    
+    
+   
+    
+
+    return dict(formA=formA,username=username, returnurl=returnurl,\
+                formheader=formheader,page=page)
+
+def update_customer_activity():
+    db = current.globalenv['db']
+    formheader = "Customer Activity" 
+    username = "Admin" 
+    status = "Scheduled"    
+    customeractivityid = int(common.getid(request.vars.customeractivityid))
+    page = common.getpage1(request.vars.page)
+    
+    ds = db((db.customeractivity.id == customeractivityid) & (db.customeractivity.is_active == True)).select()
+
+    customerid = 0 if len(ds) != 1 else ds[0].customerid
+    customer = "" if len(ds) != 1 else ds[0].customer
+   
+    customer_ref = "" if len(ds) != 1 else ds[0].customer_ref
+    activitydate = datetime.datetime.today() if len(ds) != 1 else ds[0].activitydate
+    status = "" if len(ds) != 1 else ds[0].status
+    activity = "" if len(ds) != 1 else ds[0].activity
+        
+
+    
+        
+        
+    formA = SQLFORM.factory(
+      Field('customer_id', 'string', default=customerid,writable=False ),
+      Field('customer', 'string', default=customer,writable=False),
+      Field('customer_ref', 'string',label='Customer Ref',default=customer_ref),
+      Field('activitydate', widget = lambda field, value:SQLFORM.widgets.datetime.widget(field, value, _style='height:30px'),default=activitydate,requires=IS_DATETIME(format=T('%d/%m/%Y %H:%M')),writable=False),
+      Field('status','string',represent=lambda v, r: '' if v is None else v, default=status,label='Status',requires = IS_IN_SET(CUSTACTIVITY)),
+      Field('activity', 'text',represent=lambda v, r: '' if v is None else v, default=activity, label='Middle',length=50)
+      )
+
+   
+
+    xstatus = formA.element('#no_table_status')
+    xstatus['_class'] = 'form-control'
+    xstatus['_placeholder'] = 'Date'
+    xstatus['_autocomplete'] = 'off'   
+
+    returnurl = URL('customer','update_customer',vars=dict(page=page,customerid=customerid))
+ 
+    if formA.process().accepted:
+        db(db.customeractivity.id == customeractivityid).update(
+            status = formA.vars.status,
+            activity = formA.vars.activity,
+            modified_on = common.getISTFormatCurrentLocatTime(),
+            modified_by =  1 if(auth.user == None) else auth.user.id            
+            )
+        redirect(returnurl)
+
+    elif formA.errors:
+        response.flash = "Error - Updating customer activity" + str(formA.errors)    
+    
+   
+    
+
+    return dict(formA=formA,username=username, returnurl=returnurl,\
+                formheader=formheader,page=page)
+
 
 def update_customer():
     
@@ -456,7 +584,7 @@ def update_customer():
         notes = ds[0].notes
         
         status = ds[0].status
-        
+    
     else:
         customer = ''
         customer_ref = ''
@@ -489,7 +617,7 @@ def update_customer():
     formA = SQLFORM.factory(
         Field('customer', 'string',label='Customer ID', default=customer),
         Field('customer_ref', 'string',label='Customer Ref', default=customer_ref),
-        Field('providerid', default=providerid,requires=IS_IN_DB(db(db.provider.is_active==True), 'provider.id', '%(provider)s : (%(providername)s)')),
+        Field('providerid', default=providerid,requires=IS_IN_DB(db(db.provider.is_active==True), 'provider.id', '%(id)s %(provider)s : (%(providername)s)')),
         Field('companyid', default=companyid, requires=IS_IN_DB(db(db.company.is_active==True), 'company.id', '%(name)s (%(company)s)')),
         Field('planid', default=planid, requires=IS_IN_DB(db(db.hmoplan.is_active==True), 'hmoplan.id', '%(name)s (%(hmoplancode)s) (%(groupregion)s)')),
         Field('regionid', default=regionid, requires=IS_IN_DB(db(db.groupregion.is_active == True), 'groupregion.id', '%(region)s (%(groupregion)s)')),
@@ -512,6 +640,7 @@ def update_customer():
         Field('pin3','string',default=pin3,label='Pin Choice 3'),
         Field('appointment_id','string',default=appointment_id,label='Appointment ID'),
         Field('appointment_datetime', 'datetime',label='DOB', default=appointment_datetime,  requires=IS_DATETIME(format=('%d/%m/%Y %H:%M:%S')),length=20),
+       
         Field('notes','text',default=notes,label='Notes')
         
     )
@@ -559,8 +688,60 @@ def update_customer():
 
     elif formA.errors:
         response.session = "Error - updating customer" + str(formA.errors)
+    
+    
+    fields=(
+               
+        db.customeractivity.customerid,
+        db.customeractivity.customer,
+        db.customeractivity.customer_ref,
+        db.customeractivity.activitydate,
+        
+        db.customeractivity.status,
+        db.customeractivity.activity,
+    )
+        
+    headers={
+             
+             'customeractivity.customerid':'ID',
+             'customeractivity.customer':'Customer ',
+             'customeractivity.customer_ref':'Ref',
+             'customeractivity.activitydate':'Date',
+             'customeractivity.status':'Status',
+             'customeractivity.activity':'Activity'
+             }
+    
+            
+    exportlist = dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False, xml=False)
+            
+            
+        
+            
+    links = [lambda row: A('Update',_href=URL("customer","update_customer_activity",vars=dict(page=page,customerid=customerid,customeractivityid=row.id))),
+             
+             ]
+    query = ((db.customeractivity.id > 0) & (db.customeractivity.is_active == True))
+    
+    maxtextlength = 40
+                      
+    orderby = ~(db.customeractivity.id)    
 
- 
+    formB = SQLFORM.grid(query=query,
+                         headers=headers,
+                         fields=fields,
+                         links=links,
+                         
+                         orderby=orderby,
+                         exportclasses=exportlist,
+                         links_in_grid=True,
+                         searchable=True,
+                         create=False,
+                         deletable=False,
+                         editable=False,
+                         details=False,
+                         user_signature=False
+                         )    
+
 
     regions = db(db.groupregion.is_active == True).select()  #IB 07042016
     plans   = db((db.companyhmoplanrate.groupregion==regionid) & (db.companyhmoplanrate.company==companyid)).\
@@ -571,7 +752,7 @@ def update_customer():
     enrollcustomer = URL('customer','enroll_customer',vars=dict(page=page,customerid=customerid))
     viewprovidercalendar = URL('my_pms2', 'appointment','customer_appointment',vars=dict(page=page,providerid = providerid,customerid=customerid))
 
-    return dict(formA=formA,username=username, returnurl=returnurl,enrollcustomer=enrollcustomer,viewprovidercalendar=viewprovidercalendar,\
+    return dict(formA=formA,formB=formB,username=username, customerid=customerid,returnurl=returnurl,enrollcustomer=enrollcustomer,viewprovidercalendar=viewprovidercalendar,\
                 formheader=formheader,regions=regions, plans=plans,regionid=regionid,planid=planid,status=status,page=page)
     
     

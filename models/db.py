@@ -50,6 +50,14 @@ import datetime
 import sys
 sys.path.append('applications/my_dentalplan/modules')
 
+from applications.my_pms2.modules import account
+from applications.my_pms2.modules import states
+from applications.my_pms2.modules import relations
+from applications.my_pms2.modules import gender
+from applications.my_pms2.modules import treatmentstatus
+from applications.my_pms2.modules import dental
+from applications.my_pms2.modules import cycle
+from applications.my_pms2.modules import status
 
 from account import *
 from states import *
@@ -253,6 +261,7 @@ db.define_table('clinic',
                 Field('rotary_endodontics','string'),     
                 Field('bank_id','integer'), 
                 
+                Field('state_dental_registration','string'),
                 auth.signature                
                 )
 
@@ -1353,6 +1362,7 @@ db.define_table('t_appointment',
     Field('description','string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'), default='', label='Description',length=128),
     Field('provider', 'reference provider',label=T('Dentist'), default=''),
     Field('doctor', 'integer',represent=lambda v, r: 0 if v is None else v, label=T('Dentist'), default=''),
+    Field('clinicid', 'integer',represent=lambda v, r: 0 if v is None else v, label=T('Clinic'), default=''),
     Field('patient', 'integer',represent=lambda v, r: 0 if v is None else v, label=T('Patient'), default = ''),
     Field('patientmember', 'reference patientmember', label=T('Member'), default = ''),
     Field('sendsms', 'boolean',default=False),
@@ -3284,6 +3294,10 @@ db.define_table('vw_appointments',
                 Field('companyid', 'integer'),
                 Field('groupref', 'string'),
                 Field('membercode', 'string'),
+                Field('clinicid', 'integer'),
+                Field('clinic_ref', 'string'),
+                Field('clinic_name', 'string'),
+                
                 auth.signature
     )
 
@@ -4001,6 +4015,22 @@ db.define_table('customerdependants',
                )
 db.customerdependants._singular = "customerdependants"
 db.customerdependants._plural   = "customerdependants"
+
+
+
+
+db.define_table('customeractivity',
+               Field('customerid',  widget = lambda field, value:SQLFORM.widgets.options.widget(field, value,_style="width:100%;height:35px",_class='w3-input w3-border w3-small'), requires=IS_IN_DB(db, 'customer.id', '%(fname)s (%(lname)s)')),
+               Field('customer','string'), 
+               Field('customer_ref','string'), 
+               Field('activitydate','datetime', default=request.now, requires=IS_DATETIME(format=T('%d/%m/%Y %H:%M'))),
+               Field('status','string',represent=lambda v, r: '' if v is None else v, default='Scheduled',label='Status',requires = IS_IN_SET(CUSTACTIVITY)),
+               Field('activity', 'text',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'), default='', label='Middle',length=50),
+               auth.signature
+               )
+db.customeractivity._singular = "customeractivity"
+db.customeractivity._plural   = "customeractivity"
+
 
 
 db.define_table('vw_customer',

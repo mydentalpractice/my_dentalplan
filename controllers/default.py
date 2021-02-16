@@ -691,15 +691,17 @@ def member_resetpassword():
     username = common.getstring(request.vars.username)
     
     xusername =form.element('input',_id='auth_user_username')
-    xusername['_value'] =  username
-    xusername['_class'] = 'w3-input w3-border  w3-small'
-    xusername['_pattern'] = "[a-zA-Z0-9-_.]+"
+    if(xusername != None):
+	xusername['_value'] =  username
+	xusername['_class'] = 'w3-input w3-border  w3-small'
+	xusername['_pattern'] = "[a-zA-Z0-9-_.]+"
     
     xpassword = form.element('input',_id='auth_user_password')
-    xpassword['_class'] =  'form-control'
-    xpassword['_placeholder'] =  'Password'
-    xpassword['_autocomplete'] =  'off'
-    xpassword['_pattern'] = "[a-zA-Z0-9-_.!@#$%^&*]+"    
+    if(xpassword != None):
+	xpassword['_class'] =  'form-control'
+	xpassword['_placeholder'] =  'Password'
+	xpassword['_autocomplete'] =  'off'
+	xpassword['_pattern'] = "[a-zA-Z0-9-_.!@#$%^&*]+"    
     
         
     return dict(form=form)

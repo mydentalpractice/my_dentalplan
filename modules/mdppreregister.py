@@ -87,24 +87,32 @@ class Preregister:
     db = self.db
       
     providerid = self.providerid
-       
+    
     c = db(db.company.company == self.company).select(db.company.id)
     companyid = int(common.getid(c[0].id)) if len(c) >0 else 0       
+
+    p = db(db.provider.provider == 'P0001').select(db.provider.id)
+    p0001_id = int(common.getid(p[0].id))  if(len(p)>0) else 0
 
     jsonresp = {}
     regobj = {}
     reglist = []
     
     try:
-      if(companyid > 0):
-        regs = db((db.preregister.provider == providerid) & (db.preregister.company == companyid) & (db.preregister.is_active == True)).select()
+      if((providerid == p0001_id) | (providerid==0)):
+        if(companyid > 0):
+          regs = db((db.preregister.company == companyid) & (db.preregister.is_active == True)).select()
+        else:
+          regs = db((db.preregister.is_active == True)).select()
+        
       else:
-        regs = db((db.preregister.provider == providerid)  & (db.preregister.is_active == True)).select()
+        if(companyid > 0):
+          regs = db((db.preregister.provider == providerid) & (db.preregister.company == companyid) & (db.preregister.is_active == True)).select()
+        else:
+          regs = db((db.preregister.provider == providerid)  & (db.preregister.is_active == True)).select()
       
       for reg in regs:
         regobj = json.loads(self.getpreregister(reg.id))
-        
-        
         reglist.append(regobj)
         
       jsonresp = {

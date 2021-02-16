@@ -2,6 +2,10 @@ import datetime
 from datetime import timedelta
 
 
+import time
+
+import random
+
 import pytz
 from pytz import timezone
 
@@ -10,6 +14,7 @@ getnulldt = lambda dt:dt if(dt != None) else ""
 getid    = lambda xid :xid if((xid != None)&(xid != "")&(xid != "None")) else 0
 getnegid = lambda xid :xid if((xid != None)&(xid != "")&(xid != "None")) else -1
 getpage  = lambda page:page if((page != None)&(page != "")&(page != "0")) else 0
+getpage1  = lambda page:page if((page != None)&(page != "")&(page != "0")) else 1
 getvalue = lambda amount: amount if((amount != None)&(amount != "")&(amount != "None")) else 0
 getstring = lambda text: text if((text != None)&(text != "")&(text != "None")) else ""
 getbool =   lambda text: text if((text != None)&(text != "")&(text != "None")) else False
@@ -19,6 +24,49 @@ getboolean =   lambda text: True if((text != None)&(text != "")&(text != "None")
 
 fmt = "%Y-%m-%d %H:%M:%S"
 
+
+def getkeyvalue(jobj, key1, defval):
+        
+
+        keys = jobj.keys()
+
+        for key in keys:
+                if(key.lower() == key1.lower()):
+                        return jobj.get(key,"defval")
+
+
+        return defval
+
+
+def setcookies(response):
+        response.cookies[response.session_id_name] =response.session_id
+        response.cookies[response.session_id_name]["Secure"] =  True
+        response.cookies[response.session_id_name]["HttpOnly"] =  True        
+            
+        
+        return True
+
+def getstringfromdate(dateobj,fmt):
+        
+        dtstr = dateobj.strftime(fmt)
+        
+        return dtstr
+
+def getdatefromstring(strdate,fmt):
+        
+        dt = datetime.datetime.strptime(strdate,fmt)
+        return dt
+        
+def gettimefromstring(strtime,fmt):
+        t = time.strptime(strtime, fmt)
+        return t
+
+def getstringfromtime(timeobj, fmt):
+        strtime = timeobj.strftime(fmt)
+        
+       
+        return strtime
+        
 #this returns local current (IST) date and time as datetime object
 def getISTFormatCurrentLocatTime():
         loctime = getISTCurrentLocatTime()
@@ -127,7 +175,7 @@ def getdefaultdoctor(db,providerid):
     doctorid = 0
     
     #default attending doctor to owner doctor
-    r = db((db.doctor.providerid == providerid) & (db.doctor.practice_owner == True)).select()
+    r = db((db.doctor.providerid == providerid) & (db.doctor.practice_owner == True) & (db.doctor.is_active == True)).select()
     if(len(r) > 0):
         doctorid = r[0].id
     return doctorid
@@ -303,6 +351,10 @@ def getproviderfromid(db,aproviderid):
     latitude = ""
     longitude = ""
     locationurl = ""
+    
+    city = ""
+    st = ""
+    pin = ""
 
 
     if(providerid > 0):
@@ -325,6 +377,9 @@ def getproviderfromid(db,aproviderid):
                 providername = getstring(rows[0]["providername"])  
                 practicename =  getstring(rows[0]["pa_practicename"])
                 practiceaddress =  getstring(rows[0]["pa_practiceaddress"])
+                city = getstring(rows[0]["city"])
+                st = getstring(rows[0]["st"])
+                pin = getstring(rows[0]["pin"])
                 email =  getstring(rows[0]["email"])
                 cell =  getstring(rows[0]["cell"])
                 longitude = getstring(rows[0]["pa_longitude"])
@@ -333,8 +388,8 @@ def getproviderfromid(db,aproviderid):
             
             
     return dict(providerid=providerid,provider=provider,providername=providername,registration=registration,
-                practicename=practicename,practiceaddress=practiceaddress,email=email,cell=cell,rlgrpolicynumber=rlgrpolicynumber,
-                rlgprovider=rlgprovider,regionid=regionid,planid=planid)
+                practicename=practicename,practiceaddress=practiceaddress,city=city,st=st,pin=pin,email=email,cell=cell,rlgrpolicynumber=rlgrpolicynumber,
+                rlgprovider=rlgprovider,regionid=regionid,planid=planid,longitude=longitude,latitude=latitude,locationurl=locationurl)
                 
    
    
@@ -631,3 +686,16 @@ def addyears(dt,yrs):
         
 
 
+def isfloat(value):
+        try:
+                x = float(value)
+                return True
+        except Exception as e:
+                return False
+        
+def generateackid(base,digits):
+        ackid = base
+        random.seed(int(time.time()))
+        for j in range(0,(digits-len(base))):
+                ackid += str(random.randint(0,9))  
+        return ackid

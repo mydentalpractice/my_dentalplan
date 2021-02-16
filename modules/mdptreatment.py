@@ -14,6 +14,8 @@ from applications.my_pms2.modules import mail
 from applications.my_pms2.modules import tasks
 from applications.my_pms2.modules import logger
 
+from applications.my_pms2.modules import mdputils
+
 datefmt = "%d/%m/%Y"
 datetimefmt = "%d/%m/%Y %H:%M:%S"
 
@@ -134,6 +136,9 @@ class Treatment:
         return dict(totaltreatmentcost=totaltreatmentcost, totalcopay=totalcopay,totalinspays=totalinspays,totaldue=totaldue)
     
     
+    
+    
+    
     def getopentreatments(self,page,memberid,patientid,searchphrase,maxcount):
         
         #logger.loggerpms2.info("Enter Get Treatments API")
@@ -151,14 +156,16 @@ class Treatment:
         try:
             query = (db.vw_treatmentlist.memberid == memberid) if(memberid > 0) else (1==1)
             query = query & (db.vw_treatmentlist.patientid == patientid) if(patientid > 0) else (1==1)
-            query = query & (db.vw_treatmentlist.status == "Started")
+            query = query & (db.vw_treatmentlist.status == "Started")  
+            #IB 31/01/2020 Sending all treatments
+            #query = query & ((db.vw_treatmentlist.is_active == True) | ((db.vw_treatmentlist.is_active == False) & (db.vw_treatmentlist.status == "Cancelled" )))
             
             query =  (query )
-                
+            
             if((searchphrase == "") | (searchphrase == None)):
-                query = query & ((db.vw_treatmentlist.providerid == providerid) & (db.vw_treatmentlist.is_active == True))
+                query = query & ((db.vw_treatmentlist.providerid == providerid))
             else:
-                query=  query & ((db.vw_treatmentlist.providerid == providerid) & (db.vw_treatmentlist.pattern.like('%' + searchphrase + '%')) & (db.vw_treatmentlist.is_active == True))
+                query=  query & ((db.vw_treatmentlist.providerid == providerid) & (db.vw_treatmentlist.pattern.like('%' + searchphrase + '%')) )
     
              
             
@@ -230,7 +237,6 @@ class Treatment:
         return json.dumps(trtmntobj)
 
     
-    
     def gettreatments(self,page,memberid,patientid,searchphrase,maxcount,treatmentyear):
         
         db = self.db
@@ -241,6 +247,10 @@ class Treatment:
         urlprops = db(db.urlproperties.id >0 ).select(db.urlproperties.pagination)
         items_per_page = 10 if(len(urlprops) <= 0) else int(common.getvalue(urlprops[0].pagination))
         limitby = ((page)*items_per_page,(page+1)*items_per_page) 
+        
+        limitby = None if(items_per_page <= 0) else limitby
+        
+        #logger.loggerpms2.info("page = " + str(page) + " limitby=" + str(limitby))
         trtmntobj  = {}
         
         try:
@@ -256,21 +266,23 @@ class Treatment:
             
             query = (query & ((db.vw_treatmentlist.startdate >= startdate) & (db.vw_treatmentlist.startdate <= enddate))) if(treatmentyear != None) else query
             
-            query = query & (db.vw_treatmentlist.is_active == True)
-           
+            #query = query & (db.vw_treatmentlist.is_active == True)
+            #IB 31/01/2020 Sending all treatments - Cancelled, Started and Completed
+            query = query & ((db.vw_treatmentlist.is_active == True) | ((db.vw_treatmentlist.is_active == False) & (db.vw_treatmentlist.status == "Cancelled" ))) 
+            
             query =  (query)
             
             query = query if((searchphrase == "") | (searchphrase == None)) else query & (db.vw_treatmentlist.pattern.like('%' + searchphrase + '%'))
             
             if(page >= 0):
-                treatments = db(query).select(db.vw_treatmentlist.id,db.vw_treatmentlist.tplanid,db.vw_treatmentlist.treatment,db.vw_treatmentlist.startdate, \
+                treatments = db(query).select(db.vw_treatmentlist.id,db.vw_treatmentlist.tplanid,db.vw_treatmentlist.treatment,db.vw_treatmentlist.startdate, db.vw_treatmentlist.patientname,\
                                               db.vw_treatmentlist.status,db.vw_treatmentlist.treatmentcost,db.vw_treatment_procedure_group.shortdescription,\
                                               left=db.vw_treatment_procedure_group.on(db.vw_treatment_procedure_group.treatmentid==db.vw_treatmentlist.id),\
                                               limitby=limitby, orderby=~db.vw_treatmentlist.id)
                 if(maxcount == 0):
                     maxcount = db(query).count()
             else:
-                treatments = db(query).select(db.vw_treatmentlist.id,db.vw_treatmentlist.tplanid,db.vw_treatmentlist.treatment,db.vw_treatmentlist.startdate, \
+                treatments = db(query).select(db.vw_treatmentlist.id,db.vw_treatmentlist.tplanid,db.vw_treatmentlist.treatment,db.vw_treatmentlist.startdate, db.vw_treatmentlist.patientname,\
                                               db.vw_treatmentlist.status,db.vw_treatmentlist.treatmentcost,db.vw_treatment_procedure_group.shortdescription,\
                                               left=db.vw_treatment_procedure_group.on(db.vw_treatment_procedure_group.treatmentid==db.vw_treatmentlist.id), \
                                               orderby=~db.vw_treatmentlist.id)
@@ -283,6 +295,7 @@ class Treatment:
             treatmentlist = []
             treatmentobj = {}
             
+            
             for treatment in treatments:
                 treatmentid = int(common.getid(treatment.vw_treatmentlist.id))
                 tplanid = int(common.getid(treatment.vw_treatmentlist.tplanid))
@@ -291,6 +304,7 @@ class Treatment:
                     "treatmentid" : treatmentid,
                     "treatment": common.getstring(treatment.vw_treatmentlist.treatment),
                     "treatmentdate"  : (treatment.vw_treatmentlist.startdate).strftime("%d/%m/%Y"),
+                    "patientname" : common.getstring(treatment.vw_treatmentlist.patientname),
                     "procedures":common.getstring(treatment.vw_treatment_procedure_group.shortdescription),
                     "status": "Started" if(common.getstring(treatment.vw_treatmentlist.status) == "") else common.getstring(treatment.vw_treatmentlist.status),
                     "totaltreatmentcost":float(common.getstring(r["totaltreatmentcost"])),
@@ -475,14 +489,25 @@ class Treatment:
             
             
             if(len(treatment) == 1):
-                c = db(db.company.id == treatment[0].vw_memberpatientlist.company).select(db.company.authorizationrequired)
+                #logger.loggerpms2.info("Enter Get Treatment API - A")
+                c = db(db.company.id == int(common.getid(treatment[0].vw_memberpatientlist.company))).select(db.company.authorizationrequired)
+                #logger.loggerpms2.info("Enter Get Treatment API - A1 " + str(len(c)))
+                
                 tplanid = int(common.getid(treatment[0].vw_treatmentlist.tplanid))
-                r = self.updatetreatmentcostandcopay(treatmentid, tplanid)            
+                r = self.updatetreatmentcostandcopay(treatmentid, tplanid)
+                #logger.loggerpms2.info("Enter Get Treatment API - A2 ")
+                
+                memberid = int(common.getid(treatment[0].vw_treatmentlist.memberid))
+                patientid = int(common.getid(treatment[0].vw_treatmentlist.patientid))
+                procedurepriceplancode = mdputils.getprocedurepriceplancodeformember(db,providerid,memberid,patientid)
+                #logger.loggerpms2.info("Enter Get Treatment API - B")
+                
                 treatmentobj = {
                     
                     "treatmentid":treatmentid,
                     "tplanid":tplanid,
                     "treatment": common.getstring(treatment[0].vw_treatmentlist.treatment),
+                    
                     "treatmentdate"  : (treatment[0].vw_treatmentlist.startdate).strftime("%d/%m/%Y"),
                     "patientname": common.getstring(treatment[0].vw_treatmentlist.patientname),
                     "chiefcomplaint" : common.getstring(treatment[0].vw_treatmentlist.chiefcomplaint),
@@ -490,8 +515,8 @@ class Treatment:
                     "doctorid":int(common.getid(treatment[0].vw_treatmentlist.doctorid)),
                     "treatmentcost":float(common.getvalue(treatment[0].vw_treatmentlist.treatmentcost)),
                     "description":common.getstring(treatment[0].treatment.description),
-                    "plan":common.getstring(treatment[0].vw_memberpatientlist.procedurepriceplancode),
-                    "authorization": (len(procs)>0 & common.getboolean(c[0].authorizationrequired)),
+                    "plan":  procedurepriceplancode,   #IB:15-Mar-2020 common.getstring(treatment[0].vw_memberpatientlist.procedurepriceplancode),
+                    "authorization": False if(len(c) <= 0) else (len(procs)>0 & common.getboolean(c[0].authorizationrequired)),
                     "authorized": True if(common.getstring(treatment[0].vw_treatmentlist.status) == "Authorized") else False,
                     "totaltreatmentcost":float(common.getstring(r["totaltreatmentcost"])),
                     "totalcopay":float(common.getstring(r["totalcopay"])),
@@ -501,6 +526,7 @@ class Treatment:
                     
                 }        
                 
+                #logger.loggerpms2.info("Enter Get Treatment API - C")
             
                 proclist = []
                 procobj = {}
@@ -525,7 +551,7 @@ class Treatment:
                     }
                     proclist.append(procobj)   
                 
-                
+                #logger.loggerpms2.info("Enter Get Treatment API - D")
                 treatmentobj["proccount"] = len(procs)
                 treatmentobj["proclist"] = proclist
                 
@@ -534,12 +560,13 @@ class Treatment:
                 
                 pats = db((db.vw_memberpatientlist.primarypatientid == memberid) & (db.vw_memberpatientlist.patientid == patientid)).select(db.vw_memberpatientlist.hmopatientmember)
                 hmopatientmember = False if(len(pats) <= 0) else common.getboolean(pats[0].hmopatientmember)
-        
+                #logger.loggerpms2.info("Enter Get Treatment API - E")
                 #W, R, H, S
                 trtmtnui = {}
                 procui = {}
                 
                 trstatus = common.getstring(treatment[0].vw_treatmentlist.status)
+                #logger.loggerpms2.info("Enter Get Treatment API - F")
                 if(hmopatientmember):
                     if( trstatus == "Started"):
                         trtmntui = {
@@ -663,6 +690,7 @@ class Treatment:
                         
                         }                
                 
+                #logger.loggerpms2.info("Enter Get Treatment API - G")
                 treatmentobj["treatmentui"] = trtmntui
                 treatmentobj["procedureui"] = procui
                 treatmentobj["result"] = "success"
@@ -670,7 +698,7 @@ class Treatment:
             else:
                 treatmentobj["result"] = "fail"
                 treatmentobj["error_message"] = "Invalid Treatment"
-                
+                #logger.loggerpms2.info("Enter Get Treatment API - H")
             
         except Exception as e:
             treatmentobj1 = {}
@@ -683,7 +711,7 @@ class Treatment:
     
     
 
-    def newtreatment(self,memberid,patientid):
+    def newtreatment(self,memberid,patientid,policy_name=""):
         
         #logger.loggerpms2.info("Enter New Treatment API")
         
@@ -717,7 +745,7 @@ class Treatment:
                 newmember = common.getboolean(r[0].newmember)
                 freetreatment = common.getboolean(r[0].freetreatment)
                 patienttype = r[0].patienttype
-                procedurepriceplancode = r[0].procedurepriceplancode        
+                procedurepriceplancode =  mdputils.getprocedurepriceplancodeformember(db,providerid,memberid,patientid,policy_name) #IB:15-Mar-2020 r[0].procedurepriceplancode        
             
             
             #Create a new TreatmentPlan

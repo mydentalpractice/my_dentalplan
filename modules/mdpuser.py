@@ -16,6 +16,10 @@ from applications.my_pms2.modules import cycle
 from applications.my_pms2.modules import gender
 from applications.my_pms2.modules import mail
 
+from applications.my_pms2.modules import mdpprospect
+from applications.my_pms2.modules import mdpprovider
+from applications.my_pms2.modules import mdpagent
+from applications.my_pms2.modules import mdppatient
 from applications.my_pms2.modules import logger
 
 
@@ -101,8 +105,151 @@ class User:
     
     return
 
-  
+  def agent_otp_login(self,avars):
     
+    auth = self.auth
+    db = self.db
+    
+    logger.loggerpms2.info(">>AGENT LOGIN API\n")
+    logger.loggerpms2.info("===Req_data=\n" + self.username + " " + self.password + "\n")
+    
+
+    user_data = {}
+    
+    
+    try:
+      cell = common.getkeyvalue(avars,"cell","")
+      usr = db(db.auth_user.cell == cell).select()
+      
+      if(len(usr) != 1):
+        error_message = "OTP Login API Error: No User/Multiple users matching registered " + cell
+        logger.loggerpms2.info(error_message)
+        excpobj = {}
+        excpobj["result"] = "fail"
+        excpobj["error_message"] = error_message
+        return json.dumps(excpobj)    
+
+      user = auth.login_user(db.auth_user(int(usr[0].id)))
+      cell = auth.user["cell"]
+      r = db(db.agent.cell == cell).select()
+      if(len(r) != 1):
+        error_message = "Agent Login API Error: No Agent/Multiple agent matching registered " + cell
+        logger.loggerpms2.info(error_message)
+        excpobj = {}
+        excpobj["result"] = "fail"
+        excpobj["error_message"] = error_message
+        return json.dumps(excpobj) 
+      
+      
+      user_data = {}
+      user_data={
+        "result":"success",
+        "error_message":"",
+        "usertype":"agent", 
+        "agent":r[0].agent,
+        "agentid":common.getid(r[0].id),
+        "name":r[0].name,
+        "cell":r[0].cell,
+        "email":r[0].email
+      }
+      
+    except Exception as e:
+        error_message = "AGENT Login Exception Error - " + str(e)
+        logger.loggerpms2.info(error_message)
+        excpobj = {}
+        excpobj["result"] = "fail"
+        excpobj["error_message"] = error_message
+        return json.dumps(excpobj)    
+  
+  
+    return json.dumps(user_data)
+
+  
+  #this method is called after OTP Validation:
+  #cell is xxxxxxxxxx  (without leading +<countrycode)
+  #assuming Cell is unique
+  def otp_login(self,avars):
+    auth = self.auth
+    db = self.db
+   
+    
+    rspobj = {}
+    
+    try:
+      cell = common.getkeyvalue(avars,"cell","")
+      usr = db(db.auth_user.cell == cell).select()
+    
+      if(len(usr) != 1):
+        error_message = "OTP Login API Error: No User/Multiple users matching registered " + cell
+        logger.loggerpms2.info(error_message)
+        excpobj = {}
+        excpobj["result"] = "fail"
+        excpobj["error_message"] = error_message
+        return json.dumps(excpobj)    
+      
+      auth.login_user(db.auth_user(int(usr[0].id)))
+      cell = auth.user["cell"]
+   
+      #IF THE user cell is in provider then the user is a provider
+      p = db((db.provider.cell == cell) & (db.provider.is_active == True)).select()
+      if(len(p) >= 1):
+        #if cell is in provider then otp is for provider
+        obj = mdpprovider.Provider(db,int(p[0].id))
+        user_data = json.loads(obj.getprovider())
+        user_data["usertype"] = "provider"
+        user_data["result"] = "success"
+        user_data["error_message"] = ""
+        user_data["error_code"] = ""
+      else:
+        #if the user cell is in Patient Member, then return as a patient
+        pat = db((db.vw_memberpatientlist.cell == cell) & (db.vw_memberpatientlist.is_active == True)).select()
+        
+        if(len(pat)!=0):
+          if(len(pat) == 1):
+            #user is a patientmemebr
+            patobj = mdppatient.Patient(db, 0)
+            user_data = patobj.getpatient(int(common.getid(pat[0].primarypatientid)), int(common.getid(pat[0].patientid)), "imageurl")
+            user_data["usertype"] = "member"
+          else:
+            #multiple users with the same cell
+            error_message = "OTP Login API Error: No User/Multiple Patient/Members matching registered " + cell
+            logger.loggerpms2.info(error_message)
+            excpobj = {}
+            excpobj["result"] = "fail"
+            excpobj["error_message"] = error_message
+            return json.dumps(excpobj)    
+            
+        else:
+          #check for new Signup (prospect)
+          #if the user cell is in prospect table, then returning prospect
+          p = db((db.prospect.cell == cell) & (db.prospect.status != "Enrolled") & (db.prospect.is_active == True)).select()
+          if(len(p)>=1):   #returning signup
+            obj = mdpprospect.Prospect()
+            user_data = obj.get_prospect({"prospectid":str(obj[0].id)})
+            user_data["usertype"] = "prospect"
+            user_data["result"] = "success"
+            user_data["error_message"] = ""
+            user_data["error_code"] = ""
+          else:
+            user_data["usertype"] = "prospect"
+            user_data["prospectid"] = "0"
+            user_data["result"] = "success"
+            user_data["error_message"] = ""
+            user_data["error_code"] = ""
+          
+          
+      
+    except Exception as e:
+        error_message = "OTP Login Exception Error - " + str(e)
+        logger.loggerpms2.info(error_message)
+        excpobj = {}
+        excpobj["result"] = "fail"
+        excpobj["error_message"] = error_message
+        return json.dumps(excpobj)    
+  
+  
+    return json.dumps(user_data)
+
   
   #Authenticate the user returning JSON data
   #If successful, return authenticate user data, provider data(if user is provider), web admin data (if user is admin), patient data (if user is patient - member or walkin)
@@ -114,6 +261,7 @@ class User:
     logger.loggerpms2.info("===Req_data=\n" + self.username + " " + self.password + "\n")
     
     user = auth.login_bare(self.username, self.password)
+    
     user_data = {}
     
     if(user==False):
@@ -138,18 +286,63 @@ class User:
               "providerid":int(provdict["providerid"]),
               "providername":provdict["providername"],
             }
+        
+        elif(int(provdict["providerid"]) < 0):
+          #webmember and/or patientmember
+          webmems = db((db.webmember.webkey == auth.user.sitekey) & (db.webmember.cell == auth.user.cell) &\
+                       (db.webmember.email == auth.user.email)).select()
+          if(len(webmems) == 1):
+            user_data = {
+              "result" : "success",
+              "error_message":"",
+              "usertype":"webmember",
+              "providerid":int(common.getid(webmems[0].provider)),
+              "webmemberid":int(common.getid(webmems[0].id)),
+              "memberid":0,
+              "status":webmems[0].status,
+              "cell":webmems[0].cell,
+              "email":webmems[0].email,
+              "sitekey":webmems[0].webkey,
+            }
+          else:
+            user_data ={
+              "result" : "fail",
+              "error_message":"Login Failure. Invalid Web Member"
+            }
           
+          mems = db((db.patientmember.webkey == auth.user.sitekey) & (db.patientmember.cell == auth.user.cell) &\
+                       (db.patientmember.email == auth.user.email)).select()
+          if(len(mems) == 1):
+            user_data = {
+              "result" : "success",
+              "error_message":"",
+              "usertype":"member",
+              "providerid":int(common.getid(mems[0].provider)),
+              "webmemberid":int(common.getid(mems[0].webmember)),
+              "memberid":int(common.getid(mems[0].id)),
+              "status":mems[0].status,
+              "cell":mems[0].cell,
+              "email":mems[0].email,
+              "sitekey":mems[0].webkey,
+            }
+          elif(len(mems) > 1):
+            user_data ={
+              "result" : "fail",
+              "error_message":"Login Failure. Invalid Patient Member"
+            }         
         else:
             
             #provider
             providerid = int(provdict["providerid"])
             
-            rlgprov = db(db.rlgprovider.providerid == providerid).select()
+            rlgprov = db((db.rlgprovider.providerid == providerid) & (db.rlgprovider.is_active == True)).select()
             urlprops = db(db.urlproperties.id > 0).select(db.urlproperties.relgrpolicynumber)
             user_data ={
               "result" : "success",
               "error_message":"",
               "usertype":"provider",
+              "webmemberid":0,
+              "memberid":0,
               "providerid":providerid,
               "provider":provdict["provider"],
               "providername":provdict["providername"],
@@ -257,7 +450,7 @@ class User:
     
     patlist = []
     patobj  = {}
-    message = "Success"
+    message = "success"
     
     for pat in pats:
       patobj = {
@@ -294,8 +487,8 @@ class User:
       
       
       )
-    message = "Success" if(len(pats)>0) else "Failure"
-    return json.dumps({"patientcount":len(pats),"patientlist":patlist,"message":message})
+    message = "success" if(len(pats)>0) else "failure"
+    return json.dumps({"patientcount":len(pats),"patientlist":patlist,"message":message,"result":message})
   
   
   def getallconstants(self):

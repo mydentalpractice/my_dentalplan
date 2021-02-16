@@ -1,0 +1,91 @@
+{{extend 'mdp_layoutw3.html'}}
+
+
+<form  method="post" name="frmNewMember" id="frmNewMember">
+{{=formA.custom.begin}}
+
+<div class="w3-container w3-padding-16">
+ <header class="w3-container w3-dark-grey ">
+   <h4>{{=formheader}}</h4>
+ </header>
+ <br/>
+
+
+
+<header class="w3-container w3-dark-grey ">
+ <h5>Customer Actitiy</h5>
+ </header>
+
+
+<table>
+  <tr >
+       <td class="form_details ">
+           Customer ID
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.customer_id}}
+        </td>
+  </tr>
+  <tr >
+       <td class="form_details ">
+           Customer 
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.customer}}
+        </td>
+  </tr>
+  <tr style="display:none">
+       <td class="form_details ">
+           Customer Reference
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.customer_ref}}
+        </td>
+  </tr>
+           <tr>
+            <td class="form_details " >
+                Date
+            </td>
+            
+            <td>
+                    {{=formA.custom.widget.activitydate}}
+            </td>
+         </tr>           
+  
+ <tr>
+       <td >
+           Status
+       </td>
+       <td >
+        {{=formA.custom.widget.status}}
+        </td>
+    </tr>  
+
+  
+
+  
+
+  
+</table>
+</br>
+<header class="w3-container w3-dark-grey ">
+ <h5>Activity Log</h5>
+ </header>
+<table>
+  <tr>
+       <td class="form_details ">
+            {{=formA.custom.widget.activity}}
+        </td>
+    </tr>
+</table>
+
+
+{{=formA.custom.submit}}
+
+<input  type="button" class="form_details_button" onclick="window.location='{{=returnurl}}';return false" value="Return Customer">
+</div>
+
+{{=formA.custom.end}}
+</form>
+
+

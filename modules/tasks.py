@@ -11,6 +11,8 @@ from applications.my_pms2.modules import common
 from applications.my_pms2.modules import mail
 from applications.my_pms2.modules import logger
 
+datefmt = "%d/%m/%Y"
+datetimefmt = "%d/%m/%Y %H:%M:%S"
 
 def senddoctornewaptgroupsms(db,appPath,ccs,doctorid,smsdate,providerid=0):
     
@@ -56,11 +58,14 @@ def senddoctornewaptgroupsms(db,appPath,ccs,doctorid,smsdate,providerid=0):
             groupemail = common.getboolean(appts[0].groupemail)
             
         for appt in appts:
+            providerid = int(common.getid(appt.provider))
+            prov = db(db.provider.id == providerid).select(db.provider.pa_locationurl)
+            locationurl = prov[0].pa_locationurl if len(prov) == 1 else ""            
             patientid = int(common.getid(appt.patient))
             fname   = common.getstring(appt.f_patientname)  if((appt.f_patientname != "") & (appt.f_patientname != None))  else "Patient"
             patcell = common.modify_cell(common.getstring(appt.cell))
             appttime = (appt.f_start_time).strftime('%d/%m/%Y %I:%M %p')
-            location = common.getstring(appt.f_location)
+            location = common.getstring(appt.f_location) + "\n" + locationurl
             provcell = common.modify_cell(common.getstring(appt.provcell))
             provtel = common.getstring(appt.provtel)
            
@@ -350,10 +355,15 @@ def sendAptReminders(db,appPath):
 #if no new appointments are created
 def sendNewAptGrpSMS(db,appPath):
     
+    
+    
     loccurrdate = common.getISTCurrentLocatTime()
     smsdate  = datetime.datetime.strptime(loccurrdate.strftime("%d") + "/" + loccurrdate.strftime("%m") + "/" + loccurrdate.strftime("%Y"), "%d/%m/%Y")
+
+    message = "Enter sendNewAptGrpSMS" + " " + (common.getISTFormatCurrentLocatTime()).strftime(datetimefmt)
+    logger.loggerpms2.info(message)    
     
-    logger.loggerpms2.info("Enter sendNewAptGrpSMS")
+    
     
     
     
@@ -409,6 +419,7 @@ def sendNewAptGrpSMS(db,appPath):
                 retval = mail.sendSMS2Email(db, provcell, provsms)
           
             if((provemail != "") & (prov.groupemail == True) & (provsmscount > 0)):
+                logger.loggerpms2("sendNewAptGrpSMS:send group email")
                 retval1 = mail.groupEmail(db, provemail, ccs, "Appointments:" + smsdate.strftime("%d/%m/%Y"), provsms) 
                 
     except Exception as e:
@@ -423,8 +434,9 @@ def sendNewAptGrpSMS(db,appPath):
 #THis function is called fiveminutes past hour, 24x7 from a task that runs 24x7 in the background
 #The group SMS will not be sent between 00:00:00 to 06:59:59  each day.
 def sendGroupSMS(db,appPath):
+    message = "Enter SendGroupSMS" + " " + (common.getISTFormatCurrentLocatTime()).strftime(datetimefmt)
+    logger.loggerpms2.info(message)    
     
-    logger.loggerpms2.info("Enter sendGroupSMS")
     
     try:
         loccurrdate = common.getISTCurrentLocatTime()
