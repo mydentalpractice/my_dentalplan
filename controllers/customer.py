@@ -734,7 +734,7 @@ def update_customer():
                          orderby=orderby,
                          exportclasses=exportlist,
                          links_in_grid=True,
-                         searchable=True,
+                         searchable=False,
                          create=False,
                          deletable=False,
                          editable=False,
