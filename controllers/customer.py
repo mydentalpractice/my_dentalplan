@@ -720,7 +720,7 @@ def update_customer():
     links = [lambda row: A('Update',_href=URL("customer","update_customer_activity",vars=dict(page=page,customerid=customerid,customeractivityid=row.id))),
              
              ]
-    query = ((db.customeractivity.id > 0) & (db.customeractivity.is_active == True))
+    query = ((db.customeractivity.customerid == customerid) & (db.customeractivity.is_active == True))
     
     maxtextlength = 40
                       
