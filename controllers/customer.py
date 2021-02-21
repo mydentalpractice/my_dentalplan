@@ -26,7 +26,7 @@ from applications.my_pms2.modules  import mail
 
 from applications.my_pms2.modules  import mdpappointment
 from applications.my_pms2.modules  import mdpcustomer
-
+from applications.my_pms2.modules  import logger
 
 
 def plans():
@@ -817,10 +817,10 @@ def delete_customer():
     return dict(form=form,customername=customername)
 
 def enroll_customer():
-    
     page = common.getpage1(request.vars.page)
     
     customerid = int(common.getid(request.vars.customerid))
+    logger.loggerpms2.info("Enter Controller Enroll Customer " + str(customerid))
     
     customer = db(db.customer.id == customerid).select()
     providerid = int(common.getid(customer[0].providerid))
@@ -833,8 +833,11 @@ def enroll_customer():
     avars = {"customerid":customerid,"customer_ref":customer_ref}
     patobj  = json.loads(custobj.enroll_customer(avars))
     member = common.getkeyvalue(patobj, "fullname", "")
-   
+    
+    ret = None
     if(patobj["result"] == "success"):
+        logger.loggerpms2.info("Customer Controller PatOBJ Succes ")
+        
         appPath = current.globalenv["request"].folder
         mdpappt = mdpappointment.Appointment(db, providerid)
         docs = db((db.doctor.providerid == providerid) & 
@@ -848,6 +851,7 @@ def enroll_customer():
             doctorid = 0
         
         db((db.customer.id == customerid) & (db.customer.is_active == True)).update(status = 'Enrolled')
+        logger.loggerpms2.info("Customer Controller Before New Appointment " + str(customerid))
         apptobj = json.loads(mdpappt.newappointment(patobj["primarypatientid"], patobj["patientid"], doctorid, 
                                         "", 
                                         appointment_datetime.strftime("%d/%m/%Y %H:%M"),
@@ -863,6 +867,7 @@ def enroll_customer():
         returnurl = URL('customer','list_customers',vars=dict(page=page))
     else:
         message = "ERROR enrolling Customer " + member + " in MDP"
+        logger.loggerpms2.info("Customer Controller PatOBJ Failuer ")
         returnurl = URL('customer','list_customers',vars=dict(page=page))
         
     
