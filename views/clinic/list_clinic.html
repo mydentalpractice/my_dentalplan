@@ -1,0 +1,33 @@
+{{extend 'mdp_layoutw3.html'}}
+
+<header class="w3-container w3-dark-grey ">
+   <h4>{{=formheader}}</h4>
+</header>
+
+<table>
+
+<tr>
+<td>
+<button class="form_details_button"   onclick="window.location='{{=URL('clinic','new_clinic',vars=dict(page=page))}}';return false">Add Clinic</button> 
+</td>
+</tr>
+<tr>
+<td>
+<div style="width:60%">
+
+</div>
+</td>
+</tr>
+</table>
+
+<div  >
+
+{{=form}}
+
+</div>
+
+<button class="form_details_button" onclick="window.location='{{=returnurl}}';return false">Return</button>&nbsp;&nbsp;
+
+
+
+

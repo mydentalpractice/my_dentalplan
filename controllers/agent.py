@@ -40,7 +40,9 @@ def list_agent():
     exportlist = dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False, csv=False)
 
 
-    links = [lambda row: A('Update',_href=URL("agent","update_agent",args=[row.id])), lambda row: A('Delete',_href=URL("agent","delete_agent",args=[row.id]))]
+    links = [lambda row: A('Update',_href=URL("agent","update_agent",args=[row.id])), 
+             lambda row: A('Prospects',_href=URL("prospect","list_prospect",vars=dict(ref_code="AGN", ref_id=row.id))),         
+             lambda row: A('Delete',_href=URL("agent","delete_agent",args=[row.id]))]
 
     query = (db.agent.is_active==True)
     

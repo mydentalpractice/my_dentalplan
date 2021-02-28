@@ -1,0 +1,236 @@
+{{extend 'mdp_layoutw3.html'}}
+
+
+
+<header class="w3-container w3-dark-grey ">
+   <h4>{{=formheader}}</h4>
+</header>
+{{=formA.custom.begin}}
+
+<h4 class="head-line"></h4>
+
+
+<header class="w3-container w3-light-grey ">
+<h5>Clinic Details</h5>
+</header>
+
+<table>
+<tr>
+<td class="form_details">
+  Clinic Ref
+</td>
+<td class="form_details">
+  {{=formA.custom.widget.clinic_ref}}
+</td>
+<td class="form_details">
+Clinic Name
+</td>
+<td class="form_details" >
+ {{=formA.custom.widget.name}}
+</td>
+<td class="form_details">
+Primary Clinic
+</td>
+<td class="form_details" >
+ {{=formA.custom.widget.primary_clinic}}
+</td>
+
+</tr>
+<tr>
+
+<td class="form_details">
+Cell
+</td>
+<td class="form_details">
+ {{=formA.custom.widget.cell}}
+</td>
+<td class="form_details">
+Email
+</td>
+<td class="form_details">
+{{=formA.custom.widget.email}}
+</td>
+<td class="form_details">
+Telephone
+</td>
+<td class="form_details">
+{{=formA.custom.widget.telephone}}
+</td>
+
+</tr>
+
+<tr>
+
+<td class="form_details">
+Address 1
+</td>
+<td class="form_details">
+ {{=formA.custom.widget.address1}}
+</td>
+<td class="form_details">
+Address 2
+</td>
+<td class="form_details">
+ {{=formA.custom.widget.address2}}
+</td>
+<td class="form_details">
+Address 3
+</td>
+<td class="form_details">
+ {{=formA.custom.widget.address3}}
+</td>
+
+</tr>
+
+<tr>
+
+<td class="form_details">
+City
+</td>
+<td class="form_details">
+ {{=formA.custom.widget.city}}
+</td>
+<td class="form_details">
+State
+</td>
+<td class="form_details">
+ {{=formA.custom.widget.st}}
+</td>
+<td class="form_details">
+Pin
+</td>
+<td class="form_details">
+ {{=formA.custom.widget.pin}}
+</td>
+
+</tr>
+
+
+</table>
+<br/>
+<header class="w3-container w3-light-grey ">
+<h5>Clinic Registration</h5>
+</header>
+
+<table>
+<tr>
+<td class="form_details">
+ State Dental Registration
+</td>
+<td class="form_details">
+  {{=formA.custom.widget.state_dental_registration}}
+</td>
+
+
+<td class="form_details">
+MDP Registration
+</td>
+<td class="form_details"  >
+ {{=formA.custom.widget.mdp_registration}}
+</td>
+
+
+
+</tr>
+
+
+
+
+
+</table>
+
+<br/>
+<header class="w3-container w3-light-grey ">
+<h5>Clinic Social</h5>
+</header>
+
+<table>
+<tr>
+<td class="form_details">
+  Web Site
+</td>
+<td class="form_details">
+  {{=formA.custom.widget.website}}
+</td>
+<td class="form_details">
+Location
+</td>
+<td class="form_details"  >
+ {{=formA.custom.widget.gps_location}}
+</td>
+
+
+
+
+</tr>
+
+<tr>
+<td class="form_details">
+Whats App
+</td>
+<td class="form_details"  >
+ {{=formA.custom.widget.whatsapp}}
+</td>
+<td class="form_details">
+  Facebook
+</td>
+<td class="form_details">
+  {{=formA.custom.widget.facebook}}
+</td>
+<td class="form_details">
+Twitter
+</td>
+<td class="form_details"  >
+ {{=formA.custom.widget.twitter}}
+</td>
+</tr>
+
+
+
+</table>
+
+
+{{=formA.custom.submit}}
+<button class="form_details_button" onclick="window.location='{{=returnurl}}';return false">Return</button>&nbsp;&nbsp;
+</div>
+
+<div style="display:none">
+{{=formA.custom.widget.bank_id}}
+
+
+{{=formA.custom.widget.intra_oral_camera}}
+{{=formA.custom.widget.rotary_endodontics}}
+{{=formA.custom.widget.status}}
+{{=formA.custom.widget.dentalchairs}}
+{{=formA.custom.widget.auto_clave}}
+{{=formA.custom.widget.implantology}}
+{{=formA.custom.widget.instrument_sterilization}}
+{{=formA.custom.widget.waste_displosal}}
+{{=formA.custom.widget.suction_machine}}
+{{=formA.custom.widget.laser}}
+{{=formA.custom.widget.RVG_OPG}}
+{{=formA.custom.widget.radiation_protection}}
+{{=formA.custom.widget.computers}}
+{{=formA.custom.widget.network}}
+{{=formA.custom.widget.internet}}
+{{=formA.custom.widget.air_conditioned}}
+{{=formA.custom.widget.waiting_area}}
+{{=formA.custom.widget.backup_power}}
+{{=formA.custom.widget.toilet}}
+{{=formA.custom.widget.water_filter}}
+{{=formA.custom.widget.parking_facility}}
+
+{{=formA.custom.widget.receptionist}}
+{{=formA.custom.widget.credit_card}}
+{{=formA.custom.widget.certifcates}}
+{{=formA.custom.widget.emergency_drugs}}
+{{=formA.custom.widget.infection_control}}
+{{=formA.custom.widget.daily_autoclaved}}
+{{=formA.custom.widget.patient_records}}
+{{=formA.custom.widget.patient_consent}}
+{{=formA.custom.widget.patient_traffic}}
+{{=formA.custom.widget.nabh_iso_certifcation}}
+{{=formA.custom.widget.registration_certificate}}
+
+</div>
+{{=formA.custom.end}}

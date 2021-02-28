@@ -818,58 +818,65 @@ def delete_customer():
 
 def enroll_customer():
     page = common.getpage1(request.vars.page)
-    
-    customerid = int(common.getid(request.vars.customerid))
-    logger.loggerpms2.info("Enter Controller Enroll Customer " + str(customerid))
-    
-    customer = db(db.customer.id == customerid).select()
-    providerid = int(common.getid(customer[0].providerid))
-    customer_ref = common.getstring(customer[0].customer_ref)
-    appointment_id  = common.getstring(customer[0].appointment_id)
-    appointment_datetime = customer[0].appointment_datetime
-    
-    
-    custobj = mdpcustomer.Customer(db)
-    avars = {"customerid":customerid,"customer_ref":customer_ref}
-    patobj  = json.loads(custobj.enroll_customer(avars))
-    member = common.getkeyvalue(patobj, "fullname", "")
-    
-    ret = None
-    if(patobj["result"] == "success"):
-        logger.loggerpms2.info("Customer Controller PatOBJ Succes ")
+    try:
+        customerid = int(common.getid(request.vars.customerid))
+        logger.loggerpms2.info("Enter Controller Enroll Customer " + str(customerid))
         
-        appPath = current.globalenv["request"].folder
-        mdpappt = mdpappointment.Appointment(db, providerid)
-        docs = db((db.doctor.providerid == providerid) & 
-                  (db.doctor.practice_owner == True) & 
-                  (db.doctor.is_active == True)).select()
+        customer = db(db.customer.id == customerid).select()
+        providerid = int(common.getid(customer[0].providerid))
+        customer_ref = common.getstring(customer[0].customer_ref)
+        appointment_id  = common.getstring(customer[0].appointment_id)
+        appointment_datetime = customer[0].appointment_datetime
         
-        if(len(docs)>0):
-            doctorid = docs[0].id
+        
+        custobj = mdpcustomer.Customer(db)
+        avars = {"customerid":customerid,"customer_ref":customer_ref}
+        patobj  = json.loads(custobj.enroll_customer(avars))
+        member = common.getkeyvalue(patobj, "fullname", "")
+        
+        ret = None
+        if(patobj["result"] == "success"):
+            logger.loggerpms2.info("Customer Controller PatOBJ Succes ")
             
+            appPath = current.globalenv["request"].folder
+            mdpappt = mdpappointment.Appointment(db, providerid)
+            docs = db((db.doctor.providerid == providerid) & 
+                      (db.doctor.practice_owner == True) & 
+                      (db.doctor.is_active == True)).select()
+            
+            if(len(docs)>0):
+                doctorid = docs[0].id
+                
+            else:
+                doctorid = 0
+            
+            db((db.customer.id == customerid) & (db.customer.is_active == True)).update(status = 'Enrolled')
+            logger.loggerpms2.info("Customer Controller Before New Appointment " + str(customerid))
+            apptobj = json.loads(mdpappt.newappointment(patobj["primarypatientid"], patobj["patientid"], doctorid, 
+                                            "", 
+                                            appointment_datetime.strftime("%d/%m/%Y %H:%M"),
+                                            30, 
+                                            "Auto-Appointment created\nAppointment_ID: " + appointment_id + "\n" + customer[0].notes, 
+                                            customer[0].cell, 
+                                            appPath
+                                            )
+                                 )
+            #email Welcome Kit
+            ret = mail.emailWelcomeKit(db,request,patobj["primarypatientid"],providerid)
+            message = "Customer " + member + " has been successfully enrolled in MDP\n Welcome Kit has been sent to the registered email address"
+            returnurl = URL('customer','list_customers',vars=dict(page=page))
         else:
-            doctorid = 0
+            message = "ERROR enrolling Customer " + member + " in MDP"
+            logger.loggerpms2.info("Customer Controller PatOBJ Failuer ")
+            returnurl = URL('customer','list_customers',vars=dict(page=page))
         
-        db((db.customer.id == customerid) & (db.customer.is_active == True)).update(status = 'Enrolled')
-        logger.loggerpms2.info("Customer Controller Before New Appointment " + str(customerid))
-        apptobj = json.loads(mdpappt.newappointment(patobj["primarypatientid"], patobj["patientid"], doctorid, 
-                                        "", 
-                                        appointment_datetime.strftime("%d/%m/%Y %H:%M"),
-                                        30, 
-                                        "Auto-Appointment created\nAppointment_ID: " + appointment_id + "\n" + customer[0].notes, 
-                                        customer[0].cell, 
-                                        appPath
-                                        )
-                             )
-        #email Welcome Kit
-        ret = mail.emailWelcomeKit(db,request,patobj["primarypatientid"],providerid)
-        message = "Customer " + member + " has been successfully enrolled in MDP\n Welcome Kit has been sent to the registered email address"
+    except Exception as e:
+        message = "Enroll Customer Exception:\n" + str(e)
+        logger.loggerpms2.info(message)      
         returnurl = URL('customer','list_customers',vars=dict(page=page))
-    else:
-        message = "ERROR enrolling Customer " + member + " in MDP"
-        logger.loggerpms2.info("Customer Controller PatOBJ Failuer ")
-        returnurl = URL('customer','list_customers',vars=dict(page=page))
-        
+               
+         
+           
     
     return dict(ret=ret, message=message, returnurl=returnurl)
 
