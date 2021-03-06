@@ -1,0 +1,136 @@
+{{extend 'mdp_layoutw3.html'}}
+
+
+
+<header class="w3-container w3-dark-grey ">
+   <h4>{{=formheader}}</h4>
+</header>
+
+
+<h4 class="head-line"></h4>
+{{=formA.custom.begin}}
+
+
+<table>
+<tr>
+<td class="form_details">
+  Bank Name
+</td>
+<td class="form_details">
+  {{=formA.custom.widget.bankname}}
+</td>
+</tr>
+<tr>
+<td class="form_details">
+ Branch Name
+</td>
+<td class="form_details">
+ {{=formA.custom.widget.bankbranch}}
+</td>
+</tr>
+<tr>
+<td class="form_details">
+Account Name
+</td>
+<td class="form_details">
+{{=formA.custom.widget.bankaccountname}}
+</td>
+</tr>
+<tr>
+<td class="form_details">
+Account No
+</td>
+<td class="form_details">
+{{=formA.custom.widget.bankaccountno}}
+</td>
+</tr>
+<tr>
+<td class="form_details">
+Account Type
+</td>
+<td class="form_details">
+{{=formA.custom.widget.bankaccounttype}}
+</td>
+</tr>
+<tr>
+<td class="form_details">
+MICR No
+</td>
+<td class="form_details">
+{{=formA.custom.widget.bankmicrno}}
+</td>
+</tr>
+<tr>
+<td class="form_details">
+IFS Code
+</td>
+<td class="form_details">
+{{=formA.custom.widget.bankifsccode}}
+</td>
+</tr>
+
+<tr>
+<td class="form_details">
+Address1
+</td>
+<td class="form_details">
+{{=formA.custom.widget.address1}}
+</td>
+</tr>
+<tr>
+<td class="form_details">
+Address2
+</td>
+<td class="form_details">
+{{=formA.custom.widget.address2}}
+</td>
+</tr>
+<tr>
+<td class="form_details">
+Address3
+</td>
+<td class="form_details">
+{{=formA.custom.widget.address3}}
+</td>
+</tr>
+<tr>
+<td class="form_details">
+City
+</td>
+<td class="form_details">
+{{=formA.custom.widget.city}}
+</td>
+</tr>
+<tr>
+<td class="form_details">
+State
+</td>
+<td class="form_details">
+{{=formA.custom.widget.st}}
+</td>
+</tr>
+<tr>
+<td class="form_details">
+Pin
+</td>
+<td class="form_details">
+{{=formA.custom.widget.pin}}
+</td>
+</tr>
+</table>
+<br/>
+{{=formA.custom.submit}}
+<button class="form_details_button" onclick="window.location='{{=returnurl}}';return false">Return</button>&nbsp;&nbsp;
+
+
+
+
+
+
+{{=formA.custom.end}}
+
+
+
+
+
+

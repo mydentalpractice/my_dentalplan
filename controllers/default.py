@@ -721,6 +721,7 @@ def index():
 
     if(auth.is_logged_in() & (sitekey == None)):
         redirect(URL('default','main'))    #IB 05292016
+	
     elif (auth.is_logged_in() & (sitekey != None)):
         redirect(URL('default','user', args=['logout'], vars=dict(_next=URL('default','index')))) #IB 05292016
         #redirect(URL('default','user', args=['logout'], vars=dict(_next='/my_dentalplan/default/index'))) #IB 05292016
@@ -740,6 +741,8 @@ def index():
 	xpassword['_placeholder'] =  'Password'
 	xpassword['_autocomplete'] =  'off'	
 	xpassword['_pattern'] = "[a-zA-Z0-9-_.!@#$%^&*]+"
+	
+	
 	
 	return dict(formlogin=formlogin)
 
@@ -1437,6 +1440,8 @@ def logout():
     auth.settings.logout_next = URL('default','index')
     auth.logout()
     return dict()
+
+
 
 #IB 05292016
 @auth.requires_membership('webadmin')
