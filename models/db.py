@@ -203,7 +203,9 @@ db.activity_log_ref._singular = "activity_log_ref"
 db.activity_log_ref._plural = "activity_log_ref"
 
 db.define_table('clinic',
+                
                 Field('clinic_ref','string'),
+                    
                 Field('name','string'),
                 Field('address1','string'),
                 Field('address2','string'),
@@ -260,6 +262,7 @@ db.define_table('clinic',
                 Field('bank_id','integer'), 
                 
                 Field('state_dental_registration','string'),
+                
                 Field('notes','text'),
                 auth.signature                
                 )

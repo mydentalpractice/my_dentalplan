@@ -1,0 +1,71 @@
+{{extend 'mdp_layoutw3.html'}}
+
+
+<header class="w3-container w3-dark-grey ">
+   <h4>{{=formheader}}</h4>
+</header>
+
+
+
+ 
+
+
+
+<table>
+<tr>
+    <td class="form_details ">
+       Total Number of Providers
+    </td>
+
+    <td class="form_details ">
+        {{=provider_count}}
+    </td>
+
+    </tr>
+
+
+<tr>
+    <td class="form_details ">
+        New Clinics
+    </td>
+
+    <td class="form_details ">
+        {{=new_clinics}}
+    </td>
+
+    </tr>
+<tr>
+<td class="form_details ">
+Pre-Assigned Clinics
+</td>
+ <td class="form_details ">
+        {{=old_clinics}}
+</td>
+</tr>
+    
+<tr>
+<td class="form_details ">
+Providers with New Clinics
+</td>
+ <td class="form_details ">
+        {{=assigned_provs}}
+</td>
+</tr>
+
+<tr>
+<td class="form_details ">
+Providers with no Clinics
+</td>
+ <td class="form_details ">
+        {{=unassigned_provs}}
+</td>
+</tr>
+
+
+
+
+</table>
+<button class="form_details_button" onclick="window.location='{{=returnurl}}';return false">Return</button>&nbsp;&nbsp;
+
+
+

@@ -745,24 +745,19 @@ def index():
 	logger.loggerpms2.info("Form Login Not Accepted " + str(formlogin.errors))    
     else:
 	logger.loggerpms2.info("Form Login Else Accepted ")
-	#user = auth.login_bare(formlogin.vars.username,formlogin.vars.password)
-	#if(auth.is_logged_in()):
-	    #logger.loggerpms2.info("User Logged")
-	    #redirect(URL('default','main'))
-	#else:
-	    #redirect(URL("default",'index'))    
+	    
     
     return dict(formlogin=formlogin)
 
 def user_login():
     
-    logger.loggerpms2.info("Enter user login")
+    #logger.loggerpms2.info("Enter user login")
     username = request.args[0]
     password = request.args[1]
-    logger.loggerpms2.info("Enter user login2  " + username + " "+ password)
+    #logger.loggerpms2.info("Enter user login2  " + username + " "+ password)
     user = auth.login_bare(username,password)
     if(auth.is_logged_in()):
-	logger.loggerpms2.info("User Logged")
+	#logger.loggerpms2.info("User Logged")
 	redirect(URL('default','main'))
     else:
 	redirect(URL("default",'index'))   

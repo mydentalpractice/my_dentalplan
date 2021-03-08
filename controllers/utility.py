@@ -33,12 +33,82 @@ from applications.my_pms2.modules  import mdpuser
 from applications.my_pms2.modules  import mdpimage
 from applications.my_pms2.modules  import mdpcustomer
 from applications.my_pms2.modules  import mdpmedia
-
+from applications.my_pms2.modules  import mdpclinic
 #from gluon.contrib import common
 #from gluon.contrib import mail
 
 from applications.my_pms2.modules import logger
 
+
+#this function assigns provider clinics to agents
+#for each provider, create a clinic if no clinic has been 
+#created. Then assign the clinic to agent within the same
+#region
+def assign_clinics():
+    username = ""
+    formheader = "Assigned Clinics Report"
+    provs = db(db.provider.is_active == True).select()
+    provider_count = len(provs)
+    new_clinics = 0
+    old_clinics = 0
+    assigned_provs = ""
+    unassigned_provs = ""
+    
+    for prov in provs:
+	
+	#does the clinic exists for this provider?
+	#if not, then create one for this provider
+	
+	ref_code = 'PRV'
+	ref_id = prov.id
+	r = db((db.clinic_ref.ref_code == ref_code) & (db.clinic_ref.ref_id == ref_id)).count()
+	if(r > 0):
+	    #clinic exists for this provider
+	    old_clinics = old_clinics + 1
+	    continue
+	
+	#clinic does not exist
+	reqobj = {
+	"action":"new_clinic", 
+	"ref_code":ref_code,     
+	"ref_id":ref_id,        
+	"name":prov.practicename,      
+	"address1":prov.address1,
+	"address2":prov.address2,
+	"address3":prov.address3,
+	"city":prov.city,
+	"st":prov.st,
+	"pin":prov.pin,
+	"cell":prov.cell,
+	"email":prov.email,
+
+	"status":"Old",
+	"primary":"True",
+	
+	"gps_location":prov.pa_locationurl,
+	
+	"bank_id":prov.bankid,
+	
+	"state_dental_registration":prov.registration,
+	"mdp_registration":"Yes",
+	"notes":common.getstringfromdate(datetime.datetime.today(),"%d/%m/%Y") + "\n" + " New Clinic Assigend"
+	
+	}
+
+	clinicobj = mdpclinic.Clinic(db)
+	rsp = json.loads(clinicobj.new_clinic(reqobj))
+	
+	if(rsp["result"] == 'fail'):
+	    unassigned_provs = unassigned_provs + "," + prov.provider + " "
+	else:
+	    assigned_provs = assigned_provs + "," + prov.provider + " "
+	    new_clinics = new_clinics  + 1
+	    
+    	    
+    returnurl = URL('default','main')
+    return dict(formheader=formheader,username=username,\
+                provider_count=provider_count, new_clinics = new_clinics,old_clinics=old_clinics,assigned_provs=assigned_provs,\
+                unassigned_provs=unassigned_provs,returnurl=returnurl)
 
 
 def download():
