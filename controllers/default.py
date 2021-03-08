@@ -706,7 +706,70 @@ def member_resetpassword():
         
     return dict(form=form)
 
+
 def index():
+    logger.loggerpms2.info("Enter Index")
+    formlogin = SQLFORM.factory(
+        
+        Field('username','string',default='',requires=IS_NOT_EMPTY()),
+        Field('password','password',default='',requires=IS_NOT_EMPTY())
+        
+    
+    )
+    xusername = formlogin.element('input',_id='no_table_username')
+    xusername['_class'] =  'form-control'
+    xusername['_placeholder'] =  'Username'
+    xusername['_autocomplete'] =  'off'
+    xusername['_pattern'] = "[a-zA-Z0-9-_.]+"
+
+
+    xpassword = formlogin.element('input',_id='no_table_password')
+    xpassword['_class'] =  'form-control'
+    xpassword['_placeholder'] =  'Password'
+    xpassword['_autocomplete'] =  'off'	
+    xpassword['_pattern'] = "[a-zA-Z0-9-_.!@#$%^&*]+"    
+
+    submit = formlogin.element('input',_type='submit')
+    submit['_value'] = 'Login'            
+   
+    if formlogin.accepts(request,session,keepvalues=True):
+	logger.loggerpms2.info("Form Login Accepted " +  formlogin.vars.username + " " + formlogin.vars.password)
+	user = auth.login_bare(formlogin.vars.username,formlogin.vars.password)
+	if(auth.is_logged_in()):
+	    logger.loggerpms2.info("User Logged")
+	    redirect(URL('default','main'))
+	else:
+	    redirect(URL("default",'index'))
+	    
+    elif formlogin.errors:
+	logger.loggerpms2.info("Form Login Not Accepted " + str(formlogin.errors))    
+    else:
+	logger.loggerpms2.info("Form Login Else Accepted ")
+	#user = auth.login_bare(formlogin.vars.username,formlogin.vars.password)
+	#if(auth.is_logged_in()):
+	    #logger.loggerpms2.info("User Logged")
+	    #redirect(URL('default','main'))
+	#else:
+	    #redirect(URL("default",'index'))    
+    
+    return dict(formlogin=formlogin)
+
+def user_login():
+    
+    logger.loggerpms2.info("Enter user login")
+    username = request.args[0]
+    password = request.args[1]
+    logger.loggerpms2.info("Enter user login2  " + username + " "+ password)
+    user = auth.login_bare(username,password)
+    if(auth.is_logged_in()):
+	logger.loggerpms2.info("User Logged")
+	redirect(URL('default','main'))
+    else:
+	redirect(URL("default",'index'))   
+    return dict()
+    
+def xindex():
+    
     sitekey = None
 
     if(auth.user == None):
@@ -719,15 +782,21 @@ def index():
         else:
             sitekey = auth.user.sitekey
 
+    
+
     if(auth.is_logged_in() & (sitekey == None)):
+	logger.loggerpms2.info("Logged In")
         redirect(URL('default','main'))    #IB 05292016
 	
     elif (auth.is_logged_in() & (sitekey != None)):
+	logger.loggerpms2.info("Logged In -1")
         redirect(URL('default','user', args=['logout'], vars=dict(_next=URL('default','index')))) #IB 05292016
         #redirect(URL('default','user', args=['logout'], vars=dict(_next='/my_dentalplan/default/index'))) #IB 05292016
     else:
         #redirect(URL('my_dentalplan','default','user'))
+	logger.loggerpms2.info("Enter Index-2")
         formlogin = auth.login()
+	logger.loggerpms2.info("Enter Index-3")
 	
 	xusername = formlogin.element('input',_id='auth_user_username')
 	xusername['_class'] =  'form-control'
@@ -742,14 +811,22 @@ def index():
 	xpassword['_autocomplete'] =  'off'	
 	xpassword['_pattern'] = "[a-zA-Z0-9-_.!@#$%^&*]+"
 	
+	if formlogin.accepts(request,session,keepvalues=True):
+	    logger.loggerpms2.info("Form Login Accepted " +  formlogin.vars.username + " " + formlogin.vars.password.password)
+	    user = auth.login_bare(formlogin.vars.username,formlogin.vars.password.password)
+	    if(auth.is_logged_in()):
+		logger.loggerpms2.info("User Logged")
+		redirect(URL('default','main'))
+	    else:
+		redirect(URL("default",'index'))
+		
+	elif formlogin.errors:
+	    logger.loggerpms2.info("Form Login Not Accepted " + str(formlogin.errors))
 	
 	
 	return dict(formlogin=formlogin)
 
-    #auth.settings.login_onaccept.append(redirect_after_adminlogin)
-    #auth.settings.login_onfail.append(login_adminerror)
-    #formlogin = auth.login()
-    #return dict(formlogin=formlogin)
+   
 
 def login_error(form):
     redirect(URL('default','member_login_error'))  #IB 05292016

@@ -1,7 +1,11 @@
 {{left_sidebar_enabled=False}}
 
 {{extend 'layout0.html'}}
+
+
+
 <div id="index" align="center">
+{{=formlogin.custom.begin}}
 <table>
 <tr>
 <td valign="top">
@@ -10,28 +14,47 @@
 </a>
 </td>
 </tr>
+
 <tr>
 <td>
-{{if(auth.is_logged_in()):}}
-<h3>Welcome to MyDentalPlan.in</h3>
-{{else:}}
-<h4>Please login to HMO Management System</h4>
-{{pass}}
+Username
+</td>
+<td>
+{{=formlogin.custom.widget.username}}
 </td>
 </tr>
 <tr>
 <td>
-{{if(auth.is_logged_in()):}}
-<br/>
-HMO Management System
-Copyright 2015 Macco Systems Inc.
-Version 1.00.01
-{{else:}}
-{{=formlogin}}
-{{pass}}
+Password
+</td>
+<td>
+{{=formlogin.custom.widget.password}}
 </td>
 </tr>
 </table>
+<div style="display:none">
+{{=formlogin.custom.submit}}
+</div>
+{{=formlogin.custom.end}}
+
+<button class="form_details_button" type="submit"  onclick="javascript:login()">Login</button> 
 <div>
+
+<script>
+function login(){
+  <!--alert("Enteer login");-->
+  var y = document.getElementById("no_table_username").value;
+  var z = document.getElementById("no_table_password").value;
+  
+  <!--alert(y + " " + z)-->
+  
+  window.location.replace("/my_dentalplan/default/user_login/" + y + "/" + z)
+   
+
+}
+
+
+
+</script>
 
 
