@@ -8608,3 +8608,9 @@ UPDATE provider AS p INNER JOIN bank_details AS b ON p.id = b.providerid SET p.b
 =========
 1. XXXZZZAdded gender & dob in Prospect table
 2. XXXZZZAdded 'notes' field in Clinic table
+
+8/3/2021
+========
+1. YYYZZAdded Clinic ID for this treatment
+2. ZZAdded clinicid, clinicname to vw_treatmentlist
+2. ZZZCreate and Assign clinic to Provider & Treatments by running assign clinic utility

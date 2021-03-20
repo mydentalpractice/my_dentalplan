@@ -104,6 +104,10 @@ def assign_clinics():
 	    assigned_provs = assigned_provs + "," + prov.provider + " "
 	    new_clinics = new_clinics  + 1
 	    
+	    clinicid = int(common.getid(common.getkeyvalue(rsp,"clinicid","0")))
+
+	    db(db.treatment.provider ==prov.id).update(clinicid=clinicid)
+		                                            
     	    
     returnurl = URL('default','main')
     return dict(formheader=formheader,username=username,\
