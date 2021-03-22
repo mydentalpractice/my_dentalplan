@@ -894,6 +894,128 @@ def importdoctor():
 
     return dict(form=form, count=count, error=error)
 
+
+def importSPAT():
+    
+    logger.loggerpms2.info("Import SPAT")
+    
+    strsql = "Truncate table importSPAT"
+    db.executesql(strsql)
+    db.commit()    
+    
+    count = 0
+    form = SQLFORM.factory(
+                Field('csvfile','string',label='CSV File', requires= IS_NOT_EMPTY())
+                )    
+    
+    submit = form.element('input',_type='submit')
+    submit['_value'] = 'Import'    
+    
+    xcsvfile = form.element('input',_id='no_table_csvfile')
+    xcsvfile['_class'] =  'w3-input w3-border w3-small'    
+    
+
+    error = ""
+    count = 0
+    
+    if form.accepts(request,session,keepvalues=True):
+	try:
+	    xcsvfile = request.vars.csvfile
+	    code = ""
+	    with open(xcsvfile, 'r') as csvfile:
+		reader = csv.reader(csvfile)
+		count = 0
+		memberID = ""
+		
+		    
+    
+		for row in reader:
+		    count = count + 1
+		    if(count == 1):
+			continue		    
+		   
+		    strsql = "INSERT INTO importspat"
+		    strsql = strsql + "(id,agent,name,address1,address2,address3,city,st,pin,"
+		    strsql = strsql + "cell,email"
+		    strsql = strsql + ")VALUES("
+		    strsql = strsql + row[0] + " "
+		    strsql = strsql + ",'" + row[1] + "'"
+		    strsql = strsql + ",'" + row[2] + "'"
+		    strsql = strsql + ",'" + row[3] + "'"
+		    strsql = strsql + ",'" + row[4] + "'"
+		    strsql = strsql + ",'" + row[5] + "'"
+		    strsql = strsql + ",'" + row[6] + "'"
+		    strsql = strsql + ",'" + row[7] + "'"
+		    strsql = strsql + ",'" + row[8] + "'"
+		    strsql = strsql + ",'" + row[9] + "'"
+		    strsql = strsql + ",'" + row[10] + "'"
+		    strsql = strsql + ")"                
+		    
+		    logger.loggerpms2.info("Import SPAT SQL \n" + strsql)
+
+		    db.executesql(strsql)
+		    db.commit()
+	  
+	    
+	    #loop through import spat table
+	    #for each import spat, if it exists, then create a username/password
+	    #update the record, send email
+	    #if does not exist, insert the record, and send email	    
+	    #loop through import spat table and populate agent table
+	    strsql = "SELECT * from importspat where id > 0;"
+	    ds = db.executesql(strsql)
+	    
+	    
+	    for i in xrange(0,len(ds)):
+		
+		#check if agent already present, if yes, then skip & continue
+		r = db((db.agent.agent == ds[i][1]) & (db.agent.is_active == True)).select()
+		if(len(r) > 0):
+		    continue;
+		
+		
+		agentid = db.agent.insert(
+		    agent = common.getstring(ds[i][1]),
+		    name = common.getstring(ds[i][2]),
+		    address1 = common.getstring(ds[i][3]),
+		    address2 = common.getstring(ds[i][4]),
+		    address3 = common.getstring(ds[i][5]),
+		    city = common.getstring(ds[i][6]),
+		    st = common.getstring(ds[i][7]),
+		    pin = common.getstring(ds[i][8]),
+		    cell = common.getstring(ds[i][9]),
+		    email = common.getstring(ds[i][10]),
+		    
+		    is_active = True, 
+		    created_on = request.now,
+		    created_by = 1 if(auth.user == None) else auth.user.id,
+		    modified_on=request.now, 
+		    modified_by = 1 if(auth.user == None) else auth.user.id
+		)      
+		
+		#if inserted, now create username/password
+		if(agentid > 0):
+		    
+		    username = "SPA" + str(agentid).zfill(4)
+		    password = "SPA" + str(agentid).zfill(4)
+		    
+		    ouser = mdpuser.User(current.globalenv['db'],current.auth,"","")
+		    
+		    rspobj = json.loads(ouser.spat_registration(request, common.getstring(ds[i][1]), common.getstring(ds[i][2]), common.getstring(ds[i][10]),\
+		                              common.getstring(ds[i][9]),username,password))
+		    if(rspobj["result"] == "fail"):
+			logger.loggerpms2.info("Import SPAT Error - " + rspobj["error_message"])
+			error = "Import SPAT Error - " + rspobj["error_message"]
+		    else:
+			error = "success"
+	 
+	except Exception as e:
+	    logger.loggerpms2.info("Import SPAT Exception Error - " + str(e) + "\n" + str(e.message))
+	    error = "Import SPAT Exception Error - " + str(e)
+
+    return dict(form=form, count=count, error=error)
+
+
 def importproviderregionplan():
     auth = current.auth
      

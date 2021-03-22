@@ -262,6 +262,7 @@ db.define_table('clinic',
                 Field('bank_id','integer'), 
                 
                 Field('state_dental_registration','string'),
+                Field('registration_certificate','string'),
                 
                 Field('notes','text'),
                 auth.signature                
@@ -3303,6 +3304,8 @@ db.define_table('vw_appointments',
                 Field('companyid', 'integer'),
                 Field('groupref', 'string'),
                 Field('membercode', 'string'),
+                Field('dob', 'datetime',requires=IS_DATE(format=T('%d/%m/%Y'))),
+                Field('gender', 'string'),
                 Field('clinicid', 'integer'),
                 Field('clinic_ref', 'string'),
                 Field('clinic_name', 'string'),
