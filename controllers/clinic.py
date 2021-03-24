@@ -153,6 +153,9 @@ def view_image():
 @auth.requires_membership('webadmin')
 @auth.requires_login()
 def list_clinic_images():
+    
+    logger.loggerpms2.info("Enter list_clinic_images")
+    
     username = auth.user.first_name + ' ' + auth.user.last_name
     page = common.getpage1(request.vars.page)
 
@@ -167,7 +170,10 @@ def list_clinic_images():
     
     formheader = clinics[0].name + " Images" 
     
+     
     query = ((db.dentalimage_ref.ref_code == ref_code)& (db.dentalimage_ref.ref_id == ref_id) & (db.dentalimage.is_active==True))
+    
+    logger.loggerpms2.info("List Clinic Images " + str(query))
     
     fields=(
                    

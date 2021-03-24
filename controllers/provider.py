@@ -786,13 +786,13 @@ def create_provider():
         db.provider.taxid.writable = True
         db.provider.groupregion.default = 1
         db.provider.provider.default = getProviderCode()
-	db.provider.speciality.requires = IS_IN_DB(db((db.speciality_default.id>0)),db.speciality_default.id, '%(speciality)s')
-
-
+	
+    db.provider.speciality.requires = IS_IN_DB(db((db.speciality_default.id>0)),db.speciality_default.id, '%(speciality)s')
     
     crud.settings.create_next = URL('provider','list_provider',vars=dict(page=common.getgridpage(request.vars)),args='')
     formA = crud.create(db.provider)  ## company Details entry form
-
+    
+   
 
     ## redirect on Cancel
     if session.create_provider_url == None:

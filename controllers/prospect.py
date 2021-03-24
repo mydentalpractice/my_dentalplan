@@ -40,8 +40,11 @@ def list_prospect():
     ref_code = "AGN" if (common.getstring(request.vars.ref_code) == "") else request.vars.ref_code
     ref_id = 0 if (common.getstring(request.vars.ref_id) == "") else int(request.vars.ref_id)
     
+    query = ((db.prospect.is_active == True) & (db.prospect_ref.ref_code == ref_code))
+    if(ref_id > 0):
+        query = (query & (db.prospect_ref.ref_id == ref_id))
     
-    query = ((db.prospect_ref.ref_code == ref_code)& (db.prospect_ref.ref_id == ref_id) & (db.prospect.is_active==True))
+
     
     fields=(db.prospect.provider,
             db.prospect.providername,
@@ -67,7 +70,7 @@ def list_prospect():
         'prospect.pa_approved': 'Apr'
         }    
     
-    orderby = (db.prospect.provider)
+    orderby = (~db.prospect.id)
     exportlist = dict( csv=False,csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)
     links = [lambda row: A('Update',_href=URL("prospect","update_prospect",vars=dict(page=common.getgridpage(request.vars)),args=[row.id])),
              lambda row: A('Clincs',_href=URL("clinic","list_clinic",vars=dict(page=common.getgridpage(request.vars),prev_ref_code=ref_code, prev_ref_id =ref_id,ref_code="PST",ref_id=row.id))),
