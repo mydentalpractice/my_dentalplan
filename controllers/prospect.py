@@ -683,7 +683,7 @@ def enroll_prospect():
 
     if(rspobj["result"] == "success"):
         retval = True
-        retval = mail.emailProviderLoginDetails(db,request,siteky,email,username,password)
+        retval = mail.emailProviderLoginDetails(db,request,sitekey,email,username,password)
        
     else:
         retval = False

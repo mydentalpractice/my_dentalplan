@@ -983,8 +983,8 @@ def importSPAT():
 		    city = common.getstring(ds[i][6]),
 		    st = common.getstring(ds[i][7]),
 		    pin = common.getstring(ds[i][8]),
-		    cell = common.getstring(ds[i][9]),
-		    email = common.getstring(ds[i][10]),
+		    cell = common.getstring(ds[i][10]),
+		    email = common.getstring(ds[i][12]),
 		    
 		    is_active = True, 
 		    created_on = request.now,
@@ -1000,9 +1000,9 @@ def importSPAT():
 		    password = "SPA" + str(agentid).zfill(4)
 		    
 		    ouser = mdpuser.User(current.globalenv['db'],current.auth,"","")
-		    
-		    rspobj = json.loads(ouser.spat_registration(request, common.getstring(ds[i][1]), common.getstring(ds[i][2]), common.getstring(ds[i][10]),\
-		                              common.getstring(ds[i][9]),username,password))
+		    #def spat_registration(self, request, spat, spatname,  email, cell, username, password):
+		    rspobj = json.loads(ouser.spat_registration(request, common.getstring(ds[i][1]), common.getstring(ds[i][2]), common.getstring(ds[i][12]),\
+		                              common.getstring(ds[i][10]),username,password))
 		    if(rspobj["result"] == "fail"):
 			logger.loggerpms2.info("Import SPAT Error - " + rspobj["error_message"])
 			error = "Import SPAT Error - " + rspobj["error_message"]
