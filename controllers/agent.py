@@ -42,6 +42,7 @@ def list_agent():
 
     links = [lambda row: A('Update',_href=URL("agent","update_agent",args=[row.id])), 
              lambda row: A('Prospects',_href=URL("prospect","list_prospect",vars=dict(ref_code="AGN", ref_id=row.id))),         
+             lambda row: A('Providers',_href=URL("prospect","list_provider",vars=dict(ref_code="AGN", ref_id=row.id))),         
              lambda row: A('Delete',_href=URL("agent","delete_agent",args=[row.id]))]
 
     query = (db.agent.is_active==True)

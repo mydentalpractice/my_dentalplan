@@ -65,7 +65,7 @@ def list_prospect():
         'prospect.city':'City',
         'prospect.pin' : 'PIN',
         'prospect.cell' : 'Cell',
-        'prospect.emial' : 'Email',
+        'prospect.email' : 'Email',
         'prospect.pa_accepted':'Acpt',
         'prospect.pa_approved': 'Apr'
         }    
@@ -102,6 +102,73 @@ def list_prospect():
     returnurl=URL('default','index')
     return dict(username=username,returnurl=returnurl,form=form, formheader=formheader,page=common.getgridpage(request.vars))    
 
+@auth.requires_login()
+def list_provider():
+    username = auth.user.first_name + ' ' + auth.user.last_name
+    formheader = "Provider List"
+    page = common.getpage1(request.vars.page)
+    
+    ref_code = "AGN" if (common.getstring(request.vars.ref_code) == "") else request.vars.ref_code
+    ref_id = 0 if (common.getstring(request.vars.ref_id) == "") else int(request.vars.ref_id)
+    
+    query = ((db.provider.is_active == True) & (db.prospect_ref.ref_code == ref_code))
+    if(ref_id > 0):
+        query = (query & (db.prospect_ref.ref_id == ref_id))
+    
+
+    
+    fields=(db.provider.id,
+        db.provider.provider,
+            db.provider.providername,
+            db.provider.practicename,
+      
+            db.provider.city,
+            db.provider.pin,
+            db.provider.cell,
+            db.provider.email,
+            db.provider.pa_accepted,
+            db.provider.pa_approved)
+    
+    headers={
+        'provider.id':"ID",
+        'provider.provider':'Provider',
+        'provider.providername':'Name',
+        'provider.practicename' : 'Practice',
+   
+        'provider.city':'City',
+        'provider.pin' : 'PIN',
+        'provider.cell' : 'Cell',
+        'provider.email' : 'Email'
+      
+        }    
+    
+    orderby = (~db.provider.id)
+    exportlist = dict( csv=False,csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)
+    links = [lambda row: A('Update',_href=URL("provider","update_provider",vars=dict(page=common.getgridpage(request.vars)),args=[row.provider.id]))
+             
+            ]
+
+
+    left = [db.provider.on(db.provider.id==db.prospect_ref.provider_id)]
+    form = SQLFORM.grid(query=query,
+                 headers=headers,
+                 fields=fields,
+                 links=links,
+                 left=left,
+                 orderby=orderby,
+                 exportclasses=exportlist,
+                 paginate=10,
+                 links_in_grid=True,
+                 searchable=True,
+                 create=False,
+                 deletable=False,
+                 editable=False,
+                 details=False,
+                 user_signature=False
+                )            
+
+    returnurl=URL('default','index')
+    return dict(username=username,returnurl=returnurl,form=form, formheader=formheader,page=common.getgridpage(request.vars))    
 
 @auth.requires_membership('webadmin')
 @auth.requires_login()
