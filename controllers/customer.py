@@ -133,6 +133,126 @@ def list_customers():
 
     return dict(formB = formB, username = username, formheader=formheader, page=page, returnurl = returnurl)
 
+def list_SPL_customers():
+    
+    db = current.globalenv['db']
+    
+    formheader = "Special Customer List"
+    username = "Admin" 
+    
+    page = common.getpage1(request.vars.page)
+    returnurl = URL('default', 'main')
+    
+    db.booking.id.readable = False
+   
+   
+    # varchar(45) 
+    #package_cost double 
+    # double 
+    # double 
+    # datetime 
+    # datetime 
+    # varchar(128) 
+    # varchar(128) 
+    # varchar(128) 
+    # varchar(45) 
+    # varchar(45) 
+    # varchar(45) 
+    #tx_id varchar(128) 
+    #payment_id varchar(128) 
+    #payment_amount double 
+    # datetime 
+    # double 
+    #payment_status varchar(45) 
+    #notes mediumtext 
+    # varchar(45) 
+    #is_active char(1) 
+    #created_by int(11) 
+    #created_on datetime 
+    #modified_by int(11) 
+    #modified_on datetime   
+
+    fields=(
+           
+            db.booking.booking_id,
+       
+            db.booking.package_name,
+            db.booking.package_offer_price,
+            db.booking.package_booking_amount,
+            db.booking.package_start_date,
+            db.booking.package_end_date,
+            
+            db.booking.name,
+            db.booking.cell,
+            db.booking.email,
+            db.booking.contact,            
+            db.booking.city,
+            db.booking.pincode,
+
+          
+            db.booking.payment_date,
+
+            db.booking.status
+            
+            
+            )
+    
+    headers={
+             
+             'booking.booking_id':'Booking ID',
+             'booking.package_name':'Package',
+             'booking.package_offer_price':'Booking Amount',
+             'booking.package_start_date':'Booking From',
+             'booking.package_end_date':'Booking To',
+             
+             'booking.name':'Customer',
+             'booking.cell': 'Cell',
+             'booking.email':'Email',
+             'booking.contact':'Contact',
+             'booking.city':'city',
+             'booking.pincode':'Pin',
+            
+             'booking.payment_date':'Paid Date',
+             'booking.status':'Status',
+             
+             }
+    
+    
+    exportlist = dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False, xml=False)
+    
+    
+
+    
+    links = [lambda row: A('Update',_href=URL("customer","update_SPL_customer",vars=dict(page=page,customerid=row.id))),
+             
+             lambda row: A('Enroll',_href=URL("customer","enroll_SPL_customer",
+                                              vars=dict(page=page,customerid=row.id)))  if(row.status != 'Enrolled') else "",
+             
+             lambda row: A('Delete',_href=URL("customer","delete_SPL_customer",vars=dict(customerid = row.id,customername=row.name,page=page)))
+             ]
+    query = ((db.booking.id > 0) & (db.booking.is_active == True))
+    
+    maxtextlength = 40
+                      
+    orderby = ~(db.booking.id)    
+    links = None
+    formB = SQLFORM.grid(query=query,
+                         headers=headers,
+                         fields=fields,
+                         links=links,
+                        
+                         orderby=orderby,
+                         exportclasses=exportlist,
+                         links_in_grid=True,
+                         searchable=True,
+                         create=False,
+                         deletable=False,
+                         editable=False,
+                         details=False,
+                         user_signature=False
+                         )
+
+    return dict(formB = formB, username = username, formheader=formheader, page=page, returnurl = returnurl)
 
 def list_customer_dependants():
     
@@ -815,6 +935,39 @@ def delete_customer():
         
             
     return dict(form=form,customername=customername)
+
+
+def enroll_all_SPL_customers():
+    
+    try:
+        
+        logger.loggerpms2.info("Enter Controller Enroll All SPL Customer ")
+
+        custobj = mdpcustomer.Customer(db)
+        avars = {"action":"enroll_all_spl_customer"}
+        rsp = json.loads(custobj.enroll_all_SPL_customers(avars))
+        
+        #rsp={
+            #"result":"success",
+            #"count":"5",
+        #}
+        if(rsp["result"] == "success"):
+            message = "Number of Special Customers Enrolled = " + rsp["count"]
+        else:
+            message = "Error in enrolling special customers \n" + rsp["error_message"]
+        
+        logger.loggerpms2.info(message)
+        returnurl = URL('default','main')
+        
+    except Exception as e:
+        message = "Enroll Special Customer Exception:\n" + str(e)
+        logger.loggerpms2.info(message)      
+        returnurl = URL('default','main')
+               
+         
+           
+    ret = ""
+    return dict(ret=ret, message=message, returnurl=returnurl)
 
 def enroll_customer():
     page = common.getpage1(request.vars.page)

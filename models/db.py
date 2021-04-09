@@ -895,6 +895,7 @@ db.provider_region_plan._plural = "Provider"
 
 
 db.define_table('prospect',
+                Field('speciality',  'integer', widget = lambda field, value:SQLFORM.widgets.options.widget(field, value, _style="width:100%;height:35px",_class='form-control')),
                 Field('provider', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'),label='Provider Code',default='',length=20),
                 Field('title','string',represent=lambda v, r: '' if v is None else v,default=' ',label='Title',length=10,requires = IS_EMPTY_OR(IS_IN_SET(DOCTITLE))),
                 Field('providername', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'), default='', label='Provider Name ',length=512),
@@ -928,7 +929,7 @@ db.define_table('prospect',
                 Field('capitationytd', 'double',represent=lambda v, r: 0.00 if v is None else v,widget = lambda field, value:SQLFORM.widgets.double.widget(field, value, _class='form_details'),default=0.00,label='Capitation YTD'),
                 Field('captiationmtd', 'double',represent=lambda v, r: 0.00 if v is None else v,widget = lambda field, value:SQLFORM.widgets.double.widget(field, value, _class='form_details'),default=0.00,label='Capitation MTD'),
                 Field('languagesspoken', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'),default='',label='Languages Spoken',length=32),
-                Field('speciality',  'reference speciality', widget = lambda field, value:SQLFORM.widgets.options.widget(field, value, _style="width:100%;height:35px",_class='form-control')),
+                
                 Field('specialization', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'),default='',label='Specialization',length=64),
                 Field('sitekey','string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'),label='Web Enrollment Key', default='1234', length=20),
                 Field('registration','string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'),label='Registration', default='', length=128),
@@ -4043,6 +4044,53 @@ db.define_table('customeractivity',
 db.customeractivity._singular = "customeractivity"
 db.customeractivity._plural   = "customeractivity"
 
+
+
+
+db.define_table('booking',
+      
+                
+                Field('booking_id','string'),
+                Field('package_name','string'),
+                Field('name','string'),
+                Field('email','string'),
+                Field('contact','string'),
+                Field('cell','string'),
+                Field('city','string'),
+                Field('pincode','string'),
+                Field('tx_id','string'),
+                Field('payment_id','string'),
+                Field('payment_status','string'),
+                Field('notes','text'),
+                
+                Field('package_cost','double'),
+                Field('package_offer_price','double'),
+                Field('package_booking_amount','double'),
+                Field('payment_amount','double'),
+                Field('amount_paid','double'),
+                
+                Field('package_start_date','datetime'),
+                Field('package_end_date','datetime'),
+                Field('payment_date','datetime'),
+                
+                Field('status','string'),
+                auth.signature
+                
+                )
+
+db.booking._singular = "booking"
+db.booking._plural   = "booking"
+
+
+db.define_table('package_region_plan',
+                Field('package_code','string'),
+                Field('package_name','string'),
+                Field('city','string'),
+                Field('region','string'),
+                Field('plancode','string')
+                )
+db.package_region_plan._singular = "package_region_plan"
+db.package_region_plan._plural   = "package_region_plan"
 
 
 db.define_table('vw_customer',
