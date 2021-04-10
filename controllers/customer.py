@@ -223,19 +223,19 @@ def list_SPL_customers():
     
 
     
-    links = [lambda row: A('Update',_href=URL("customer","update_SPL_customer",vars=dict(page=page,customerid=row.id))),
+    links = [lambda row: A('Update',_href=URL("customer","update_SPL_customer",vars=dict(page=page,bookingid=row.id))),
              
              lambda row: A('Enroll',_href=URL("customer","enroll_SPL_customer",
-                                              vars=dict(page=page,customerid=row.id)))  if(row.status != 'Enrolled') else "",
+                                              vars=dict(page=page,bookingid=row.id)))  if(row.status != 'Enrolled') else ""
              
-             lambda row: A('Delete',_href=URL("customer","delete_SPL_customer",vars=dict(customerid = row.id,customername=row.name,page=page)))
+            
              ]
     query = ((db.booking.id > 0) & (db.booking.is_active == True))
     
     maxtextlength = 40
                       
     orderby = ~(db.booking.id)    
-    links = None
+    
     formB = SQLFORM.grid(query=query,
                          headers=headers,
                          fields=fields,
@@ -936,6 +936,37 @@ def delete_customer():
             
     return dict(form=form,customername=customername)
 
+def enroll_SPL_customer():
+    
+    try:
+        
+        logger.loggerpms2.info("Enter Controller Enroll A SPL Customer ")
+        bookingid = request.vars.bookingid
+        custobj = mdpcustomer.Customer(db)
+        avars = {"action":"enroll_all_spl_customer","bookingid":bookingid}
+        rsp = json.loads(custobj.enroll_SPL_customers(avars))
+        
+        #rsp={
+            #"result":"success",
+            #"count":"5",
+        #}
+        if(rsp["result"] == "success"):
+            message = "Number of Special Customers Enrolled = " + rsp["count"]
+        else:
+            message = "Error in enrolling special customers \n" + rsp["error_message"]
+        
+        logger.loggerpms2.info(message)
+        returnurl = URL('default','main')
+        
+    except Exception as e:
+        message = "Enroll Special Customer Exception:\n" + str(e)
+        logger.loggerpms2.info(message)      
+        returnurl = URL('default','main')
+               
+         
+           
+    ret = ""
+    return dict(ret=ret, message=message, returnurl=returnurl)
 
 def enroll_all_SPL_customers():
     
@@ -1348,3 +1379,148 @@ def customer_report():
         redirect(returnurl)    
 
     return dict(username=username,returnurl=returnurl,form=form,formheader=formheader,formA=formA,formB=formB)
+
+
+def update_SPL_customer():
+    
+    db = current.globalenv['db']
+    
+    formheader = "Special Customer"
+    username = "Admin" 
+  
+    
+    bookingid = int(common.getid(request.vars.bookingid))
+  
+    page = common.getpage1(request.vars.page)
+    
+    ds = db((db.booking.id == bookingid) & (db.booking.is_active == True)).select()
+    
+   
+   
+    #status    
+
+    if(len(ds) == 1):
+        booking_id = ds[0].booking_id
+        package_name = ds[0].package_name
+        package_cost = float(common.getvalue(ds[0].package_cost))
+        package_offer_price = float(common.getvalue(ds[0].package_offer_price))
+        package_booking_amount = float(common.getvalue(ds[0].package_booking_amount))
+        package_start_date = ds[0].package_start_date
+        package_end_date = ds[0].package_end_date        
+       
+        name = ds[0].name
+        contact = ds[0].contact
+        city = ds[0].city
+        pincode = ds[0].pincode
+        cell = ds[0].cell
+        email = ds[0].email
+
+        notes = ds[0].notes
+        status = ds[0].status
+        
+        tx_id = ds[0].tx_id
+        payment_id = ds[0].payment_id
+        payment_amount = float(common.getvalue(ds[0].payment_amount))
+        payment_date = ds[0].payment_date
+
+    else:
+        booking_id = ""
+        package_name = ""
+        package_cost = 0
+        package_offer_price = 0
+        package_booking_amount = 0
+        package_start_date = datetime.date.today()
+        package_end_date = datetime.date.today()  
+       
+        name = ""
+        contact = ""
+        city = ""
+        pincode = ""
+        cell = ""
+        email =""
+
+        notes = ""
+        status = "Open"
+        
+        tx_id = ""
+        payment_id = ""
+        payment_amount =0
+        payment_date = datetime.date.today()
+        
+    formA = SQLFORM.factory(
+        Field('booking_id', 'string',label='Customer ID', default=booking_id),
+        Field('package_name', 'string',label='Customer Ref', default=package_name),
+        Field('package_cost', 'double', default=package_cost),
+        Field('package_offer_price', 'double', default=package_offer_price),
+        Field('package_booking_amount', 'double', default=package_booking_amount),
+        Field('package_start_date', 'date',default=package_start_date),
+        Field('package_end_date', 'date',label='First Name', default=package_end_date),
+        
+        Field('name', 'string',label='Middle Name', default=name),
+        Field('contact', 'string',label='Last Name', default=contact),
+        Field('city', 'string',label='City', default=city),
+        
+        Field('pincode', 'string',label='pincode', default=pincode),
+        Field('cell', 'string',label='Cell Phone', default=cell),
+        Field('email', 'string',label='Email', default=email),
+
+
+        Field('tx_id','string',default=tx_id,label='Pin Choice 1'),
+        Field('payment_id','string',default=payment_id,label='Pin Choice 2'),
+        Field('payment_amount','double',default=payment_amount,label='Pin Choice 3'),
+        
+        Field('payment_date', 'date',label='DOB', default=payment_date),
+
+        Field('notes','text',default=notes,label='Notes'),
+        Field('status','string',default=status,label='status')
+        
+    )
+
+   
+
+    
+    if formA.process().accepted:
+        db(db.booking.id == bookingid).update(
+            
+            booking_id = formA.vars.booking_id,
+            package_name = formA.vars.package_name,
+            package_cost = formA.vars.package_cost,
+            package_offer_price = formA.vars.package_offer_price,
+            package_booking_amount = formA.vars.package_booking_amount,
+            package_start_date = formA.vars.package_start_date,
+            package_end_date = formA.vars.package_end_date,
+            name = formA.vars.name,
+            contact = formA.vars.contact,
+            city = formA.vars.city,
+            pincode = formA.vars.pincode,
+            cell = formA.vars.cell,
+            email = formA.vars.email,
+            
+            tx_id = formA.vars.tx_id,
+            payment_id = formA.vars.payment_id,
+            payment_amount = formA.vars.payment_amount,
+            payment_date = formA.vars.payment_date,
+            
+            notes = formA.vars.notes,
+            status = formA.vars.status,
+
+            modified_on = common.getISTFormatCurrentLocatTime(),
+            modified_by =  1 if(auth.user == None) else auth.user.id
+            
+            
+        ) 
+        
+        redirect(URL('customer','list_customers',vars=dict(page=page)))
+
+    elif formA.errors:
+        response.session = "Error - updating special customer" + str(formA.errors)
+    
+    
+  
+ 
+    returnurl = URL('customer','list_SPL_customers',vars=dict(page=page))
+    enrollcustomer = URL('customer','enroll_SPL_customer',vars=dict(page=page,bookingid=bookingid))
+
+    return dict(formA=formA,username=username, bookingid=bookingid,returnurl=returnurl,\
+                formheader=formheader,page=page,enrollcustomer=enrollcustomer,status=status)
+    

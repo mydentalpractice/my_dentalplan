@@ -1,0 +1,287 @@
+{{extend 'mdp_layoutw3.html'}}
+
+
+<form  method="post" name="frmNewMember" id="frmNewMember">
+{{=formA.custom.begin}}
+
+<div class="w3-container w3-padding-16">
+ <header class="w3-container w3-dark-grey ">
+   <h4>{{=formheader}}</h4>
+ </header>
+ <br/>
+
+
+<header class="w3-container w3-dark-grey ">
+ <h5>Booking Package Details</h5>
+ </header>
+
+
+<table>
+  <tr >
+       <td class="form_details ">
+           Booking ID
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.booking_id}}
+        </td>
+  </tr>
+  
+  <tr>
+       <td class="form_details ">
+           Package Name
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.package_name}}
+        </td>
+  </tr>
+           <tr>
+            <td class="form_details " >
+                Package Cost
+            </td>
+            
+            <td>
+                    {{=formA.custom.widget.package_cost}}
+            </td>
+         </tr>           
+  
+ <tr>
+       <td >
+           Package Offer Price
+       </td>
+       <td >
+        {{=formA.custom.widget.package_offer_price}}
+        </td>
+    </tr>  
+  
+ <tr>
+       <td class="form_details ">
+           Package Booking Amount
+       </td>
+       
+       <td >
+        {{=formA.custom.widget.package_booking_amount}}
+        </td>
+        
+       
+    </tr>  
+
+ <tr>
+       <td class="form_details ">
+           Booked On
+       </td>
+   <td class="form_details " >
+             {{=formA.custom.widget.package_start_date}}
+        </td>
+    </tr>  
+
+  
+ <tr>
+       <td class="form_details ">
+           Valid Until
+       </td>
+   <td class="form_details " >
+             {{=formA.custom.widget.package_end_date}}
+        </td>
+    </tr>  
+  
+</table>
+
+</br>
+
+<header class="w3-container w3-dark-grey ">
+ <h5>Personal Details</h5>
+ </header>
+
+
+<table>
+  <tr>
+       <td class="form_details ">
+           Name</span>
+       </td>
+       <td class="form_details " >
+        {{=formA.custom.widget.name}}
+        </td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+          Status
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.status}}
+        </td>
+    </tr>
+
+</table>
+
+
+
+
+
+ </br>
+<header class="w3-container w3-dark-grey ">
+ <h5>Contact Details</h5>
+ </header>
+
+<table>
+
+  <tr>
+       <td class="form_details ">
+       Contact
+           </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.contact}}
+        </td>
+    </tr>
+
+
+  <tr>
+       <td class="form_details ">
+          Mobile Number
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.cell}}
+        </td>
+    </tr>
+
+  <tr>
+       <td class="form_details ">
+           Email</span>
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.email}}
+        </td>
+    </tr>
+  
+  <tr>
+       <td class="form_details ">
+           City</span>
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.city}}
+        </td>
+    </tr>
+ 
+  <tr>
+       <td class="form_details ">
+           Pin </span>
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.pincode}}
+        </td>
+    </tr>
+  
+
+
+</table>
+
+</br>
+<header class="w3-container w3-dark-grey ">
+ <h5>Payment</h5>
+ </header>
+<table>
+  <tr>
+       <td class="form_details ">
+           TX ID
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.tx_id}}
+        </td>
+    </tr>
+    
+  <tr>
+       <td class="form_details ">
+           Payment ID
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.payment_id}}
+       
+    </tr>
+  
+  <tr>
+       <td class="form_details ">
+           Payment Amount
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.payment_amount}}
+       
+    </tr>
+  <tr>
+       <td class="form_details ">
+           Payment Date
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.payment_date}}
+       
+    </tr>
+  
+    
+</table>  
+
+</br>
+
+  <tr>
+       <td class="form_details ">
+           Area of dentist choice 1 (pincode)
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.pin1}}
+        </td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+           Area of dentist choice 2 (pincode)
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.pin2}}
+        </td>
+    </tr>
+  <tr>
+       <td class="form_details ">
+           Area of dentist choice 3 (pincode)
+       </td>
+       <td class="form_details ">
+        {{=formA.custom.widget.pin3}}
+        </td>
+    </tr>
+
+
+</table>
+
+
+<header class="w3-container w3-dark-grey ">
+ <h5>Notes</h5>
+ </header>
+<table>
+  <tr>
+       
+       <td class="form_details ">
+        {{=formA.custom.widget.notes}}
+        </td>
+    </tr>
+  
+
+
+
+</table>
+
+</br>
+
+
+{{=formA.custom.submit}}
+{{if(status != 'Enrolled'):}}
+<input  type="button" class="form_details_button" onclick="window.location='{{=enrollcustomer}}';return false" value="Enroll Customer">
+{{pass}}
+<input  type="button" class="form_details_button" onclick="window.location='{{=returnurl}}';return false" value="Return Customer List">
+</div>
+
+{{=formA.custom.end}}
+
+
+</form>
+
+
+<script>
+
+
+
+</script>
