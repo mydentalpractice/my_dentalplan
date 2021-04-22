@@ -173,12 +173,169 @@ def list_provider():
 @auth.requires_membership('webadmin')
 @auth.requires_login()
 def update_prospect():
-
-
     username = auth.user.first_name + ' ' + auth.user.last_name
+    formheader="Prospect Maintenance"
+
+    authuser = ""
+    f = lambda name: name if ((name != "") & (name != None)) else ""
+    authuser = f(auth.user.first_name)  + " " + f(auth.user.last_name)
+
+
+    if(len(request.args)>0):   # called with prospectid as URL params
+        prospectid = int(request.args[0])
+        session.prospectid = prospectid
+    elif (len(request.vars)>0): # called on grid next page, get the prospectid from session.
+        prospectid = session.prospectid
 
 
 
+    text = ''
+    bankid = 0
+    rows = db(db.prospect.id == prospectid).select()
+    if((rows[0].sitekey == '1234') | (rows[0].sitekey == '') | (rows[0].sitekey == None)):
+        password = ''
+        specials=r'!#$*?'
+        for i in range(0,2):
+            password += random.choice(string.lowercase)
+            password += random.choice(string.uppercase)
+            password += random.choice(string.digits)
+            #password += random.choice(specials)
+
+        text = password
+        bankid = int(common.getid(rows[0].bankid))
+    else:
+        text = rows[0].sitekey
+        bankid = int(common.getid(rows[0].bankid))
+  
+    db(db.prospect.id == prospectid).update( sitekey = text)
+    p_city = "Jaipur" if((rows[0].p_city == "")|(rows[0].p_city == None)) else rows[0].p_city
+    p_st = "Rajasthan (RJ)" if((rows[0].p_st == "")|(rows[0].p_st == None)) else rows[0].p_st
+    is_active = True if((rows[0].is_active == "")|(rows[0].is_active == None)) else common.getboolean(rows[0].is_active)
+    #formA
+    formA = SQLFORM.factory(
+        Field('provider','string',default=rows[0].provider),
+        Field('title','string',default=rows[0].title),
+        Field('providername','string',default=rows[0].providername),
+        Field('practicename','string',default=rows[0].practicename),
+        Field('address1','string',default=rows[0].address1),
+        Field('address2','string',default=rows[0].address2),
+        Field('address3','string',default=rows[0].address3),
+        Field('city','string',default=rows[0].city,requires = IS_IN_SET(CITIES)),
+        Field('st','string',default=rows[0].st,requires = IS_IN_SET(STATES)),
+        Field('pin','string',default=rows[0].pin),
+        Field('cell','string',default=rows[0].cell),
+        Field('email','string',default=rows[0].email),
+        Field('telephone','string',default=rows[0].telephone),
+        Field('p_address1','string',default=rows[0].p_address1),
+        Field('p_address2','string',default=rows[0].p_address2),
+        Field('p_address3','string',default=rows[0].p_address3),
+        Field('p_city','string',default=p_city,requires = IS_IN_SET(CITIES)),
+        Field('p_st','string',default=p_st,requires = IS_IN_SET(STATES)),
+        Field('p_pin','string',default=rows[0].p_pin),
+        Field('fax','string',default=rows[0].fax),
+        Field('taxid','string',default=rows[0].taxid),
+        Field('sitekey','string',default=rows[0].sitekey),
+        Field('registration','string',default=rows[0].registration),
+        Field('pa_providername','string',default=rows[0].pa_providername),
+        Field('pa_practicename','string',default=rows[0].pa_practicename),
+        Field('pa_practiceaddress','string',default=rows[0].pa_practiceaddress),
+        Field('pa_parent','string',default=rows[0].pa_parent),
+        Field('pa_address','string',default=rows[0].pa_address),
+        Field('pa_pan','string',default=rows[0].pa_pan),
+        Field('pa_regno','string',default=rows[0].pa_regno),
+        Field('pa_day','string',default=rows[0].pa_day),
+        Field('pa_month','string',default=rows[0].pa_month),
+        Field('pa_location','string',default=rows[0].pa_location),
+        Field('pa_practicepin','string',default=rows[0].pa_practicepin),
+        Field('pa_hours','string',default=rows[0].pa_hours),
+        Field('pa_longitude','string',default=rows[0].pa_longitude),
+        Field('pa_latitude','string',default=rows[0].pa_latitude),
+        Field('pa_locationurl','string',default=rows[0].pa_locationurl),
+        Field('status','string',default=rows[0].status),
+
+        Field('languagesspoken','text',default=rows[0].languagesspoken),
+        Field('specialization','string',default=rows[0].specialization),
+        
+        
+        Field('gender', 'string',label='Gender', default=rows[0].gender, requires = IS_IN_SET(GENDER)),
+        Field('dob', 'date',label='DOB', default=rows[0].dob,  requires=IS_DATE(format=('%d/%m/%Y')),length=20),
+        Field('enrolleddate', 'date',label='DOB', default=rows[0].enrolleddate,  requires=IS_DATE(format=('%d/%m/%Y')),length=20),
+        Field('pa_dob','date',default=rows[0].pa_dob,  requires=IS_DATE(format=('%d/%m/%Y %H:%M'))),
+        Field('pa_date','datetime',default=rows[0].pa_date,  requires=IS_DATE(format=('%d/%m/%Y'))),
+        Field('pa_approvedon','date',default=rows[0].pa_approvedon,  requires=IS_DATE(format=('%d/%m/%Y'))),
+        
+        Field('captguarantee','double',default=rows[0].captguarantee),
+        Field('schedulecapitation','double',default=rows[0].schedulecapitation),
+        Field('capitationytd','double',default=rows[0].capitationytd),
+        Field('captiationmtd','double',default=rows[0].captiationmtd),
+
+
+        Field('assignedpatientmembers','integer',default=rows[0].assignedpatientmembers),
+        Field('bankid','integer',default=rows[0].bankid),
+        Field('groupregion', 'ineger',default=rows[0].groupregion, requires=IS_IN_DB(db(db.groupregion.is_active == True), 'groupregion.id', '%(region)s (%(groupregion)s)')),
+
+        Field('speciality', 'integer',default=rows[0].speciality, requires=IS_IN_DB(db((db.speciality_default.id>0)),db.speciality_default.id, '%(speciality)s')),
+        
+        Field('pa_accepted','boolean',default=rows[0].pa_accepted),
+
+        Field('registered','boolean',default=rows[0].registered),
+        Field('pa_approved','boolean',default=rows[0].pa_approved),
+        Field('is_active','boolean',default=is_active),
+        Field('groupemail','boolean',default=rows[0].groupemail),
+        Field('groupsms','boolean',default=rows[0].groupsms)
+    
+    )
+    #crud.settings.update_onaccept = acceptOnUpdate
+    #crud.settings.detect_record_change = False
+    #crud.settings.keepvalues = True
+    #crud.settings.showid = True
+    #crud.settings.update_next = URL('prospect','update_prospect',vars=dict(page=common.getgridpage(request.vars)),args=[prospectid])
+
+    #db.prospect.sitekey.writable = False
+   
+    #db.prospect.taxid.readable = True
+    #db.prospect.taxid.writable = True
+    #db.prospect.speciality.requires = IS_IN_DB(db((db.speciality_default.id>0)),db.speciality_default.id, '%(speciality)s')
+
+    #formA = crud.update(db.prospect, prospectid,cast=int)
+    
+    if formA.process(keepvalues=True).accepted:
+        logger.loggerpms2.info("Form A Accesspted")
+        
+        db(db.prospect.id == prospectid).update(**db.prospect._filter_fields(formA.vars))
+    elif formA.errors:
+        logger.loggerpms2.info("Form A Rejected")
+        
+    # Bank Details
+    bank = db(db.bank_details.id == bankid).select()
+
+
+    formBank = SQLFORM.factory(
+        Field('bankname', 'string',  label='Patient', default =bank[0].bankname  if(len(bank) > 0) else "" ,writable=False),
+        Field('bankbranch', 'string',  label='Patient', default =bank[0].bankbranch  if(len(bank) > 0) else "" ,writable=False),
+        Field('bankaccountno', 'string',  label='Patient', default =bank[0].bankaccountno  if(len(bank) > 0) else "" ,writable=False),
+
+        Field('bankaccounttype', 'string',  label='Patient', default =bank[0].bankaccounttype  if(len(bank) > 0) else "" ,writable=False),
+
+        Field('bankmicrno', 'string',  label='Patient', default =bank[0].bankmicrno  if(len(bank) > 0) else "" ,writable=False),
+
+        Field('bankifsccode', 'string',  label='Patient', default =bank[0].bankifsccode  if(len(bank) > 0) else "" ,writable=False)
+    )
+
+   
+
+
+
+    ## redirect on Items, with PO ID and return URL
+    page=common.getgridpage(request.vars)
+    returnurl = URL('prospect','list_prospect',vars=dict(page=page))
+    return dict(username=username,returnurl=returnurl,formA=formA, formBank=formBank,formheader=formheader,prospectid=prospectid,authuser=authuser,page=page)
+
+
+@auth.requires_membership('webadmin')
+@auth.requires_login()
+def xupdate_prospect():
+    username = auth.user.first_name + ' ' + auth.user.last_name
     formheader="Prospect Maintenance"
 
     authuser = ""
@@ -214,10 +371,6 @@ def update_prospect():
   
     db(db.prospect.id == prospectid).update( sitekey = text)
 
-
-
-
-
     crud.settings.update_onaccept = acceptOnUpdate
     crud.settings.detect_record_change = False
     crud.settings.keepvalues = True
@@ -230,13 +383,13 @@ def update_prospect():
     db.prospect.taxid.writable = True
     db.prospect.speciality.requires = IS_IN_DB(db((db.speciality_default.id>0)),db.speciality_default.id, '%(speciality)s')
 
-
-
-
-
-
     formA = crud.update(db.prospect, prospectid,cast=int)
-
+    
+    if formA.process(keepvalues=True).accepted:
+        logger.loggerpms2.info("Form A Accesspted")
+    elif formA.errors:
+        logger.loggerpms2.info("Form A Rejected")
+        
     # Bank Details
     bank = db(db.bank_details.id == bankid).select()
 
@@ -261,6 +414,7 @@ def update_prospect():
     page=common.getgridpage(request.vars)
     returnurl = URL('prospect','list_prospect',vars=dict(page=page))
     return dict(username=username,returnurl=returnurl,formA=formA, formBank=formBank,formheader=formheader,prospectid=prospectid,authuser=authuser,page=page)
+
 
 @auth.requires_membership('webadmin')
 @auth.requires_login()
@@ -709,6 +863,7 @@ def viewprovideragreement():
     return dict(username=username,returnurl=returnurl,form=form,page=1,todaydate=todaydate,xpa_providername=pa_providername)
 
 def enroll_prospect():
+    logger.loggerpms2.info("Enter Enroll Prospect - Controller")
     username = auth.user.first_name + ' ' + auth.user.last_name
     prospectid = int(common.getstring(request.vars.prospectid))
     s = db(db.prospect.id == prospectid).select(db.prospect.providername, db.prospect.practicename)
@@ -717,44 +872,66 @@ def enroll_prospect():
     
     ppt = mdpprospect.Prospect(db)
     rspobj = json.loads(ppt.get_prospect({"prospectid":str(prospectid)}))
+    #logger.loggerpms2.info("Enter Enroll Prospect - Module")
     rspobj = json.loads(ppt.enroll_prospect(rspobj))
     
-    providerid = int(common.getkeyvalue(rspobj,"providerid","0"))
     
+    providerid = int(common.getkeyvalue(rspobj,"providerid","0"))
+    #logger.loggerpms2.info("Exit Enroll Prospect - Module Prospect ID + ProviderID " + str(prospectid) + " " + str(providerid) )
     
     prv = mdpprovider.Provider(db,providerid)
     rspobj = prv.get_provider({"providerid":str(providerid)})
     rspobj = json.loads(rspobj)
+    #logger.loggerpms2.info("After Get_provider - " + json.dumps(rspobj) )
+    
+    retval = True
+    returnurl = URL('prospect', 'list_prospect')
+    error_message = ""
     
     if(rspobj["result"] == "fail"):
         rspobj["error_message"] = rspobj["error_message"] + "\n" + "Error in Enroll Prospect - get Provider"
-        return json.dumps(rspobj)
+        error_message = rspobj["error_message"]
+        return dict(username=username,returnurl=returnurl,providername=providername, practicename=practicename,retval=retval,error_message=error_message)
     
     sitekey = common.getkeyvalue(rspobj,"sitekey","")
     email = common.getkeyvalue(rspobj,"email","")
     username = common.getkeyvalue(rspobj,"provider","")
     password = common.getkeyvalue(rspobj,"provider","")
 
-    usr = mdpuser.User(db, auth, rspobj["provider"], rspobj["provider"])
-    rspobj = usr.provider_registration(request, rspobj["providername"], rspobj["sitekey"], rspobj["email"], 
-                                      rspobj["cell"], 
-                                      rspobj["registration"],
-                                      rspobj["provider"],
-                                      rspobj["provider"],
-                                      "Provider")
+    #before a new provider is registered, the prospect that is enrolled, has to be deregistered from the systme.
     
-    rspobj = json.loads(rspobj)
-    returnurl = URL('prospect', 'list_prospect')
-    retval = False
-    error_message = ""
-
-    if(rspobj["result"] == "success"):
-        retval = True
-        retval = mail.emailProviderLoginDetails(db,request,sitekey,email,username,password)
-       
-    else:
+    usr = mdpuser.User(db, auth, rspobj["provider"], rspobj["provider"])
+    #logger.loggerpms2.info("Enter Prospect De Registration" )
+    rspobj1 = json.loads(usr.prospect_de_registration(request,rspobj["cell"],rspobj["email"]))
+    #logger.loggerpms2.info("Exit Prospect De Registration " + json.dumps(rspobj1) )
+    if(rspobj1["result"] == "fail"):
         retval = False
-        error_message = rspobj["error_message"]
+        error_message = "Error in de-Registration of Prospect "+ str(prospectid) + " " + rspobj1["error_message"]
+    else:
+        #logger.loggerpms2.info("Enter Provider Registration " + json.dumps(rspobj) )
+        rspobj = usr.provider_registration(request, rspobj["providername"], rspobj["sitekey"], rspobj["email"], 
+                                          rspobj["cell"], 
+                                          rspobj["registration"],
+                                          rspobj["provider"],
+                                          rspobj["provider"],
+                                          "Provider")
+        
+        rspobj = json.loads(rspobj)
+        #logger.loggerpms2.info("Exit Provider Registration " + json.dumps(rspobj) )
+        
+        retval = False
+        error_message = ""
+    
+        if(rspobj["result"] == "success"):
+            retval = True
+
+            
+            retval = mail.emailProviderLoginDetails(db,request,sitekey,email,username,password)
+            #logger.loggerpms2.info("Afte Email " )
+           
+        else:
+            retval = False
+            error_message = rspobj["error_message"]
     
     return dict(username=username,returnurl=returnurl,providername=providername, practicename=practicename,retval=retval,error_message=error_message)
 

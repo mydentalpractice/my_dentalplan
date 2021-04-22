@@ -52,8 +52,12 @@ Region
 {{=formA.custom.widget.groupregion}}
 </td>
 <td class="form_details">
-Assigned Members
+Gender
 </td>
+<td class="form_details">
+{{=formA.custom.widget.gender}}
+</td>
+
 
 
 </tr>
@@ -70,6 +74,12 @@ Speciality Description
 </td>
 <td class="form_details">
 {{=formA.custom.widget.specialization}}
+</td>
+<td class="form_details">
+DOB
+</td>
+<td class="form_details">
+{{=formA.custom.widget.dob}}
 </td>
 </tr>
 
@@ -133,26 +143,23 @@ Cell
 {{=formA.custom.widget.cell}}
 </td>
 <td class="form_details">
-Telephone
+Email
 </td>
 <td class="form_details">
-{{=formA.custom.widget.telephone}}
-</td>
-<td class="form_details">
-Fax
+{{=formA.custom.widget.email}}
 </td>
 
 </tr>
 
 <tr>
 
-<td class="form_details">
-Email
-</td>
-<td class="form_details">
-{{=formA.custom.widget.email}}
-</td>
+
 </tr>
+
+
+
+
+
 </table>
 
 
@@ -276,11 +283,18 @@ IFS Code
 
 
 
-<div style="display:none">
+
 
 <div style="display:none">
+{{=formA.custom.widget.is_active}}
+{{=formA.custom.widget.telephone}}
+{{=formA.custom.widget.fax}}
+{{=formA.custom.widget.assignedpatientmembers}}
 {{=formA.custom.widget.languagesspoken}}
-
+{{=formA.custom.widget.capitationytd}}
+{{=formA.custom.widget.captiationmtd}}
+{{=formA.custom.widget.schedulecapitation}}
+{{=formA.custom.widget.captguarantee}}
 {{=formA.custom.widget.enrolleddate}}
 {{=formA.custom.widget.registered}}
 {{=formA.custom.widget.title}}
@@ -302,7 +316,7 @@ IFS Code
 
 {{=formA.custom.widget.pa_day}}
 {{=formA.custom.widget.pa_month}}
-
+{{=formA.custom.widget.pa_location}}
 
 
 </div>
