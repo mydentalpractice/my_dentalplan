@@ -1015,6 +1015,73 @@ def importSPAT():
 
     return dict(form=form, count=count, error=error)
 
+def importSPATprovider():
+    auth = current.auth
+     
+    count = 0
+    logger.logger.info("Enter Import SPAT Provider") 
+    strsql = "Truncate table importspatprov"
+    db.executesql(strsql)
+    db.commit()    
+    
+    count = 0
+    form = SQLFORM.factory(
+                Field('csvfile','string',label='CSV File', requires= IS_NOT_EMPTY())
+                )    
+    
+    submit = form.element('input',_type='submit')
+    submit['_value'] = 'Import'    
+    
+    xcsvfile = form.element('input',_id='no_table_csvfile')
+    xcsvfile['_class'] =  'w3-input w3-border w3-small'
+
+    error = ""    
+    if form.accepts(request,session,keepvalues=True):
+	try:
+	    if request.vars.csvfile != None:
+		xcsvfile = request.vars.csvfile
+		code = ""
+		with open(xcsvfile, 'r') as csvfile:
+		    reader = csv.reader(csvfile)
+		    count = 0
+		    for row in reader:
+			count = count+1
+			
+			if(count == 1):
+			    continue		    
+			
+			code = row[1]
+			strsql = "INSERT INTO importspatprov(id,providercode,spatcode)VALUES("
+			strsql = strsql + row[0] + ",'" + row[1] + "','" + row[2] + "')" 
+			db.executesql(strsql)    
+		        db.commit()
+		
+		strsql = "SELECT * from importspatprov where id > 0;"
+		ds = db.executesql(strsql)
+		
+		for i in xrange(0,len(ds)):
+		    
+		    providercode = ds[i][1]
+		    spatcode = ds[i][2]
+		    
+		    ref_code = "AGN"
+		    agns = db((db.agent.agent == spatcode) & (db.agent.is_active == True)).select()
+		    ref_id = 0 if len(agns) == 0 else agns[0].id
+		    provs = db((db.provider.provider == providercode) & (db.provider.is_active == True)).select()
+		    provider_id = 0 if len(provs) == 0 else provs[0].id
+		    
+		    db.prospect_ref.insert(
+		        ref_code = ref_code,
+		        ref_id = ref_id,
+		        provider_id = provider_id
+		    )
+		    
+		    
+	except Exception as e:
+	    error = "Import SPAT Provider Exception Error - " + str(e)
+	    
+       
+    return dict(form=form, count=count, error = error)
 
 def importproviderregionplan():
     auth = current.auth

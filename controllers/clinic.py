@@ -329,7 +329,55 @@ def update_clinic():
 
     db.clinic.name.default = "" if(len(clinics) != 1 ) else common.getstring(clinics[0].name)
     
+    
+    #db.clinic.auto_clave.requires =  IS_IN_SET(YESNO)   
+    db.clinic.auto_clave.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].auto_clave)
+    #db.clinic.radiation_protection.requires =  IS_IN_SET(YESNO)   
+    db.clinic.radiation_protection.default ="" if(len(clinics) == 0) else common.getstring(clinics[0].radiation_protection)
+    #db.clinic.implantology.requires =  IS_IN_SET(YESNO)   
+    db.clinic.implantology.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].implantology)
+    #db.clinic.intra_oral_camera.requires =  IS_IN_SET(YESNO)   
+    db.clinic.intra_oral_camera.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].intra_oral_camera)
+    #db.clinic.waste_displosal.requires =  IS_IN_SET(YESNO)   
+    db.clinic.waste_displosal.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].waste_displosal)
+    #db.clinic.daily_autoclaved.requires =  IS_IN_SET(YESNO)   
+    db.clinic.daily_autoclaved.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].daily_autoclaved)
+    
+    #db.clinic.instrument_sterilization.requires =  IS_IN_SET(YESNO)   
+    db.clinic.instrument_sterilization.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].instrument_sterilization)
+    #db.clinic.RVG_OPG.requires =  IS_IN_SET(YESNO)   
+    db.clinic.RVG_OPG.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].RVG_OPG)
+    #db.clinic.emergency_drugs.requires =  IS_IN_SET(YESNO)   
+    db.clinic.emergency_drugs.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].emergency_drugs)
+    #db.clinic.rotary_endodontics.requires =  IS_IN_SET(YESNO)   
+    db.clinic.rotary_endodontics.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].rotary_endodontics)
 
+
+    #db.clinic.patient_consent.requires =  IS_IN_SET(YESNO)   
+    db.clinic.patient_consent.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].patient_consent)
+    #db.clinic.patient_traffic.requires =  IS_IN_SET(YESNO)   
+    db.clinic.patient_traffic.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].patient_traffic)
+    #db.clinic.receptionist.requires =  IS_IN_SET(YESNO)   
+    db.clinic.receptionist.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].receptionist)
+    #db.clinic.air_conditioned.requires =  IS_IN_SET(YESNO)   
+    db.clinic.air_conditioned.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].air_conditioned)
+    #db.clinic.toilet.requires =  IS_IN_SET(YESNO)   
+    db.clinic.toilet.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].toilet)
+    #db.clinic.parking_facility.requires =  IS_IN_SET(YESNO)   
+    db.clinic.parking_facility.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].parking_facility)
+    
+    #db.clinic.backup_power.requires =  IS_IN_SET(YESNO)   
+    db.clinic.backup_power.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].backup_power)
+    #db.clinic.internet.requires =  IS_IN_SET(YESNO)   
+    db.clinic.internet.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].internet)
+    #db.clinic.credit_card.requires =  IS_IN_SET(YESNO)   
+    db.clinic.credit_card.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].credit_card)
+    #db.clinic.patient_records.requires =  IS_IN_SET(YESNO)   
+    db.clinic.patient_records.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].patient_records)
+
+
+
+    
     formA = crud.update(db.clinic, clinicid,cast=int)    
     
     returnurl = URL('clinic','list_clinic',vars=dict(page=page,ref_code=ref_code,ref_id=ref_id))

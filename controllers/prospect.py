@@ -285,19 +285,7 @@ def update_prospect():
         Field('groupsms','boolean',default=rows[0].groupsms)
     
     )
-    #crud.settings.update_onaccept = acceptOnUpdate
-    #crud.settings.detect_record_change = False
-    #crud.settings.keepvalues = True
-    #crud.settings.showid = True
-    #crud.settings.update_next = URL('prospect','update_prospect',vars=dict(page=common.getgridpage(request.vars)),args=[prospectid])
-
-    #db.prospect.sitekey.writable = False
-   
-    #db.prospect.taxid.readable = True
-    #db.prospect.taxid.writable = True
-    #db.prospect.speciality.requires = IS_IN_DB(db((db.speciality_default.id>0)),db.speciality_default.id, '%(speciality)s')
-
-    #formA = crud.update(db.prospect, prospectid,cast=int)
+    
     
     if formA.process(keepvalues=True).accepted:
         logger.loggerpms2.info("Form A Accesspted")
@@ -872,17 +860,17 @@ def enroll_prospect():
     
     ppt = mdpprospect.Prospect(db)
     rspobj = json.loads(ppt.get_prospect({"prospectid":str(prospectid)}))
-    #logger.loggerpms2.info("Enter Enroll Prospect - Module")
+    logger.loggerpms2.info("Enter Enroll Prospect - Module")
     rspobj = json.loads(ppt.enroll_prospect(rspobj))
     
     
     providerid = int(common.getkeyvalue(rspobj,"providerid","0"))
-    #logger.loggerpms2.info("Exit Enroll Prospect - Module Prospect ID + ProviderID " + str(prospectid) + " " + str(providerid) )
+    logger.loggerpms2.info("Exit Enroll Prospect - Module Prospect ID + ProviderID " + str(prospectid) + " " + str(providerid) )
     
     prv = mdpprovider.Provider(db,providerid)
     rspobj = prv.get_provider({"providerid":str(providerid)})
     rspobj = json.loads(rspobj)
-    #logger.loggerpms2.info("After Get_provider - " + json.dumps(rspobj) )
+    logger.loggerpms2.info("After Get_provider - " + json.dumps(rspobj) )
     
     retval = True
     returnurl = URL('prospect', 'list_prospect')
@@ -895,20 +883,22 @@ def enroll_prospect():
     
     sitekey = common.getkeyvalue(rspobj,"sitekey","")
     email = common.getkeyvalue(rspobj,"email","")
+    cell = common.getkeyvalue(rspobj,"cell","")
     username = common.getkeyvalue(rspobj,"provider","")
     password = common.getkeyvalue(rspobj,"provider","")
-
+    registration = common.getkeyvalue(rspobj,"registration","")
+    
     #before a new provider is registered, the prospect that is enrolled, has to be deregistered from the systme.
     
     usr = mdpuser.User(db, auth, rspobj["provider"], rspobj["provider"])
-    #logger.loggerpms2.info("Enter Prospect De Registration" )
+    logger.loggerpms2.info("Enter Prospect De Registration" )
     rspobj1 = json.loads(usr.prospect_de_registration(request,rspobj["cell"],rspobj["email"]))
-    #logger.loggerpms2.info("Exit Prospect De Registration " + json.dumps(rspobj1) )
+    logger.loggerpms2.info("Exit Prospect De Registration " + json.dumps(rspobj1) )
     if(rspobj1["result"] == "fail"):
         retval = False
         error_message = "Error in de-Registration of Prospect "+ str(prospectid) + " " + rspobj1["error_message"]
     else:
-        #logger.loggerpms2.info("Enter Provider Registration " + json.dumps(rspobj) )
+        logger.loggerpms2.info("Enter Provider Registration " + json.dumps(rspobj) )
         rspobj = usr.provider_registration(request, rspobj["providername"], rspobj["sitekey"], rspobj["email"], 
                                           rspobj["cell"], 
                                           rspobj["registration"],
@@ -917,7 +907,36 @@ def enroll_prospect():
                                           "Provider")
         
         rspobj = json.loads(rspobj)
-        #logger.loggerpms2.info("Exit Provider Registration " + json.dumps(rspobj) )
+        logger.loggerpms2.info("Exit Provider Registration " + json.dumps(rspobj) )
+        
+        #if this provider is new, then create doctor, role etc. for this provider
+        logger.loggerpms2.info("Create a Doctor for this new Provider " + str(providerid))
+        
+        
+        if(rspobj["result"]=="success"):
+           
+            #copy default Roles, Speciality and Medicines for this provider
+            roles = db((db.role_default.role=='Chief Consultant') & (db.role_default.is_active)).select()
+            roleid = 3 if(len(roles) == 0) else int(common.getid(roles[0].id))
+            logger.loggerpms2.info("Provider Role "+str(roleid))
+            
+            specs = db((db.speciality_default.speciality=='General Dentist') & (db.speciality_default.is_active)).select()
+            specsid = 1 if(len(specs) == 0) else int(common.getid(specs[0].id))   
+            logger.loggerpms2.info("Provider Role "+str(specsid))
+            
+            docid = db.doctor.insert(name = providername, providerid = providerid, speciality=specsid, role = roleid, email=email,cell=cell,registration=registration,stafftype='Doctor',\
+                             color="#ff0000",practice_owner=True,is_active = True, created_on = request.now, created_by = providerid, modified_on=request.now, modified_by = providerid)      
+            
+            db.doctor_ref.insert(ref_code='PRV', ref_id=providerid,doctor_id = docid)
+            logger.loggerpms2.info("Doctor created " +str(docid))
+            logger.loggerpms2.info("Mail")
+            retval = mail.emailProviderLoginDetails(db,request,sitekey,email,username,password)
+        else:
+    
+            error = "Import Provider Error - \n" + userdict["error_message"]
+            logger.loggerpms2.info(error)  
+        
+        
         
         retval = False
         error_message = ""
