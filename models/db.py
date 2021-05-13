@@ -229,7 +229,7 @@ db.define_table('clinic',
                 
                 Field('mdp_registration','string'),
                 Field('dentalchairs','string'),
-                Field('auto_clave', 'string'),                
+                Field('auto_clave','string',default='Yes',requires=IS_IN_SET(YESNO)),
                 Field('implantology','string'),
                 Field('instrument_sterilization','string'),
                 Field('waste_displosal','string'),
@@ -871,6 +871,7 @@ db.define_table('provider',
                 Field('status', 'string', default='New'),
                 
                 Field('bankid','reference providerbank'),                
+                Field('imageid','integer'),                
                 
                 auth.signature,
                 format='%(providername)s (%(provider)s')
@@ -1016,6 +1017,7 @@ db.define_table('patientmember',
                 Field('webkey', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'), label='Web Key', default='', length=20),
                 Field('hmopatientmember','boolean', default=True),
                 Field('image','upload'),
+                Field('imageid','integer'),
                 Field('paid', 'boolean',default=False,label='Paid'),
                 Field('upgraded', 'boolean',default=False,label='Upgraded'),
                 Field('renewed', 'boolean',default=False,label='Renewed'),
@@ -3258,14 +3260,14 @@ db.define_table('vw_procedurepriceplancode',
 db.vw_procedurepriceplancode._singular = "vw_procedurepriceplancode"
 db.vw_procedurepriceplancode._plural   = "vw_procedurepriceplancode"                
 
-db.define_table('consentform',
-                Field('id', 'integer'),
-                Field('consentform', 'string'),
-                Field('formcontent', 'text'),
-                auth.signature
-                )
-db.consentform._singular = "consentform"
-db.consentform._plural   = "consentform"                
+#db.define_table('consentform',
+                #Field('id', 'integer'),
+                #Field('consentform', 'string'),
+                #Field('formcontent', 'text'),
+                #auth.signature
+                #)
+#db.consentform._singular = "consentform"
+#db.consentform._plural   = "consentform"                
 
 db.define_table('vw_appointments',
                 Field('id','integer'),
@@ -4258,6 +4260,36 @@ db.define_table('vw_abhicl_report_group',
 
 
 
+
+ 
+
+db.define_table('consentform',
+                
+                Field('providerid','integer'),
+                Field('memberid','integer'),
+                Field('patientid','integer'),
+                Field('clinicid','integer'),
+                Field('doctorid','integer'),
+                Field('consentformid','integer'),
+                Field('consentform_date','date'),
+                Field('consentform_code','string'),
+                Field('consentform_name','string'),
+                Field('procedurecode','string'),
+                Field('procedurename','string'),
+                Field('patientname','string'),
+                Field('membername','string'),
+                
+                Field('status','string'),
+                Field('is_active','boolean'),
+                
+                auth.signature
+                            
+                
+                )
+
+db.consentform._singular = "consentform"
+db.consentform._plural   = "consentform"   
+
 db.define_table('vw_procedure_groupby_treatment',
                 Field('treatmentid','integer'),
                 Field('treatment','string'),
@@ -4276,6 +4308,83 @@ db.define_table('vw_prescription_groupby_treatment',
                 Field('treatmentid','integer')
                
                 )
+
+
+db.define_table('vw_clinic',
+                
+                Field('id','integer'),
+                Field('clinic_ref','string'),
+                    
+                Field('name','string'),
+                Field('address1','string'),
+                Field('address2','string'),
+                Field('address3','string'),
+                Field('city', 'string',default='--Select City--',label='City',length=50,requires = IS_IN_SET(CITIES)),
+                Field('st', 'string',default='--Select State--',label='State',length=50,requires = IS_IN_SET(STATES)),
+                Field('pin','string'),
+                
+                Field('cell','string'),
+                Field('telephone','string'),
+                Field('email','string'),
+
+                Field('website','string'),
+                Field('gps_location','string'),
+                Field('whatsapp','string'),
+                Field('facebook','string'),
+                Field('twitter','string'),
+
+                Field('status','string'),
+                Field('primary_clinic','boolean'),
+                
+                Field('mdp_registration','string'),
+                Field('dentalchairs','string'),
+                Field('auto_clave','string',default='Yes',requires=IS_IN_SET(YESNO)),
+                Field('implantology','string'),
+                Field('instrument_sterilization','string'),
+                Field('waste_displosal','string'),
+                Field('suction_machine','string'),
+                Field('laser','string'),
+                Field('RVG_OPG','string'),
+                
+                Field('radiation_protection','string'),                
+                Field('computers','string'),                
+                Field('network','string'),                
+                Field('internet','string'),                
+                Field('air_conditioned','string'),                
+                Field('waiting_area','string'),                
+                Field('backup_power','string'),                
+                Field('toilet','string'),                
+                Field('water_filter','string'),                
+                Field('parking_facility','string'),                
+                Field('receptionist','string'),                
+                Field('credit_card','string'),                
+                Field('certifcates','string'),                
+                Field('emergency_drugs','string'),                
+                Field('infection_control','string'),                
+                Field('daily_autoclaved','string'),                
+                Field('patient_records','string'),                
+                Field('patient_consent','string'),                
+                Field('patient_traffic','string'),                
+                Field('nabh_iso_certifcation','string'),     
+                Field('intra_oral_camera','string'),     
+                Field('rotary_endodontics','string'),     
+                Field('bank_id','integer'), 
+                
+                Field('state_dental_registration','string'),
+                Field('registration_certificate','string'),
+                
+                Field('notes','text'),
+                Field('ref_code','string'),                
+                Field('ref_id','integer'), 
+                Field('clinic_id','integer'), 
+                
+                
+                auth.signature                
+                )
+
+db.clinic._singular = "clinic"
+db.clinic._plural   = "clinic"
+
 
 def geocode2(form):
     from gluon.tools import geocode

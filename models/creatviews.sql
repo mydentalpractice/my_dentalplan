@@ -8623,5 +8623,31 @@ UPDATE provider AS p INNER JOIN bank_details AS b ON p.id = b.providerid SET p.b
 
 7/4/2021
 ========
-1. ZZZZNew Booking table
-2. ZZZZCreate & Populate package_region_plan
+1. XXXYYYZZZZNew Booking table
+2. XXXYYYYZZZZCreate & Populate package_region_plan
+3. XXXYYYZZZUpdate dentalimage uploadfolder
+XXXYYYZZZupdate dentalimage set uploadfolder = 'c:\\inetpub\\wwwroot\\applications\\my_pms2\\uploads' where id <= 467
+
+XXXZZZupdate speciality in doctor to refer to speciality_default
+XXXZZZZupdate role in doctor to refer to role_default
+
+21/4/2021
+=========
+1. YYYZZZrole_default,  set role = 'Office_Staff' instead of Office Boy
+
+28/4/202
+========
+1. XXXYYYZZZZCreate ImportSAPTProv table
+
+30/04/2021
+==========
+1. YYYZZZconsentform table
+
+5/5/2021
+========
+1. YYYZZZModified Patientmember - added imageid
+2. YYYZZZModified Provider - added imageid
+
+5/8/2021
+=========
+1. ZZZ Create new vw_clinic

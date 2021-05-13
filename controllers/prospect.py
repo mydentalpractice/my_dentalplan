@@ -212,6 +212,8 @@ def update_prospect():
     p_st = "Rajasthan (RJ)" if((rows[0].p_st == "")|(rows[0].p_st == None)) else rows[0].p_st
     is_active = True if((rows[0].is_active == "")|(rows[0].is_active == None)) else common.getboolean(rows[0].is_active)
     #formA
+    
+    
     formA = SQLFORM.factory(
         Field('provider','string',default=rows[0].provider),
         Field('title','string',default=rows[0].title),
@@ -236,17 +238,17 @@ def update_prospect():
         Field('taxid','string',default=rows[0].taxid),
         Field('sitekey','string',default=rows[0].sitekey),
         Field('registration','string',default=rows[0].registration),
-        Field('pa_providername','string',default=rows[0].pa_providername),
-        Field('pa_practicename','string',default=rows[0].pa_practicename),
-        Field('pa_practiceaddress','string',default=rows[0].pa_practiceaddress),
+        Field('pa_providername','string',default=rows[0].pa_providername if(common.getstring(rows[0].pa_providername) != "") else rows[0].providername),
+        Field('pa_practicename','string',default=rows[0].pa_practicename if(common.getstring(rows[0].pa_practicename) != "") else rows[0].practicename),
+        Field('pa_practiceaddress','string',default=rows[0].pa_practiceaddress if(common.getstring(rows[0].pa_practiceaddress) != "") else rows[0].address1 + " " + rows[0].address2 +" " + rows[0].address3 + " " + rows[0].city + " " + rows[0].st + " " + rows[0].pin),
         Field('pa_parent','string',default=rows[0].pa_parent),
         Field('pa_address','string',default=rows[0].pa_address),
-        Field('pa_pan','string',default=rows[0].pa_pan),
-        Field('pa_regno','string',default=rows[0].pa_regno),
+        Field('pa_pan','string',default=rows[0].pa_pan  if(common.getstring(rows[0].pa_pan) != "") else rows[0].taxid),
+        Field('pa_regno','string',default=rows[0].pa_regno   if(common.getstring(rows[0].pa_regno) != "") else rows[0].registration),
         Field('pa_day','string',default=rows[0].pa_day),
         Field('pa_month','string',default=rows[0].pa_month),
-        Field('pa_location','string',default=rows[0].pa_location),
-        Field('pa_practicepin','string',default=rows[0].pa_practicepin),
+        Field('pa_location','string',default=rows[0].pa_location if(common.getstring(rows[0].pa_location) != "") else rows[0].city ),
+        Field('pa_practicepin','string',default=rows[0].pa_practicepin if(common.getstring(rows[0].pa_practicepin) != "") else rows[0].pin),
         Field('pa_hours','string',default=rows[0].pa_hours),
         Field('pa_longitude','string',default=rows[0].pa_longitude),
         Field('pa_latitude','string',default=rows[0].pa_latitude),
