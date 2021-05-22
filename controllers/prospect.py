@@ -212,7 +212,11 @@ def update_prospect():
     p_st = "Rajasthan (RJ)" if((rows[0].p_st == "")|(rows[0].p_st == None)) else rows[0].p_st
     is_active = True if((rows[0].is_active == "")|(rows[0].is_active == None)) else common.getboolean(rows[0].is_active)
     #formA
-    
+    pa_practiceaddess = rows[0].pa_practiceaddress if(common.getstring(rows[0].pa_practiceaddress) != "") else rows[0].address1 + " " + rows[0].address2 +" " + rows[0].address3 + " " + rows[0].city + " " + rows[0].st + " " + rows[0].pin
+
+    x = rows[0].pa_practiceaddress
+    pa_practiceaddess = rows[0].address1 + " " + rows[0].address2 +" " + rows[0].address3 + " " + rows[0].city + " " + rows[0].st + " " + rows[0].pin if(common.getstring(rows[0].pa_practiceaddress) == "") else rows[0].pa_practiceaddress
+
     
     formA = SQLFORM.factory(
         Field('provider','string',default=rows[0].provider),
