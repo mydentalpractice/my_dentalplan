@@ -685,7 +685,8 @@ def list_provider():
 
     #search_input = form.element('#w2p_keywords')
     #search_input.attributes.pop('_onfocus')   
-
+  
+   
     returnurl=URL('default','index')
     return dict(username=username,returnurl=returnurl,form=form, formheader=formheader,page=common.getgridpage(request.vars))
 

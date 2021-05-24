@@ -42,6 +42,73 @@ def plans():
     return dict(plans=plans)
 
 
+
+#IB 05292016
+@auth.requires_membership('webadmin')
+@auth.requires_login()
+def create_city():
+
+    username = "Admin"
+    formheader = "New City"
+
+    ## Add form -
+    crud.settings.keepvalues = True
+    crud.settings.showid = True
+    returnurl=URL('company','list_cities')
+
+    formA = crud.create(db.cities, message='New City Added!', next=returnurl)  ## company Details entry form
+
+
+
+   
+    return dict(username=username,returnurl=returnurl,formA=formA, formheader=formheader)
+
+
+
+@auth.requires_membership('webadmin')
+@auth.requires_login()
+def list_cities():
+    
+    
+    username = "Admin"
+
+    formheader = "City List"
+
+    selectable = None
+
+    fields=(db.cities.id,db.cities.city)
+
+    headers={
+        'cities.id':"ID",        
+        'cities.city':'City'
+             }
+
+    exportlist = dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False, csv=False)
+
+
+  
+    query = (db.cities.id>0)
+
+    left=None
+    form = SQLFORM.grid(query=query,
+                        headers=headers,
+                        fields=fields,
+                        exportclasses=exportlist,
+                        links_in_grid=False,
+                        create=False,
+                        deletable=False,
+                        editable=False,
+                        details=False,
+                        user_signature=True
+                       )
+
+    returnurl=URL('default','index')
+    return dict(username=username,returnurl=returnurl,form=form, formheader=formheader)
+
+
+ 
+    
+
 #IB 05292016
 @auth.requires_membership('webadmin')
 @auth.requires_login()

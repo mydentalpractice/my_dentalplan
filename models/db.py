@@ -147,7 +147,11 @@ use_janrain(auth, filename='private/janrain.key')
 ## >>> for row in rows: print row.id, row.myfield
 #########################################################################
 
-
+db.define_table('cities',
+                Field('city','string')
+                )
+db.cities._singular = "cities"
+db.cities._plural   = "cities"
 
 
 db.define_table('travel_log',
