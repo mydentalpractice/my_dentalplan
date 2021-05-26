@@ -322,71 +322,258 @@ def update_clinic():
     
     
  
-    crud.settings.detect_record_change = False
-    crud.settings.keepvalues = False
-    crud.settings.showid = True
-    crud.settings.update_next = URL('clinic','update_clinic',vars=dict(page=common.getgridpage(request.vars),clinicid=clinicid,ref_code=ref_code,ref_id=ref_id))
 
     db.clinic.name.default = "" if(len(clinics) != 1 ) else common.getstring(clinics[0].name)
     
-    db.clinic.dentalchairs.default = 0 if(len(clinics) == 0) else int(common.getid(clinics[0].dentalchairs))
+    dentalchairs = 0 if(len(clinics) != 1 ) else int(common.getid(clinics[0].dentalchairs))
     
-    db.clinic.auto_clave.requires =  IS_EMPTY_OR(IS_IN_SET(YESNO)) 
-    db.clinic.auto_clave.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].auto_clave)
-    db.clinic.radiation_protection.requires =  IS_EMPTY_OR(IS_IN_SET(YESNO))    
-    db.clinic.radiation_protection.default ="" if(len(clinics) == 0) else common.getstring(clinics[0].radiation_protection)
-    db.clinic.implantology.requires =  IS_EMPTY_OR(IS_IN_SET(YESNO))  
-    db.clinic.implantology.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].implantology)
-    db.clinic.intra_oral_camera.requires =  IS_EMPTY_OR(IS_IN_SET(YESNO))    
-    db.clinic.intra_oral_camera.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].intra_oral_camera)
-    db.clinic.waste_displosal.requires =  IS_EMPTY_OR(IS_IN_SET(YESNO))    
-    db.clinic.waste_displosal.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].waste_displosal)
-    db.clinic.daily_autoclaved.requires =  IS_EMPTY_OR(IS_IN_SET(YESNO))    
-    db.clinic.daily_autoclaved.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].daily_autoclaved)
+    clinic_ref = "" if(len(clinics) !=1 ) else common.getstring(clinics[0].clinic_ref)
+    name = "" if(len(clinics) !=1 ) else common.getstring(clinics[0].name)
+    address1 = "" if(len(clinics) !=1 ) else common.getstring(clinics[0].address1)
+    address2 = "" if(len(clinics) !=1 ) else common.getstring(clinics[0].address2)
+    address3 = "" if(len(clinics) !=1 ) else common.getstring(clinics[0].address3)
+    city = "" if(len(clinics) !=1 ) else common.getstring(clinics[0].city)
+    st = "" if(len(clinics) !=1 ) else common.getstring(clinics[0].st)
+    pin = "" if(len(clinics) !=1 ) else common.getstring(clinics[0].pin)
     
-    db.clinic.instrument_sterilization.requires =  IS_EMPTY_OR(IS_IN_SET(YESNO))    
-    db.clinic.instrument_sterilization.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].instrument_sterilization)
-    db.clinic.RVG_OPG.requires =  IS_EMPTY_OR(IS_IN_SET(YESNO))   
-    db.clinic.RVG_OPG.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].RVG_OPG)
-    db.clinic.emergency_drugs.requires =  IS_EMPTY_OR(IS_IN_SET(YESNO))  
-    db.clinic.emergency_drugs.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].emergency_drugs)
-    db.clinic.rotary_endodontics.requires =  IS_EMPTY_OR(IS_IN_SET(YESNO))   
-    db.clinic.rotary_endodontics.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].rotary_endodontics)
-
-
-    db.clinic.patient_consent.requires =  IS_EMPTY_OR(IS_IN_SET(YESNO))   
-    db.clinic.patient_consent.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].patient_consent)
-    db.clinic.patient_traffic.requires =  IS_EMPTY_OR(IS_IN_SET(YESNO))   
-    db.clinic.patient_traffic.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].patient_traffic)
-    db.clinic.receptionist.requires =  IS_EMPTY_OR(IS_IN_SET(YESNO))   
-    db.clinic.receptionist.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].receptionist)
-    db.clinic.air_conditioned.requires =  IS_EMPTY_OR(IS_IN_SET(YESNO))   
-    db.clinic.air_conditioned.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].air_conditioned)
-    db.clinic.toilet.requires =  IS_EMPTY_OR(IS_IN_SET(YESNO))   
-    db.clinic.toilet.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].toilet)
-    db.clinic.parking_facility.requires =  IS_EMPTY_OR(IS_IN_SET(YESNO))   
-    db.clinic.parking_facility.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].parking_facility)
+   
+  
     
-    db.clinic.backup_power.requires =  IS_EMPTY_OR(IS_IN_SET(YESNO))   
-    db.clinic.backup_power.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].backup_power)
-    db.clinic.internet.requires =  IS_EMPTY_OR(IS_IN_SET(YESNO))   
-    db.clinic.internet.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].internet)
-    db.clinic.credit_card.requires =  IS_EMPTY_OR(IS_IN_SET(YESNO))   
-    db.clinic.credit_card.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].credit_card)
-    db.clinic.patient_records.requires =  IS_EMPTY_OR(IS_IN_SET(YESNO))   
-    db.clinic.patient_records.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].patient_records)
-
-    db.clinic.water_filter.requires =  IS_EMPTY_OR(IS_IN_SET(YESNO))   
-    db.clinic.water_filter.default = "" if(len(clinics) == 0) else common.getstring(clinics[0].water_filter)
+    
+    auto_clave = common.getyesno(clinics[0].auto_clave)
+ 
+    
+    
+    
+    
+    radiation_protection ="yes" if(len(clinics) == 0) else common.getyesno(clinics[0].radiation_protection)
+    implantology = "yes" if(len(clinics) == 0) else common.getyesno(clinics[0].implantology)
+    intra_oral_camera = "yes" if(len(clinics) == 0) else common.getyesno(clinics[0].intra_oral_camera)
+    waste_displosal = "" if(len(clinics) == 0) else common.getstring(clinics[0].waste_displosal)
+    daily_autoclaved = "yes" if(len(clinics) == 0) else common.getyesno(clinics[0].daily_autoclaved)
+    
+    suction_machine ="yes" if(len(clinics) == 0) else common.getyesno(clinics[0].suction_machine)
+    instrument_sterilization = "yes" if(len(clinics) == 0) else common.getyesno(clinics[0].instrument_sterilization)
+    
+    RVG_OPG = "yes" if(len(clinics) == 0) else common.getyesno(clinics[0].RVG_OPG)
+    
+    emergency_drugs = "yes" if(len(clinics) == 0) else common.getyesno(clinics[0].emergency_drugs)
+    
+    rotary_endodontics = "yes" if(len(clinics) == 0) else common.getyesno(clinics[0].rotary_endodontics)
 
 
     
-    formA = crud.update(db.clinic, clinicid,cast=int)    
+    patient_consent = "yes" if(len(clinics) == 0) else common.getyesno(clinics[0].patient_consent)
     
-    #if formA.accepts(request,session,keepvalues=True):
-        #i = 0
-    #elif formA.errors:
-        #i  =0
+    patient_traffic = "yes" if(len(clinics) == 0) else common.getyesno(clinics[0].patient_traffic)
+    
+    receptionist = "yes" if(len(clinics) == 0) else common.getyesno(clinics[0].receptionist)
+    
+    air_conditioned = "yes" if(len(clinics) == 0) else common.getyesno(clinics[0].air_conditioned)
+    
+    toilet = "yes" if(len(clinics) == 0) else common.getyesno(clinics[0].toilet)
+    
+    parking_facility = "yes" if(len(clinics) == 0) else common.getyesno(clinics[0].parking_facility)
+    
+    
+    backup_power = "yes" if(len(clinics) == 0) else common.getyesno(clinics[0].backup_power)
+    
+    internet = "yes" if(len(clinics) == 0) else common.getyesno(clinics[0].internet)
+    
+    credit_card = "yes" if(len(clinics) == 0) else common.getyesno(clinics[0].credit_card)
+    
+    patient_records = "yes" if(len(clinics) == 0) else common.getyesno(clinics[0].patient_records)
+
+    
+    water_filter = "yes" if(len(clinics) == 0) else common.getyesno(clinics[0].water_filter)
+    laser = "" if(len(clinics) == 0) else common.getstring(clinics[0].laser)
+
+    computers = "" if(len(clinics) == 0) else common.getstring(clinics[0].computers)
+    
+    network = "no" if(len(clinics) == 0) else common.getyesno(clinics[0].network)
+   
+    waiting_area = "" if(len(clinics) == 0) else common.getstring(clinics[0].waiting_area)
+    
+    certifcates = "yes" if(len(clinics) == 0) else common.getyesno(clinics[0].certifcates)
+    
+    infection_control = "no" if(len(clinics) == 0) else common.getyesno(clinics[0].infection_control)
+
+    nabh_iso_certifcation = "yes" if(len(clinics) == 0) else common.getyesno(clinics[0].nabh_iso_certifcation)
+    state_dental_registration = "yes" if(len(clinics) == 0) else common.getstring(clinics[0].state_dental_registration)
+    registration_certificate = "" if(len(clinics) == 0) else common.getstring(clinics[0].registration_certificate)
+    notes = "" if(len(clinics) == 0) else common.getstring(clinics[0].notes)
+
+    mdp_registration = "" if(len(clinics) == 0) else common.getstring(clinics[0].mdp_registration)
+
+    cell = "" if(len(clinics) == 0) else common.getstring(clinics[0].cell)
+    telephone = "" if(len(clinics) == 0) else common.getstring(clinics[0].telephone)
+    email = "" if(len(clinics) == 0) else common.getstring(clinics[0].email)
+
+    website = "" if(len(clinics) == 0) else common.getstring(clinics[0].website)
+    gps_location = "" if(len(clinics) == 0) else common.getstring(clinics[0].gps_location)
+    whatsapp = "" if(len(clinics) == 0) else common.getstring(clinics[0].whatsapp)
+    facebook = "" if(len(clinics) == 0) else common.getstring(clinics[0].facebook)
+    twitter = "" if(len(clinics) == 0) else common.getstring(clinics[0].twitter)
+
+    primary_clinic = False if(len(clinics) == 0) else common.getboolean(clinics[0].primary_clinic)
+    formA = SQLFORM.factory(
+        Field('clinic_ref','string',default=clinic_ref),
+            
+        Field('name','string',default=name),
+        Field('address1','string',default=address1),
+        Field('address2','string',default=address2),
+        Field('address3','string',default=address3),
+        Field('city', 'string',default=city,label='City',length=50,requires = IS_IN_SET(CITIES)),
+        Field('st', 'string',default=st,label='State',length=50,requires = IS_IN_SET(STATES)),
+        Field('pin','string',default=pin),
+        
+        Field('cell','string',default=cell),
+        Field('telephone','string',default=telephone),
+        Field('email','string',default=email),
+
+        Field('website','string',default=website),
+        Field('gps_location','string',default=gps_location),
+        Field('whatsapp','string',default=whatsapp),
+        Field('facebook','string',default=facebook),
+        Field('twitter','string',default=twitter),
+
+        Field('status','string',default=status),
+        Field('primary_clinic','boolean',default=primary_clinic),
+        
+        Field('mdp_registration','string',default=mdp_registration),
+        Field('dentalchairs','string',default=dentalchairs),
+        
+        
+        Field('auto_clave','string',default=auto_clave,requires=IS_IN_SET(YESNO)),
+        Field('implantology','string',default=implantology,requires=IS_IN_SET(YESNO)),
+        Field('instrument_sterilization','string',default=instrument_sterilization,requires=IS_IN_SET(YESNO)),
+        Field('waste_displosal','string',default=waste_displosal),
+        Field('suction_machine','string',default=suction_machine,requires=IS_IN_SET(YESNO)),
+        Field('laser','string',default=laser),
+        Field('RVG_OPG','string',default=RVG_OPG,requires=IS_IN_SET(YESNO)),
+        
+        Field('radiation_protection','string',default=radiation_protection,requires=IS_IN_SET(YESNO)),                
+        Field('computers','string',default=computers),                
+        Field('network','string',default=network,requires=IS_IN_SET(YESNO)),                
+        Field('internet','string',default=internet,requires=IS_IN_SET(YESNO)),                
+        Field('air_conditioned','string',default=air_conditioned,requires=IS_IN_SET(YESNO)),                
+        Field('waiting_area','string',default=waiting_area),                
+        Field('backup_power','string',default=backup_power,requires=IS_IN_SET(YESNO)),                
+        Field('toilet','string',default=toilet,requires=IS_IN_SET(YESNO)),                
+        Field('water_filter','string',default=water_filter,requires=IS_IN_SET(YESNO)),                
+        Field('parking_facility','string',default=parking_facility,requires=IS_IN_SET(YESNO)),                
+        Field('receptionist','string',default=receptionist,requires=IS_IN_SET(YESNO)),                
+        Field('credit_card','string',default=credit_card,requires=IS_IN_SET(YESNO)),                
+        Field('certifcates','string',default=certifcates,requires=IS_IN_SET(YESNO)),                
+        Field('emergency_drugs','string',default=emergency_drugs,requires=IS_IN_SET(YESNO)),                
+        Field('infection_control','string',default=infection_control,requires=IS_IN_SET(YESNO)),                
+        Field('daily_autoclaved','string',default=daily_autoclaved,requires=IS_IN_SET(YESNO)),                
+        Field('patient_records','string',default=patient_records,requires=IS_IN_SET(YESNO)),                
+        Field('patient_consent','string',default=patient_consent,requires=IS_IN_SET(YESNO)),                
+        Field('patient_traffic','string',default=patient_traffic,requires=IS_IN_SET(YESNO)),                
+        Field('nabh_iso_certifcation','string',default=nabh_iso_certifcation,requires=IS_IN_SET(YESNO)),     
+        Field('intra_oral_camera','string',default=intra_oral_camera,requires=IS_IN_SET(YESNO)),     
+        Field('rotary_endodontics','string',default=rotary_endodontics,requires=IS_IN_SET(YESNO)),     
+        Field('bank_id','integer'), 
+        
+        Field('state_dental_registration','string',default=state_dental_registration),
+        Field('registration_certificate','string',default=registration_certificate),
+        
+        Field('notes','text',default=notes),
+    )  
+    
+    
+    
+    
+    
+    if formA.accepts(request,session,keepvalues=True):
+        
+        db.clinic.update_or_insert(((db.clinic.id == clinicid) & (db.clinic.is_active == True)),
+                        
+                        clinic_ref=formA.vars.name if(formA.vars.name != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].name)),
+                            
+                        name=formA.vars.name if(formA.vars.name != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].name)),
+                        address1=formA.vars.address1 if(formA.vars.address1 != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].address1)),
+                        address2=formA.vars.address2 if(formA.vars.address2 != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].address2)),
+                        address3=formA.vars.address3 if(formA.vars.address3 != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].address3)),
+                        city=formA.vars.city if(formA.vars.city != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].city)),
+                        st=formA.vars.st if(formA.vars.st != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].st)),
+                        pin=formA.vars.pin if(formA.vars.pin != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].pin)),
+                        
+                        cell=formA.vars.cell if(formA.vars.cell != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].cell)),
+                        telephone=formA.vars.telephone if(formA.vars.telephone != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].telephone)),
+                        email=formA.vars.email if(formA.vars.email != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].email)),
+                
+                        website=formA.vars.website if(formA.vars.website != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].website)),
+                        gps_location=formA.vars.gps_location if(formA.vars.gps_location != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].gps_location)),
+                        whatsapp=formA.vars.whatsapp if(formA.vars.whatsapp != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].whatsapp)),
+                        facebook=formA.vars.facebook if(formA.vars.facebook != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].facebook)),
+                        twitter=formA.vars.twitter if(formA.vars.twitter != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].twitter)),
+                
+                        status=formA.vars.status if(formA.vars.status != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].status)),
+                        
+                        
+                        #primary_clinic','boolean'),
+                        
+                        mdp_registration=formA.vars.mdp_registration if(formA.vars.mdp_registration != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].mdp_registration)),
+                        dentalchairs=formA.vars.dentalchairs if(formA.vars.dentalchairs != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].dentalchairs)),
+                        
+                        
+                        auto_clave=common.gettruefalse(formA.vars.auto_clave) if(formA.vars.auto_clave != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].auto_clave)),
+                        
+                        implantology=common.gettruefalse(formA.vars.auto_clave) if(formA.vars.auto_clave != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].auto_clave)),
+                        instrument_sterilization=common.gettruefalse(formA.vars.auto_clave) if(formA.vars.auto_clave != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].auto_clave)),
+                        waste_displosal=formA.vars.waste_displosal if(formA.vars.waste_displosal != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].waste_displosal)),
+                        
+                        suction_machine=formA.vars.suction_machine if(formA.vars.suction_machine != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].suction_machine)),
+                        laser=formA.vars.laser if(formA.vars.laser != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].laser)),
+                        
+                        RVG_OPG=common.gettruefalse(formA.vars.RVG_OPG) if(formA.vars.RVG_OPG != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].RVG_OPG)),
+                        
+                        radiation_protection=common.gettruefalse(formA.vars.radiation_protection) if(formA.vars.radiation_protection != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].radiation_protection)),
+                        computers=int(formA.vars.computers) if(formA.vars.computers != "") else ("" if(len(clinics) == 0) else int(common.getid(clinics[0].computers))),
+                        
+                        network=common.gettruefalse(formA.vars.network) if(formA.vars.network != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].network)),
+                        internet=common.gettruefalse(formA.vars.internet) if(formA.vars.internet != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].internet)),
+                        air_conditioned=common.gettruefalse(formA.vars.air_conditioned) if(formA.vars.air_conditioned != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].air_conditioned)),
+                        
+                        waiting_area=formA.vars.waiting_area if(formA.vars.waiting_area != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].waiting_area)),
+                        
+                        backup_power=common.gettruefalse(formA.vars.backup_power) if(formA.vars.backup_power != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].backup_power)),
+                        toilet=common.gettruefalse(formA.vars.toilet) if(formA.vars.toilet != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].toilet)),
+                        water_filter=common.gettruefalse(formA.vars.water_filter) if(formA.vars.water_filter != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].water_filter)),               
+                        parking_facility=common.gettruefalse(formA.vars.parking_facility) if(formA.vars.parking_facility != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].parking_facility)),                
+                        receptionist=common.gettruefalse(formA.vars.receptionist) if(formA.vars.receptionist != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].receptionist)),              
+                        credit_card=common.gettruefalse(formA.vars.credit_card) if(formA.vars.credit_card != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].credit_card)),               
+                        certifcates=common.gettruefalse(formA.vars.certifcates) if(formA.vars.certifcates != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].certifcates)),            
+                        emergency_drugs=common.gettruefalse(formA.vars.emergency_drugs) if(formA.vars.emergency_drugs != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].emergency_drugs)),                
+                        infection_control = common.gettruefalse(formA.vars.infection_control) if(formA.vars.infection_control != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].infection_control)),             
+                        daily_autoclaved=common.gettruefalse(formA.vars.daily_autoclaved) if(formA.vars.daily_autoclaved != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].daily_autoclaved)),                
+                        patient_records=common.gettruefalse(formA.vars.patient_records) if(formA.vars.patient_records != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].patient_records)),                
+                        
+                        patient_consent=common.gettruefalse(formA.vars.patient_consent) if(formA.vars.patient_consent != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].patient_consent)),              
+                        patient_traffic=common.gettruefalse(formA.vars.patient_traffic) if(formA.vars.patient_traffic != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].patient_traffic)),                 
+                        nabh_iso_certifcation=common.gettruefalse(formA.vars.nabh_iso_certifcation) if(formA.vars.nabh_iso_certifcation != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].nabh_iso_certifcation)),      
+                        intra_oral_camera=common.gettruefalse(formA.vars.intra_oral_camera) if(formA.vars.intra_oral_camera != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].intra_oral_camera)),       
+                        rotary_endodontics=common.gettruefalse(formA.vars.rotary_endodontics) if(formA.vars.rotary_endodontics != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].rotary_endodontics)),   
+                        bank_id = formA.vars.bankid,
+                        
+                        state_dental_registration=formA.vars.rotary_endodontics if(formA.vars.state_dental_registration != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].state_dental_registration)),   
+                        registration_certificate=formA.vars.registration_certificate if(formA.vars.registration_certificate != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].registration_certificate)),   
+                        
+                        notes=formA.vars.notes if(formA.vars.notes != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].notes)),   
+
+
+
+                        is_active = True,\
+                        modified_on = datetime.date.today(),\
+                        modified_by = 1
+        )   
+        db.commit()
+        
+
+    elif formA.errors:
+        i  =0
         
     returnurl = URL('clinic','list_clinic',vars=dict(page=page,ref_code=ref_code,ref_id=ref_id))
     return dict(username=username,returnurl=returnurl,formA=formA, formheader=formheader,clinicid=clinicid,authuser=authuser,page=page)    
