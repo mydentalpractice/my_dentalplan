@@ -61,10 +61,23 @@ def assign_clinics():
 	
 	ref_code = 'PRV'
 	ref_id = prov.id
-	r = db((db.clinic_ref.ref_code == ref_code) & (db.clinic_ref.ref_id == ref_id)).count()
-	if(r > 0):
+	r = db((db.clinic_ref.ref_code == ref_code) & (db.clinic_ref.ref_id == ref_id)).select()
+	if(len(r) > 0):
 	    #clinic exists for this provider
-	    old_clinics = old_clinics + 1
+	    old_clinics = old_clinics + len(r)
+
+	    #if it is a primary clinic & treatment clinicid == NULL and t_appointment clinicid = NUll, then
+	    #assign primary clinic as the default_clinic
+	
+	    clns = db((db.clinic_ref.ref_code == 'PRV') & (db.clinic_ref.ref_id == ref_id) & (db.clinic.primary_clinic == True) &(db.clinic.is_active == True)).\
+		select(db.clinic_ref.clinic_id, left=db.clinic.on(db.clinic.id==db.clinic_ref.clinic_id))
+	    
+	    clinicid = 0 if(len(clns) == 0) else clns[0].clinic_id
+
+	    db((db.treatment.provider ==prov.id) & ( (db.treatment.clinicid == None) | (db.treatment.clinicid == "") | (db.treatment.clinicid == 0))).update(clinicid=clinicid)
+	    
+	    db((db.t_appointment.provider == prov.id) & ( (db.t_appointment.clinicid == None) | (db.t_appointment.clinicid == "") | (db.t_appointment.clinicid == 0))).update(clinicid = clinicid)
+
 	    continue
 	
 	#clinic does not exist
@@ -107,6 +120,8 @@ def assign_clinics():
 	    clinicid = int(common.getid(common.getkeyvalue(rsp,"clinicid","0")))
 
 	    db(db.treatment.provider ==prov.id).update(clinicid=clinicid)
+	    
+	    db((db.t_appointment.provider == prov.id) & ( (db.t_appointment.clinicid == None) | (db.t_appointment.clinicid == "") | (db.t_appointment.clinicid == 0))).update(clinicid = clinicid)
 		                                            
     	    
     returnurl = URL('default','main')
