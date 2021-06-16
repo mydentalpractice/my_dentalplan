@@ -1262,22 +1262,31 @@ def importmember():
                     
                     
                     #get group region code  BLR, CHE etc.
+		    logger.logger.info("Import Member-1") 
                     r = db(db.groupregion.id == int(row[7])).select()
                     groupregion = r[0].groupregion                
+
+		    logger.logger.info("Import Member-2") 
                     
                     strsql = "SELECT id FROM provider WHERE provider = '" + row[27] + "'"
                     ds = db.executesql(strsql)
                     providerid = int(ds[0][0])
+
+		    logger.logger.info("Import Member-3") 
                     
                     #get company id and company code 
                     strsql = "SELECT id FROM company WHERE company = '" + row[36] + "'"
                     ds = db.executesql(strsql)
                     companyid = int(ds[0][0])
                     companycode =row[36]
+
+		    logger.logger.info("Import Member-4") 
                     
                     strsql = "SELECT id FROM hmoplan WHERE hmoplancode = '" + row[37] + "'"
                     ds = db.executesql(strsql)
                     planid = int(ds[0][0])
+                    
+		    logger.logger.info("Import Member-5") 
                     
                     #get last member count for this company
                     sql = "UPDATE membercount SET membercount = membercount + 1 WHERE company = " + str(companyid) + ";"
@@ -1288,6 +1297,7 @@ def importmember():
                     
                     #generate patientmember = BLRMDP100002
                     patientmember = groupregion + companycode[:3] + str(companyid).zfill(3) + str(membercount)
+		    logger.logger.info("Import Member-6") 
                     
                     strsql = "UPDATE importmember SET patientmember = '" + patientmember + "', providerid = " + str(providerid) + ", companyid = " + str(companyid) + ", planid=" + str(planid)
                     strsql = strsql + " WHERE id = " + str(row[0])
@@ -1316,7 +1326,8 @@ def importmember():
                     strsql = strsql + "planid,'T',premstartdt,'F','F','F','F',groupref  from importmember where id = "+ str(row[0])        
                     db.executesql(strsql)
                     db.commit()
-                    
+		    
+		    logger.logger.info("Import Member-7") 
                     ##send welcomekit
                     props = db(db.urlproperties.id > 0).select(db.urlproperties.welcomekit)
                     welcomekit = common.getboolean(props[0].welcomekit) if(len(props) > 0) else False
