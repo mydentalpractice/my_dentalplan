@@ -415,6 +415,8 @@ db.define_table('auth_user',
           writable=False,readable=False),
     Field('impersonatorid','integer',default=1,
           writable=False,readable=False),
+
+    Field('IND_IS_SYNC','boolean'),
     
     format='%(username)s')
 
@@ -538,6 +540,7 @@ db.define_table('company',
                 Field('cashlesspayment','boolean', default=True),
                 Field('cashpayment','boolean', default=True),
                 Field('chequepayment','boolean', default=True),
+                Field('IND_IS_SYNC','boolean'),
                 Field('hmoplan', 'reference hmoplan'),
                 Field('agent', 'reference agent'),
                 Field('groupkey', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'),default='', label='Group Key', length=20),
@@ -883,6 +886,7 @@ db.define_table('provider',
                 
                 Field('bankid','reference providerbank'),                
                 Field('imageid','integer'),                
+                Field('IND_VC','boolean',default=False),
                 
                 auth.signature,
                 format='%(providername)s (%(provider)s')
@@ -1292,6 +1296,7 @@ db.define_table('treatment',
                 Field('doctor', 'integer',represent=lambda v, r: 0 if v is None else v, label=T('Dentist'), default=''),
                 Field('clinicid', 'integer',represent=lambda v, r: 0 if v is None else v, label=T('Clinic'), default=''),
                 Field('dentalprocedure','reference procedurepriceplan',label='Member/Patient'),
+                Field('IND_IS_SYNC','boolean'),
                 auth.signature,
                 format = '%(treatment)s'
                 )
@@ -3302,7 +3307,9 @@ db.vw_appointment_weekly._plural   = "vw_appointment_weekly"
 db.define_table('vw_provider',
                 Field('providerid', 'integer'),
                 Field('provider', 'string'),
-                Field('is_active','boolean')
+                Field('is_active','boolean'),
+                Field('IND_VC','boolean')
+                
                 )
 db.vw_provider._singular = "vw_provider"
 db.vw_provider._plural   = "vw_provider"
@@ -3501,7 +3508,9 @@ db.define_table('vw_doctor',
     Field('stafftype','string'),
     Field('notes','text'),
     Field('practice_owner','boolean'),
-    Field('is_active','boolean')
+    Field('is_active','boolean'),
+    Field('IND_IS_SYNC','boolean')
+    
     )
     
     

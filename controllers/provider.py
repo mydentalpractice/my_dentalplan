@@ -650,9 +650,14 @@ def list_provider():
     db.provider.address1.searchable = False
     db.provider.address1.listable = False
     
+    
+ 
+    
+	
     orderby = (db.provider.provider)
     exportlist = dict( csv=False,csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)
     links = [lambda row: A('Update',_href=URL("provider","update_provider",vars=dict(page=common.getgridpage(request.vars)),args=[row.id])),\
+             lambda row: A('Clincs',_href=URL("clinic","list_clinic",vars=dict(page=common.getgridpage(request.vars),prev_ref_code="PRV", prev_ref_id =row.id,ref_code="PRV",ref_id=row.id))),
              lambda row: A('Assigned',_href=URL("report","assignedmembersreportparam",vars=dict(providerid=row.id))),\
              #lambda row: A('Captiation Report',_href=URL("report","providercapitationreportparam",vars=dict(providerid=row.id))),\
              lambda row: A('Register',_href=URL("provider","emailregister",vars=dict(providerid=row.id))),\

@@ -8693,6 +8693,27 @@ ADD COLUMN `shopsee_returnURL` VARCHAR(512) NULL DEFAULT NULL AFTER `shopsee_url
 
 7. YYYYZZZZAdded longitude & latitude fileds in clinic table
 
+
+8. YYYZZZ Add IND_IS_SYNC in auth_user
+ALTER TABLE `mydp_prod`.`auth_user` 
+ADD COLUMN `IND_IS_SYNC` CHAR(1) NULL DEFAULT NULL AFTER `impersonatorlname`;
+
+9. YYYZZZ Add IND_VC in provider
+ALTER TABLE `mydp_prod`.`provider` 
+ADD COLUMN `IND_VC` CHAR(1) NULL DEFAULT 'F' AFTER `imageid`;
+
+10 YYYYZZZ Add IND_IS_SYNCH
+ALTER TABLE `mydp_prod`.`doctor` 
+ADD COLUMN `IND_IS_SYNC` CHAR(1) NULL AFTER `modified_on`;
+
+11. ZZZ vw_doctor (IND_IS_SYNC)
+
+12. ZZZ vw_provider (IND_VC)
+
+13. YYYZZZ added col IND_IS_SYNC in Company table
+ALTER TABLE `mydp_prod`.`company` 
+ADD COLUMN `IND_IS_SYNC` CHAR(1) NULL AFTER `chequepayment`;
+
 Script file to clear user for sign-up
 =====================================
 
