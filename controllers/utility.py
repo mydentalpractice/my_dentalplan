@@ -47,7 +47,7 @@ from applications.my_pms2.modules import logger
 def assign_clinics():
     username = ""
     formheader = "Assigned Clinics Report"
-    provs = db(db.provider.is_active == True).select()
+    provs = db((db.provider.is_active == True)).select()
     provider_count = len(provs)
     new_clinics = 0
     old_clinics = 0
@@ -125,6 +125,61 @@ def assign_clinics():
 		                                            
     	    
     returnurl = URL('default','main')
+    return dict(formheader=formheader,username=username,\
+                provider_count=provider_count, new_clinics = new_clinics,old_clinics=old_clinics,assigned_provs=assigned_provs,\
+                unassigned_provs=unassigned_provs,returnurl=returnurl)
+
+
+def assign_appointment_clinics():
+    logger.loggerpms2.info("Enter assign_appointment_clinics")
+    username = ""
+    formheader = "Assigned Clinics Report"
+    provs = db((db.provider.is_active == True)).select()
+    provider_count = len(provs)
+    logger.loggerpms2.info("Sssign_appointment_clinics " + str(provider_count))
+    new_clinics = 0
+    old_clinics = 0
+    assigned_provs = ""
+    unassigned_provs = ""
+    
+    
+    try:
+	for prov in provs:
+	    logger.loggerpms2.info("Enter Provider loog " + str(prov.id))
+	    #does the clinic exists for this provider?
+	    #if not, then create one for this provider
+	    
+	    ref_code = 'PRV'
+	    ref_id = prov.id
+	    r = db((db.clinic_ref.ref_code == ref_code) & (db.clinic_ref.ref_id == ref_id)).select()
+	    if(len(r) > 0):
+		logger.loggerpms2.info("Enter Provider R > 0 ")
+		
+		#clinic exists for this provider
+		old_clinics = old_clinics + len(r)
+    
+		#if it is a primary clinic & treatment clinicid == NULL and t_appointment clinicid = NUll, then
+		#assign primary clinic as the default_clinic
+	    
+		clns = db((db.clinic_ref.ref_code == 'PRV') & (db.clinic_ref.ref_id == ref_id) & (db.clinic.primary_clinic == True) &(db.clinic.is_active == True)).\
+		    select(db.clinic_ref.clinic_id, left=db.clinic.on(db.clinic.id==db.clinic_ref.clinic_id))
+		
+		clinicid = 0 if(len(clns) == 0) else clns[0].clinic_id
+		logger.loggerpms2.info("Enter Provider R > 0  Clinicid  " + str(clinicid))
+    
+		db((db.treatment.provider ==prov.id) & ( (db.treatment.clinicid == None) | (db.treatment.clinicid == "") | (db.treatment.clinicid == 0))).update(clinicid=clinicid)
+		
+		db((db.t_appointment.provider == prov.id) & ( (db.t_appointment.clinicid == None) | (db.t_appointment.clinicid == "") | (db.t_appointment.clinicid == 0))).update(clinicid = clinicid)
+    
+		
+	db.commit()
+    except Exception as e:
+	logger.loggerpms2.info("Assign_Appointment_Clinics Exception " + str(e))
+	
+   
+    
+    returnurl = URL('default','main')
+    logger.loggerpms2.info("Exit assign_appointment_clinics")
     return dict(formheader=formheader,username=username,\
                 provider_count=provider_count, new_clinics = new_clinics,old_clinics=old_clinics,assigned_provs=assigned_provs,\
                 unassigned_provs=unassigned_provs,returnurl=returnurl)

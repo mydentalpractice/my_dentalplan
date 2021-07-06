@@ -14,6 +14,7 @@ from applications.my_pms2.modules  import mail
 from applications.my_pms2.modules  import mdpuser
 from applications.my_pms2.modules  import mdpprospect
 from applications.my_pms2.modules  import mdpprovider
+from applications.my_pms2.modules  import mdpbank
 from applications.my_pms2.modules  import logger
 
 
@@ -29,6 +30,115 @@ def acceptOnUpdate(form):
     db(db.prospect.provider==form.vars.provider).update(pa_pan = pan, pa_regno = regno)
     
     return
+
+
+def bank_prospect():
+
+    auth = current.auth
+
+    username = auth.user.first_name + ' ' + auth.user.last_name
+
+    formheader = "Bank Details"    
+
+    authuser = ""
+    f = lambda name: name if ((name != "") & (name != None)) else ""
+    authuser = f(auth.user.first_name)  + " " + f(auth.user.last_name)
+
+
+    page=common.getgridpage(request.vars)
+
+    if(len(request.args)>0):   # called with prospectid as URL params
+        prospectid = int(request.args[0])
+    elif (len(request.vars)>0): # called on grid next page, get the prospectid from session.
+        prospectid = 0 if((common.getstring(request.vars.prospectid) == "")) else request.vars.prospectid
+
+    ref_code = request.vars.ref_code
+    ref_id = request.vars.ref_id
+
+   
+
+    returnurl = URL('prospect','list_prospect',vars=dict(page=page))
+    ds = db((db.prospect.id == prospectid) & (db.prospect.is_active == True)).select(db.prospect.bankid)
+    bankid = 0 if(len(ds)!=1) else common.getid(ds[0].bankid)
+    obj = mdpbank.Bank(db)
+    banks = json.loads(obj.get_account({"bankid":str(bankid)}))
+
+
+
+
+    bankname = common.getkeyvalue(banks,"bankname","")
+    bankbranch = common.getkeyvalue(banks,"bankbranch","")
+    bankaccountname = common.getkeyvalue(banks,"bankaccountname","")
+    bankaccountno = common.getkeyvalue(banks,"bankaccountno","")
+    bankaccounttype = common.getkeyvalue(banks,"bankaccounttype","")
+    bankmicrno = common.getkeyvalue(banks,"bankmicrno","")
+    bankifsccode = common.getkeyvalue(banks,"bankifsccode","")
+    address1 = common.getkeyvalue(banks,"address1","")
+    address2 = common.getkeyvalue(banks,"address2","")
+    address3 = common.getkeyvalue(banks,"address3","")
+    city = common.getkeyvalue(banks,"city","--Select City--")
+    st = common.getkeyvalue(banks,"st","--Select State--")
+    pin = common.getkeyvalue(banks,"pin","")
+
+
+    formA = SQLFORM.factory(
+        Field('bankname','string',  default=bankname,label='Bank Name'),
+        Field('bankbranch','string',  default=bankbranch,label='Bank Branch'),
+        Field('bankaccountname','string',  default=bankaccountname,label='Bank Account'),
+        Field('bankaccountno','string',  default=bankaccountno,label='Account No'),
+        Field('bankaccounttype','string',  default=bankaccounttype,label='Account Type'),
+        Field('bankmicrno','string',  default=bankmicrno,label='MICR'),
+        Field('bankifsccode','string',  default=bankifsccode,label='IFS'),
+
+        Field('address1','string',  default=address1,label='ADDR1'),
+        Field('address2','string',  default=address2,label='ADDR2'),
+        Field('address3','string',  default=address3,label='ADDR3'),
+        Field('city', 'string', widget = lambda field, value:SQLFORM.widgets.options.widget(field, value,_class='form-control '), default=city,label='City',requires = IS_EMPTY_OR(IS_IN_SET(states.CITIES))),
+        Field('st', 'string', widget = lambda field, value:SQLFORM.widgets.options.widget(field, value,_class='form-control '), default=st,label='State',requires = IS_EMPTY_OR(IS_IN_SET(states.STATES))),
+        Field('pin','string',  default=pin,label='PIN'),
+
+
+    )
+
+    if formA.accepts(request,session,keepvalues=True):
+
+
+        requestobj = {}
+        requestobj["bankid"] = str(bankid)
+        requestobj["bankname"] = formA.vars.bankname
+        requestobj["bankbranch"] = formA.vars.bankbranch
+        requestobj["bankaccountname"] = formA.vars.bankaccountname
+        requestobj["bankaccountno"] = formA.vars.bankaccountno
+        requestobj["bankaccounttype"] = formA.vars.bankaccounttype
+        requestobj["bankmicrno"] = formA.vars.bankmicrno
+        requestobj["bankifsccode"] = formA.vars.bankifsccode
+
+        requestobj["address1"] = formA.vars.address1
+        requestobj["address2"] = formA.vars.address2
+        requestobj["address3"] = formA.vars.address3
+        requestobj["city"] = formA.vars.city
+        requestobj["st"] = formA.vars.st
+        requestobj["pin"] = formA.vars.pin
+
+        if(bankid == 0):
+            rsp = json.loads(obj.new_account(requestobj))
+            result = common.getkeyvalue(rsp,"result","fail")
+            if(result == "success"):
+                bankid = int(common.getkeyvalue(rsp,"bankid","0"))
+                db(db.prospect.id == prospectid).update(bankid=bankid,
+                                                        modified_on = common.getISTFormatCurrentLocatTime(),
+                                                        modified_by =1 if(auth.user == None) else auth.user.id        
+                                                        )
+        else:
+            rsp = json.loads(obj.update_account(requestobj))
+
+        redirect(returnurl)
+
+    elif formA.errors:
+        response.flash = 'Error adding a Provider Bank Details' + str(formA.errors)        
+
+    return dict(username=username,formA=formA,formheader=formheader,page=page,returnurl=returnurl,\
+                providerid=0,provider="",providername="",authuser=authuser)
 
 @auth.requires_membership('webadmin')
 @auth.requires_login()
@@ -74,6 +184,7 @@ def list_prospect():
     exportlist = dict( csv=False,csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)
     links = [lambda row: A('Update',_href=URL("prospect","update_prospect",vars=dict(page=common.getgridpage(request.vars)),args=[row.id])),
              lambda row: A('Clincs',_href=URL("clinic","list_clinic",vars=dict(page=common.getgridpage(request.vars),prev_ref_code=ref_code, prev_ref_id =ref_id,ref_code="PST",ref_id=row.id))),
+             lambda row: A('Bank Details',_href=URL("prospect","bank_prospect",vars=dict(page=page,prev_ref_code=ref_code, prev_ref_id =ref_id,ref_code="PST",ref_id=row.id,prospectid=row.id))),
              lambda row: A('EmailPA',_href=URL("prospect","emailpa",vars=dict(prospectid=row.id))),
              lambda row: A('ApprovePA',_href=URL("prospect","viewprovideragreement",vars=dict(prospectid=row.id))),
              lambda row: A('EnrollPA',_href=URL("prospect","enroll_prospect",vars=dict(prospectid=row.id))),
@@ -217,6 +328,31 @@ def update_prospect():
     x = rows[0].pa_practiceaddress
     pa_practiceaddess = rows[0].address1 + " " + rows[0].address2 +" " + rows[0].address3 + " " + rows[0].city + " " + rows[0].st + " " + rows[0].pin if(common.getstring(rows[0].pa_practiceaddress) == "") else rows[0].pa_practiceaddress
 
+    x = rows[0].pa_pan
+    pa_pan = rows[0].taxid
+
+    x = rows[0].pa_regno
+    pa_regno = rows[0].registration
+
+    pa_practicepin = rows[0].pin
+    
+    pa_approved = False if(len(rows) == 0) else rows[0].pa_approved
+    pa_approved = False if((pa_approved == None)|(pa_approved == "")) else pa_approved
+    
+    if(pa_approved):
+        pa_approvedby = None if(len(rows) == 0) else rows[0].pa_approvedby
+        pa_approvedby = (1 if(auth.user == None) else auth.user.id) if((pa_approvedby == None)|(pa_approvedby == "")) else pa_approvedby
+    
+        approvedby = username if(pa_approved == True) else ""
+        
+        pa_approvedon = None if(len(rows) == 0) else rows[0].pa_approvedon
+        pa_approvedon = common.getISTFormatCurrentLocatTime() if((pa_approvedon == None) | (pa_approvedon == "")) else pa_approvedon
+
+    else:
+        pa_approvedby = None
+        approvedby = ""
+        pa_approvedon = None
+        
     
     formA = SQLFORM.factory(
         Field('provider','string',default=rows[0].provider),
@@ -247,12 +383,12 @@ def update_prospect():
         Field('pa_practiceaddress','string',default=rows[0].pa_practiceaddress if(common.getstring(rows[0].pa_practiceaddress) != "") else rows[0].address1 + " " + rows[0].address2 +" " + rows[0].address3 + " " + rows[0].city + " " + rows[0].st + " " + rows[0].pin),
         Field('pa_parent','string',default=rows[0].pa_parent),
         Field('pa_address','string',default=rows[0].pa_address),
-        Field('pa_pan','string',default=rows[0].pa_pan  if(common.getstring(rows[0].pa_pan) != "") else rows[0].taxid),
-        Field('pa_regno','string',default=rows[0].pa_regno   if(common.getstring(rows[0].pa_regno) != "") else rows[0].registration),
+        Field('pa_pan','string',default=pa_pan),
+        Field('pa_regno','string',default=pa_regno),
         Field('pa_day','string',default=rows[0].pa_day),
         Field('pa_month','string',default=rows[0].pa_month),
         Field('pa_location','string',default=rows[0].pa_location if(common.getstring(rows[0].pa_location) != "") else rows[0].city ),
-        Field('pa_practicepin','string',default=rows[0].pa_practicepin if(common.getstring(rows[0].pa_practicepin) != "") else rows[0].pin),
+        Field('pa_practicepin','string',default=pa_practicepin),
         Field('pa_hours','string',default=rows[0].pa_hours),
         Field('pa_longitude','string',default=rows[0].pa_longitude),
         Field('pa_latitude','string',default=rows[0].pa_latitude),
@@ -268,7 +404,9 @@ def update_prospect():
         Field('enrolleddate', 'date',label='DOB', default=rows[0].enrolleddate,  requires=IS_DATE(format=('%d/%m/%Y')),length=20),
         Field('pa_dob','date',default=rows[0].pa_dob,  requires=IS_DATE(format=('%d/%m/%Y %H:%M'))),
         Field('pa_date','datetime',default=rows[0].pa_date,  requires=IS_DATE(format=('%d/%m/%Y'))),
-        Field('pa_approvedon','date',default=rows[0].pa_approvedon,  requires=IS_DATE(format=('%d/%m/%Y'))),
+        Field('pa_approvedon','date',default=pa_approvedon,  writable=False,requires=IS_DATE(format=('%d/%m/%Y'))),
+        Field('pa_approvedby','integer',default=pa_approvedby,writable=False),
+        Field('approvedby','string',default=approvedby,writable=False),
         
         Field('captguarantee','double',default=rows[0].captguarantee),
         Field('schedulecapitation','double',default=rows[0].schedulecapitation),
@@ -288,7 +426,8 @@ def update_prospect():
         Field('pa_approved','boolean',default=rows[0].pa_approved),
         Field('is_active','boolean',default=is_active),
         Field('groupemail','boolean',default=rows[0].groupemail),
-        Field('groupsms','boolean',default=rows[0].groupsms)
+        Field('groupsms','boolean',default=rows[0].groupsms),
+        Field('newcity','string',default=rows[0].newcity)
     
     )
     
@@ -670,6 +809,13 @@ def emailregister():
 def viewprovideragreement():
     
     username = ""
+    
+    username = auth.user.first_name + ' ' + auth.user.last_name
+
+    f = lambda name: name if ((name != "") & (name != None)) else ""
+    authuser = f(auth.user.first_name)  + " " + f(auth.user.last_name)
+
+    
     prospectid = int(common.getstring(request.vars.prospectid))
     
     prv = db((db.prospect.id == prospectid)&(db.prospect.is_active == True)).select()
@@ -690,8 +836,13 @@ def viewprovideragreement():
     pa_date = prv[0].pa_date
     pa_accepted = prv[0].pa_accepted
     pa_approved = prv[0].pa_approved
-    pa_approvedby = prv[0].pa_approvedby
-    pa_approvedon = prv[0].pa_approvedon
+    
+    pa_approvedby = "" if(len(prv) == 0) else prv[0].pa_approvedby
+    pa_approvedby = (1 if(auth.user == None) else auth.user.id) if((pa_approvedby == "") | (pa_approvedby == None)) else pa_approvedby
+    
+    
+    pa_approvedon = None if(len(prv) == 0) else prv[0].pa_approvedon
+    pa_approvedon = common.getISTFormatCurrentLocatTime() if((pa_approvedon == None) | (pa_approvedon == "")) else pa_approvedon
 
     pa_practicename = prv[0].pa_practicename
     pa_practiceaddress = prv[0].pa_practiceaddress
@@ -721,7 +872,8 @@ def viewprovideragreement():
             Field('pa_accepted','boolean',default=pa_accepted),
             Field('pa_approved','boolean',default=pa_approved),
             Field('pa_approvedby','integer',default=pa_approvedby),
-            Field('pa_approvedon','datetime',default=datetime.date.today(),requires=IS_EMPTY_OR(IS_DATE(format=('%d/%m/%Y %H:%M'))))
+            
+            Field('pa_approvedon','datetime',default=pa_approvedon,requires=IS_EMPTY_OR(IS_DATE(format=('%d/%m/%Y %H:%M'))))
             )
     
     
@@ -804,7 +956,7 @@ def viewprovideragreement():
     pa_practicepin = form.element('#no_table_pa_practicepin')
     pa_practicepin['_class'] = 'w3-input'
     pa_practicepin['_style'] = 'border:0px'
-    pa_practicepin['_placeholder'] = 'Enter Practice Address.'
+    pa_practicepin['_placeholder'] = 'Enter Practice PIN.'
     pa_practicepin['_autocomplete'] = 'off'    
 
     returnurl = URL('prospect', 'list_prospect')
@@ -827,6 +979,7 @@ def viewprovideragreement():
                                             pa_practicename = common.getstring(form.vars.pa_practicename),\
                                             pa_practiceaddress = common.getstring(form.vars.pa_practiceaddress),\
                                             pa_practicepin = common.getstring(form.vars.pa_practicepin),\
+                                            pin = common.getstring(form.vars.pa_practicepin),\
                                             pa_approvedon= datetime.date.today(),\
                                             pa_approvedby= 1,\
                                             is_active = True,

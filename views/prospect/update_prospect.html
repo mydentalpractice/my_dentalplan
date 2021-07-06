@@ -135,6 +135,12 @@ PIN
 </tr>
 
 <tr>
+<td class="form_details">
+New City
+</td>
+<td class="form_details">
+{{=formA.custom.widget.newcity}}
+</td>
 
 <td class="form_details">
 Cell
@@ -186,7 +192,7 @@ PA Approval Date
 PA Approved By
 </td>
 <td>
-{{=formA.custom.widget.pa_approvedby}}
+{{=formA.custom.widget.approvedby}}
 </td>
 
 </tr>
@@ -286,6 +292,7 @@ IFS Code
 
 
 <div style="display:none">
+{{=formA.custom.widget.pa_approvedby}}
 {{=formA.custom.widget.is_active}}
 {{=formA.custom.widget.telephone}}
 {{=formA.custom.widget.fax}}
@@ -312,7 +319,7 @@ IFS Code
 {{=formA.custom.widget.pa_address}}
 {{=formA.custom.widget.pa_pan}}
 {{=formA.custom.widget.pa_regno}}
-
+{{=formA.custom.widget.pa_practicepin}}
 
 {{=formA.custom.widget.pa_day}}
 {{=formA.custom.widget.pa_month}}
