@@ -435,7 +435,16 @@ def update_prospect():
     if formA.process(keepvalues=True).accepted:
         logger.loggerpms2.info("Form A Accesspted")
         
+        formA.vars.pa_pan = formA.vars.taxid
+        formA.vars.pa_regno = formA.vars.registration
+        formA.vars.pa_providername = formA.vars.providername
+        formA.vars.pa_practicename = formA.vars.practicename
+        formA.vars.pa_practiceaddress = formA.vars.address1 + " " + formA.vars.address2 +" " + formA.vars.address3 + " " + formA.vars.city + " " + formA.vars.st + " " + formA.vars.pin
+        formA.vars.pa_practicepin = formA.vars.pin
+        formA.vars.pa_location = formA.vars.city
         db(db.prospect.id == prospectid).update(**db.prospect._filter_fields(formA.vars))
+        
+        
     elif formA.errors:
         logger.loggerpms2.info("Form A Rejected")
         
