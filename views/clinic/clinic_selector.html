@@ -1,0 +1,7 @@
+    <select id="provclinics" onchange="changeClinics()">
+        <option value='1'>--Select--</option>
+    
+        {{for clinic in clinics:}}
+        <option value='{{=clinic.id}}'>{{=clinic.name}}</option>
+        {{pass}}
+    </select>

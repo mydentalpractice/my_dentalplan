@@ -474,11 +474,12 @@ def new_customer():
     regionid = 1
     providerid = 1
     page = 1
-    
+    clinicid = 1
     formA = SQLFORM.factory(
         Field('customer', 'string',label='Customer ID', default=''),
         Field('customer_ref', 'string',label='Customer Ref', default=''),
         Field('providerid', default=providerid,requires=IS_IN_DB(db(db.provider.is_active==True), 'provider.id', '%(provider)s : (%(providername)s)')),
+        Field('clinicid', 'integer'),
         Field('companyid', default=companyid, requires=IS_IN_DB(db(db.company.is_active==True), 'company.id', '%(name)s (%(company)s)')),
         Field('planid', default=planid, requires=IS_IN_DB(db(db.hmoplan.is_active==True), 'hmoplan.id', '%(name)s (%(hmoplancode)s) (%(groupregion)s)')),
         Field('regionid', default=regionid, requires=IS_IN_DB(db(db.groupregion.is_active == True), 'groupregion.id', '%(region)s (%(groupregion)s)')),
@@ -526,9 +527,10 @@ def new_customer():
         select(db.hmoplan.id,db.hmoplan.hmoplancode,db.hmoplan.name,\
                left=db.hmoplan.on((db.companyhmoplanrate.hmoplan == db.hmoplan.id)&(db.hmoplan.is_active==True)))    
  
+    providers = db(db.provider.is_active==True).select(db.provider.id,db.provider.provider,db.provider.providername,orderby=db.provider.provider)
     returnurl = URL('customer', 'list_customers',vars=dict(page=page))
-
-    return dict(formA=formA,username=username, returnurl=returnurl,formheader=formheader,regions=regions, plans=plans,page=page)
+    clinics= db(db.clinic.id == 0).select()
+    return dict(formA=formA,username=username, returnurl=returnurl,formheader=formheader,regions=regions, plans=plans,providers=providers,clinics=clinics,page=page)
 
 
 def new_customer_activity():
@@ -678,6 +680,7 @@ def update_customer():
         customer = ds[0].customer
         customer_ref = ds[0].customer_ref
         providerid = ds[0].providerid
+        clinicid = ds[0].clinicid        
         companyid = ds[0].companyid
         planid = ds[0].planid
         regionid = ds[0].regionid
@@ -709,6 +712,7 @@ def update_customer():
         customer = ''
         customer_ref = ''
         providerid = 1
+        clinicid = 1
         companyid = 1
         planid = 1
         regionid = 1
@@ -738,6 +742,7 @@ def update_customer():
         Field('customer', 'string',label='Customer ID', default=customer),
         Field('customer_ref', 'string',label='Customer Ref', default=customer_ref),
         Field('providerid', default=providerid,requires=IS_IN_DB(db(db.provider.is_active==True), 'provider.id', '%(id)s %(provider)s : (%(providername)s)')),
+        Field('clinicid', default=clinicid,requires=IS_IN_DB(db(db.vw_clinic.id==clinicid), 'vw_clinic.id', '%(id)s %(name)s')),
         Field('companyid', default=companyid, requires=IS_IN_DB(db(db.company.is_active==True), 'company.id', '%(name)s (%(company)s)')),
         Field('planid', default=planid, requires=IS_IN_DB(db(db.hmoplan.is_active==True), 'hmoplan.id', '%(name)s (%(hmoplancode)s) (%(groupregion)s)')),
         Field('regionid', default=regionid, requires=IS_IN_DB(db(db.groupregion.is_active == True), 'groupregion.id', '%(region)s (%(groupregion)s)')),
@@ -1008,6 +1013,7 @@ def enroll_customer():
         
         customer = db(db.customer.id == customerid).select()
         providerid = int(common.getid(customer[0].providerid))
+        clinicid = int(common.getid(customer[0].clinicid))
         customer_ref = common.getstring(customer[0].customer_ref)
         appointment_id  = common.getstring(customer[0].appointment_id)
         appointment_datetime = customer[0].appointment_datetime
@@ -1036,15 +1042,29 @@ def enroll_customer():
             
             db((db.customer.id == customerid) & (db.customer.is_active == True)).update(status = 'Enrolled')
             logger.loggerpms2.info("Customer Controller Before New Appointment " + str(customerid))
-            apptobj = json.loads(mdpappt.newappointment(patobj["primarypatientid"], patobj["patientid"], doctorid, 
-                                            "", 
-                                            appointment_datetime.strftime("%d/%m/%Y %H:%M"),
-                                            30, 
-                                            "Auto-Appointment created\nAppointment_ID: " + appointment_id + "\n" + customer[0].notes, 
-                                            customer[0].cell, 
-                                            appPath
-                                            )
-                                 )
+            
+            
+            jsonreq = {}
+            jsonreq["memberid"]=patobj["primarypatientid"]
+            jsonreq["patientid"]=patobj["patientid"]
+            jsonreq["doctorid"]=str(doctorid)
+            jsonreq["clinicid"]=str(clinicid)
+            jsonreq["startdt"]=common.getstringfromdate(appointment_datetime,"%d/%m/%Y %H:%M")
+            jsonreq["duration"]=str(30)
+            jsonreq["providernotes"]="Auto-Appointment created\nAppointment_ID: " + appointment_id + "\n" + customer[0].notes, 
+            jsonreq["appPath"]=appPath
+            jsonreq["cell"]=customer[0].cell
+            apptobj = json.loads(mdpappt.newappointment(jsonreq))
+            
+            #apptobj = json.loads(mdpappt.newappointment(patobj["primarypatientid"], patobj["patientid"], doctorid, 
+                                            #"", 
+                                            #appointment_datetime.strftime("%d/%m/%Y %H:%M"),
+                                            #30, 
+                                            #"Auto-Appointment created\nAppointment_ID: " + appointment_id + "\n" + customer[0].notes, 
+                                            #customer[0].cell, 
+                                            #appPath
+                                            #)
+                                 #)
             #email Welcome Kit
             ret = mail.emailWelcomeKit(db,request,patobj["primarypatientid"],providerid)
             message = "Customer " + member + " has been successfully enrolled in MDP\n Welcome Kit has been sent to the registered email address"
@@ -1222,6 +1242,7 @@ def import_customers():
                     c = db(db.customer.customer_ref == customer_ref).select()
                     customerid = c[0].id if(len(c)==1) else 0
                     providerid = c[0].providerid if(len(c)==1) else 0
+                    clinicid = c[0].clinicid if(len(c)==1) else 0
                     appointment_id = c[0].appointment_id if(len(c)==1) else ""
                     
                     custobj = mdpcustomer.Customer(db)
@@ -1243,15 +1264,29 @@ def import_customers():
                             doctorid = 0
                         
                         db((db.customer.id == customerid) & (db.customer.is_active == True)).update(status = 'Enrolled')
-                        apptobj = json.loads(mdpappt.newappointment(patobj["primarypatientid"], patobj["patientid"], doctorid, 
-                                                        "", 
-                                                        (c[0].appointment_datetime).strftime("%d/%m/%Y %H:%M"),
-                                                        30, 
-                                                        "Auto-Appointment created\nAppointment_ID: " + c[0].appointment_id + "\n" + c[0].notes, 
-                                                        c[0].cell, 
-                                                        appPath
-                                                        )
-                                             )
+                        
+                        jsonreq = {}
+                        jsonreq["memberid"]=patobj["primarypatientid"]
+                        jsonreq["patientid"]=patobj["patientid"]
+                        jsonreq["doctorid"]=str(doctorid)
+                        jsonreq["clinicid"]=str(clinicid)
+                        jsonreq["startdt"]=common.getstringfromdate(c[0].appointment_datetime,"%d/%m/%Y %H:%M")
+                        jsonreq["duration"]=str(30)
+                        jsonreq["providernotes"]="Auto-Appointment created\nAppointment_ID: " + c[0].appointment_id + "\n" + c[0].notes, 
+                        jsonreq["appPath"]=appPath
+                        jsonreq["cell"]=c[0].cell                        
+
+                        apptobj = json.loads(mdpappt.newappointment(jsonreq))
+             
+                        #apptobj = json.loads(mdpappt.newappointment(patobj["primarypatientid"], patobj["patientid"], doctorid, 
+                                                        #"", 
+                                                        #(c[0].appointment_datetime).strftime("%d/%m/%Y %H:%M"),
+                                                        #30, 
+                                                        #"Auto-Appointment created\nAppointment_ID: " + c[0].appointment_id + "\n" + c[0].notes, 
+                                                        #c[0].cell, 
+                                                        #appPath
+                                                        #)
+                                             #)
                         #email Welcome Kit
                         ret = mail.emailWelcomeKit(db,request,patobj["primarypatientid"],providerid)
                         message += "Customer " + member + " has been successfully enrolled in MDP\n Welcome Kit has been sent to the registered email address\n"

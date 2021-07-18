@@ -13,6 +13,8 @@
 <div class="w3-container w3-hide">
 {{=formA.custom.widget.planid}}
 {{=formA.custom.widget.regionid}}
+{{=formA.custom.widget.clinicid}}
+{{=formA.custom.widget.providerid}}
 </div>
 
 <header class="w3-container w3-dark-grey ">
@@ -41,12 +43,36 @@
             <td class="form_details " >
                 Provider
             </td>
+ <td class="form_details ">
+                <select class="form_details" id="xproviders" onchange="changeProviders()">
+                    <option value='0'>--Select--</option>
+                    {{ for provider in providers: }}
+                        <option value={{=provider.id}}>{{=provider.providername}} ({{=provider.provider}})</option>
+                    {{pass}}
+                </select>    
+       
+       
+        
+        </td>
+    </tr>              
+ <tr>
+        <td class="form_details " >
+           Clinic
+       </td>
+        <td class="form_details " >
+            <div id='clinicsdiv'>
+               <select class="form_details" id="provclinics" onchange="changeClinics()">
+                    <option value='1'>--Select--</option>
+    
+                    {{for clinic in clinics:}}
+                    <option value='{{=clinic.id}}'>{{=clinic.name}}</option>
+                    {{pass}}
+                </select>
+            </div>           
             
-            <td>
-                    {{=formA.custom.widget.providerid}}
-            </td>
-         </tr>           
-  
+        </td>
+    </tr>  
+    
  <tr>
        <td >
            Company
@@ -325,6 +351,34 @@
 
 
 <script>
+
+function changeProviders(){
+<!--#alert('Enter changeProviders')-->
+var provopts = document.getElementById("xproviders");
+<!--alert('Enter changeProviders-1')-->
+var prov = provopts.options[provopts.selectedIndex].value;
+<!--alert('Enter changeProviders-2')-->
+var x = document.getElementById("no_table_providerid");
+    x.value = prov;
+<!--alert('Enter changeProviders-3')   -->
+<!--alert('Provider ' + x.value)-->
+
+ajax('{{=URL('clinic','clinic_selector')}}', ['providerid'], 'clinicsdiv');
+
+};
+
+
+function changeClinics(){
+<!--#alert('Enter Change Clinic')-->
+var clnopts = document.getElementById("provclinics");
+var cln = clnopts.options[clnopts.selectedIndex].value;
+<!--#alert('Enter Change Clinic-1')-->
+var y = document.getElementById("no_table_clinicid");
+
+    y.value = cln;
+
+<!--alert('Clinic ID ' + y)   -->
+};
 function changeRegions(){
 var regionopts = document.getElementById("regions");
 var region = regionopts.options[regionopts.selectedIndex].value;

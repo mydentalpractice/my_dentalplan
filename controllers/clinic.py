@@ -20,7 +20,16 @@ from applications.my_pms2.modules  import mdpmedia
 from applications.my_pms2.modules  import logger
 
 
+#this method is called from new_customer page to get a list of clinics for the selected provider
+def clinic_selector():
+    
+    providerid = int(common.getid(request.vars.providerid))
+    clinics = db((db.clinic_ref.ref_code == 'PRV') & (db.clinic_ref.ref_id == providerid) & (db.clinic.is_active == True)).\
+        select(db.clinic.id,db.clinic.name,left=db.clinic.on(db.clinic.id == db.clinic_ref.clinic_id))
+    
 
+    return dict(clinics=clinics)
+    
 @auth.requires_membership('webadmin')
 @auth.requires_login()
 def new_image():
