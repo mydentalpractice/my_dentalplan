@@ -13,7 +13,10 @@
 <div class="w3-container w3-hide">
 {{=formA.custom.widget.planid}}
 {{=formA.custom.widget.regionid}}
+{{=formA.custom.widget.clinicid}}
+{{=formA.custom.widget.providerid}}
 </div>
+
 
 <header class="w3-container w3-dark-grey ">
  <h5>Details</h5>
@@ -37,24 +40,76 @@
         {{=formA.custom.widget.customer_ref}}
         </td>
   </tr>
-           <tr>
+  
+             <tr>
             <td class="form_details " >
                 Provider
             </td>
+ <td class="form_details ">
+                <select class="form_details" id="xproviders" onchange="changeProviders()">
+                    <option value='0'>--Select--</option>
+                    
+                    
+                        
+                    {{ for provider in providers: }}
+                        {{if (provider.id == providerid):}}
+                          <option selected="selected" value={{=provider.id}}>{{=provider.providername}}({{=provider.provider}})</option>
+                        {{else:}}
+                        <option value={{=provider.id}}>{{=provider.providername}}({{=provider.provider}})</option>
+                        {{pass}}                     
+                        <!--<option value={=provider.id}}>{=provider.providername}} ({=provider.provider}})</option>-->
+                    {{pass}}
+                </select>    
+       
+       
+        
+        </td>
+    </tr>              
+<tr>
+        <td class="form_details " >
+           Clinic
+       </td>
+        <td class="form_details " >
+            <div id='clinicsdiv'>
+               <select class="form_details" id="provclinics" onchange="changeClinics()">
+                    <option value='1'>--Select--</option>
+    
+                    {{for clinic in clinics:}}
+                    alert("Clinic = " + clinic.id)
+                        {{if (clinic.id == provclinicid):}}
+                        
+                          <option selected="selected" value={{=clinic.id}}>{{=clinic.name}}</option>
+                        {{else:}}
+                        <option value={{=clinic.id}}>{{=clinic.name}}</option>
+                        {{pass}}                     
+                    
+                    
+                    <!--<option value='{=clinic.id}}'>{{=clinic.name}}</option>-->
+                    {{pass}}
+                </select>
+            </div>           
             
-            <td>
-                    {{=formA.custom.widget.providerid}}
-            </td>
-         </tr>           
-           <tr>
-            <td class="form_details " >
-                Clinic
-            </td>
+        </td>
+    </tr>  
+
+           <!--<tr>-->
+            <!--<td class="form_details " >-->
+                <!--Provider-->
+            <!--</td>-->
             
-            <td>
-                    {{=formA.custom.widget.clinicid}}
-            </td>
-         </tr>           
+            <!--<td>-->
+                    <!--{=custom.widget.providerid}}-->
+            <!--</td>-->
+         <!--</tr>           -->
+           <!--<tr>-->
+            <!--<td class="form_details " >-->
+                <!--Clinic-->
+            <!--</td>-->
+            
+            <!--<td>-->
+                    <!--{=formA.custom.widget.clinicid}}-->
+            <!--</td>-->
+         <!--</tr>           -->
   
  <tr>
        <td >
@@ -365,6 +420,29 @@
 
 
 <script>
+$(document).ready(function(){
+  // we call the function
+  changeProviders()
+ 
+});
+
+function changeProviders(){
+<!--alert('Enter changeProviders')-->
+var provopts = document.getElementById("xproviders");
+<!--alert('Enter changeProviders-1')-->
+var prov = provopts.options[provopts.selectedIndex].value;
+<!--alert('Enter changeProviders-2')-->
+var x = document.getElementById("no_table_providerid");
+    x.value = prov;
+<!--alert('Enter changeProviders-3')   -->
+<!--alert('Provider ' + x.value)-->
+
+ajax('{{=URL('clinic','clinic_selector')}}', ['providerid','{{=provclinicid}}'], 'clinicsdiv');
+
+};
+
+
+
 function changeRegions(){
 var regionopts = document.getElementById("regions");
 var region = regionopts.options[regionopts.selectedIndex].value;
@@ -390,5 +468,15 @@ var y = document.getElementById("no_table_planid");
 };
 
 
+function changeClinics(){
+<!--alert('Enter Change Clinic')-->
+var clnopts = document.getElementById("provclinics");
+var cln = clnopts.options[clnopts.selectedIndex].value;
+<!--alert('Enter Change Clinic-1')-->
+var y = document.getElementById("no_table_clinicid");
 
+    y.value = cln;
+
+<!--alert('Clinic ID ' + y)   -->
+};
 </script>

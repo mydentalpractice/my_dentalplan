@@ -680,7 +680,8 @@ def update_customer():
         customer = ds[0].customer
         customer_ref = ds[0].customer_ref
         providerid = ds[0].providerid
-        clinicid = ds[0].clinicid        
+        clinicid = ds[0].clinicid      
+        provclinicid = clinicid
         companyid = ds[0].companyid
         planid = ds[0].planid
         regionid = ds[0].regionid
@@ -713,6 +714,7 @@ def update_customer():
         customer_ref = ''
         providerid = 1
         clinicid = 1
+        provclinicid = 1
         companyid = 1
         planid = 1
         regionid = 1
@@ -742,6 +744,7 @@ def update_customer():
         Field('customer', 'string',label='Customer ID', default=customer),
         Field('customer_ref', 'string',label='Customer Ref', default=customer_ref),
         Field('providerid', default=providerid,requires=IS_IN_DB(db(db.provider.is_active==True), 'provider.id', '%(id)s %(provider)s : (%(providername)s)')),
+        #Field('clinicid', 'integer',default=clinicid),       
         Field('clinicid', default=clinicid,requires=IS_IN_DB(db(db.vw_clinic.id==clinicid), 'vw_clinic.id', '%(id)s %(name)s')),
         Field('companyid', default=companyid, requires=IS_IN_DB(db(db.company.is_active==True), 'company.id', '%(name)s (%(company)s)')),
         Field('planid', default=planid, requires=IS_IN_DB(db(db.hmoplan.is_active==True), 'hmoplan.id', '%(name)s (%(hmoplancode)s) (%(groupregion)s)')),
@@ -779,6 +782,7 @@ def update_customer():
             customer = formA.vars.customer,
             customer_ref = formA.vars.customer_ref,
             providerid = formA.vars.providerid,
+            clinicid = formA.vars.clinicid,
             companyid = formA.vars.companyid,
             planid = formA.vars.planid,
             regionid = formA.vars.regionid,
@@ -872,13 +876,18 @@ def update_customer():
     plans   = db((db.companyhmoplanrate.groupregion==regionid) & (db.companyhmoplanrate.company==companyid)).\
         select(db.hmoplan.id,db.hmoplan.hmoplancode,db.hmoplan.name,\
                left=db.hmoplan.on((db.companyhmoplanrate.hmoplan == db.hmoplan.id)&(db.hmoplan.is_active==True)))    
- 
+    
+    providers = db(db.provider.is_active==True).select(db.provider.id,db.provider.provider,db.provider.providername,orderby=db.provider.provider)
+
+    clinics= db(db.clinic.id == 0).select()
+    
     returnurl = URL('customer','list_customers',vars=dict(page=page))
     enrollcustomer = URL('customer','enroll_customer',vars=dict(page=page,customerid=customerid))
     viewprovidercalendar = URL('my_pms2', 'appointment','customer_appointment',vars=dict(page=page,providerid = providerid,customerid=customerid))
 
     return dict(formA=formA,formB=formB,username=username, customerid=customerid,returnurl=returnurl,enrollcustomer=enrollcustomer,viewprovidercalendar=viewprovidercalendar,\
-                formheader=formheader,regions=regions, plans=plans,regionid=regionid,planid=planid,status=status,page=page)
+                formheader=formheader,regions=regions, plans=plans,providers=providers, clinics=clinics,\
+                provclinicid=provclinicid,regionid=regionid,planid=planid,providerid=providerid,status=status,page=page)
     
     
 def delete_customer_dependant():

@@ -1,7 +1,19 @@
-    <select id="provclinics" onchange="changeClinics()">
-        <option value='1'>--Select--</option>
+
+   
+               <select class="form_details" id="provclinics" onchange="changeClinics()">
+                    <option value='1'>--Select--</option>
     
-        {{for clinic in clinics:}}
-        <option value='{{=clinic.id}}'>{{=clinic.name}}</option>
-        {{pass}}
-    </select>
+                    {{for clinic in clinics:}}
+                   
+                        {{if (clinic.id == provclinicid):}}
+                        
+                          <option selected="selected" value={{=clinic.id}}>{{=clinic.name}}</option>
+                        {{else:}}
+                        <option value={{=clinic.id}}>{{=clinic.name}}</option>
+                        {{pass}}                     
+                    
+                    
+                    <!--<option value='{=clinic.id}}'>{{=clinic.name}}</option>-->
+                    {{pass}}
+                </select>
+         
