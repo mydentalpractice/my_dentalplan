@@ -371,8 +371,8 @@ def update_prospect():
         Field('p_address1','string',default=rows[0].p_address1),
         Field('p_address2','string',default=rows[0].p_address2),
         Field('p_address3','string',default=rows[0].p_address3),
-        Field('p_city','string',default=p_city,requires = IS_IN_SET(CITIES)),
-        Field('p_st','string',default=p_st,requires = IS_IN_SET(STATES)),
+        Field('p_city','string',default=p_city),
+        Field('p_st','string',default=p_st),
         Field('p_pin','string',default=rows[0].p_pin),
         Field('fax','string',default=rows[0].fax),
         Field('taxid','string',default=rows[0].taxid),
@@ -385,8 +385,8 @@ def update_prospect():
         Field('pa_address','string',default=rows[0].pa_address),
         Field('pa_pan','string',default=pa_pan),
         Field('pa_regno','string',default=pa_regno),
-        Field('pa_day','string',default=rows[0].pa_day),
-        Field('pa_month','string',default=rows[0].pa_month),
+        Field('pa_day','string',default=""),
+        Field('pa_month','string',default=""),
         Field('pa_location','string',default=rows[0].pa_location if(common.getstring(rows[0].pa_location) != "") else rows[0].city ),
         Field('pa_practicepin','string',default=pa_practicepin),
         Field('pa_hours','string',default=rows[0].pa_hours),
@@ -402,7 +402,7 @@ def update_prospect():
         Field('gender', 'string',label='Gender', default=rows[0].gender, requires = IS_IN_SET(GENDER)),
         Field('dob', 'date',label='DOB', default=rows[0].dob,  requires=IS_DATE(format=('%d/%m/%Y')),length=20),
         Field('enrolleddate', 'date',label='DOB', default=rows[0].enrolleddate,  requires=IS_DATE(format=('%d/%m/%Y')),length=20),
-        Field('pa_dob','date',default=rows[0].pa_dob,  requires=IS_DATE(format=('%d/%m/%Y %H:%M'))),
+        Field('pa_dob','date',default=rows[0].pa_dob,  requires=IS_DATE(format=('%d/%m/%Y'))),
         Field('pa_date','datetime',default=rows[0].pa_date,  requires=IS_DATE(format=('%d/%m/%Y'))),
         Field('pa_approvedon','date',default=pa_approvedon,  writable=False,requires=IS_DATE(format=('%d/%m/%Y'))),
         Field('pa_approvedby','integer',default=pa_approvedby,writable=False),
@@ -446,7 +446,8 @@ def update_prospect():
         
         
     elif formA.errors:
-        logger.loggerpms2.info("Form A Rejected")
+        logger.loggerpms2.info("Form A Rejected " + str(formA.errors))
+        response.flash = 'formA has errors ' + str(formA.errors)
         
     # Bank Details
     bank = db(db.bank_details.id == bankid).select()
