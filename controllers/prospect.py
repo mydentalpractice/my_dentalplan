@@ -155,6 +155,7 @@ def list_prospect():
         query = (query & (db.prospect_ref.ref_id == ref_id))
     
 
+
     
     fields=(db.prospect.provider,
             db.prospect.providername,
@@ -164,8 +165,10 @@ def list_prospect():
             db.prospect.pin,
             db.prospect.cell,
             db.prospect.email,
+            db.prospect.newcity,
             db.prospect.pa_accepted,
-            db.prospect.pa_approved)
+            db.prospect.pa_approved,
+            db.prospect.status)
     
     headers={
         'prospect.provider':'Prospect',
@@ -176,12 +179,27 @@ def list_prospect():
         'prospect.pin' : 'PIN',
         'prospect.cell' : 'Cell',
         'prospect.email' : 'Email',
+        'prospect.newcity' : 'New City',
+        'prospect.status' : 'Status',
         'prospect.pa_accepted':'Acpt',
         'prospect.pa_approved': 'Apr'
         }    
     
+    db.prospect.title.readable = False
+    db.prospect.address1.readable = False
+    db.prospect.address2.readable = False
+    db.prospect.address3.readable = False
+    db.prospect.st.readable = False
+    db.prospect.pin.readable = False
+    db.prospect.speciality.readable = False
+    db.prospect.practicename.readable = False
+    
+    db.prospect.pa_approved.readable = False
+    db.prospect.pa_accepted.readable = False
+    db.prospect.pa_approvedby.readable = False
+    
     orderby = (~db.prospect.id)
-    exportlist = dict( csv=False,csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)
+    exportlist = dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)
     links = [lambda row: A('Update',_href=URL("prospect","update_prospect",vars=dict(page=common.getgridpage(request.vars)),args=[row.id])),
              lambda row: A('Clincs',_href=URL("clinic","list_clinic",vars=dict(page=common.getgridpage(request.vars),prev_ref_code=ref_code, prev_ref_id =ref_id,ref_code="PST",ref_id=row.id))),
              lambda row: A('Bank Details',_href=URL("prospect","bank_prospect",vars=dict(page=page,prev_ref_code=ref_code, prev_ref_id =ref_id,ref_code="PST",ref_id=row.id,prospectid=row.id))),

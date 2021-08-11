@@ -345,7 +345,7 @@ def update_clinic():
     st = "" if(len(clinics) !=1 ) else common.getstring(clinics[0].st)
     pin = "" if(len(clinics) !=1 ) else common.getstring(clinics[0].pin)
     
-   
+    bank_id = 0 if(len(clinics) != 1) else int(common.getid(clinics[0].bank_id))
   
     
     
@@ -483,12 +483,12 @@ def update_clinic():
         Field('nabh_iso_certifcation','string',default=nabh_iso_certifcation,requires=IS_IN_SET(YESNO)),     
         Field('intra_oral_camera','string',default=intra_oral_camera,requires=IS_IN_SET(YESNO)),     
         Field('rotary_endodontics','string',default=rotary_endodontics,requires=IS_IN_SET(YESNO)),     
-        Field('bank_id','integer'), 
         
         Field('state_dental_registration','string',default=state_dental_registration),
         Field('registration_certificate','string',default=registration_certificate),
         
         Field('notes','text',default=notes),
+        Field('bank_id','integer',default=bank_id)
     )  
     
     
@@ -565,7 +565,7 @@ def update_clinic():
                         nabh_iso_certifcation=common.gettruefalse(formA.vars.nabh_iso_certifcation) if(formA.vars.nabh_iso_certifcation != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].nabh_iso_certifcation)),      
                         intra_oral_camera=common.gettruefalse(formA.vars.intra_oral_camera) if(formA.vars.intra_oral_camera != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].intra_oral_camera)),       
                         rotary_endodontics=common.gettruefalse(formA.vars.rotary_endodontics) if(formA.vars.rotary_endodontics != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].rotary_endodontics)),   
-                        bank_id = formA.vars.bankid,
+                        bank_id = formA.vars.bank_id,
                         
                         state_dental_registration=formA.vars.rotary_endodontics if(formA.vars.state_dental_registration != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].state_dental_registration)),   
                         registration_certificate=formA.vars.registration_certificate if(formA.vars.registration_certificate != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].registration_certificate)),   
@@ -583,6 +583,9 @@ def update_clinic():
 
     elif formA.errors:
         i  =0
+        logger.loggerpms2.info("Clinic Form A Rejected " + str(formA.errors))
+        response.flash = 'Clinic formA has errors ' + str(formA.errors)
+        
         
     returnurl = URL('clinic','list_clinic',vars=dict(page=page,ref_code=ref_code,ref_id=ref_id))
     return dict(username=username,returnurl=returnurl,formA=formA, formheader=formheader,clinicid=clinicid,authuser=authuser,page=page)    

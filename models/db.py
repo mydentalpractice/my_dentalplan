@@ -1017,7 +1017,7 @@ db.provider_region_plan._plural = "Provider"
 db.define_table('prospect',
                 Field('speciality',  'integer', widget = lambda field, value:SQLFORM.widgets.options.widget(field, value, _style="width:100%;height:35px",_class='form-control')),
                 Field('provider', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'),label='Provider Code',default='',length=20),
-                Field('title','string',represent=lambda v, r: '' if v is None else v,default=' ',label='Title',length=10,requires = IS_EMPTY_OR(IS_IN_SET(DOCTITLE))),
+                Field('title','string'),
                 Field('providername', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'), default='', label='Provider Name ',length=512),
                 Field('practicename', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'), default='', label='Pratice Name',length=512),
                 Field('address1', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'),label='Address 1',default='',length=512),
@@ -1081,7 +1081,7 @@ db.define_table('prospect',
                 Field('groupsms', 'boolean', default=True),
                 Field('groupemail', 'boolean', default=True),
                 
-                Field('status', 'string', default='New'),
+                Field('status', 'string', default='New',writable=True),
                 
                 Field('bankid','reference providerbank'),                
                 Field('newcity', 'string'),
