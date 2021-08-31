@@ -1,5 +1,8 @@
+
+
 import datetime 
 from datetime import timedelta
+
 
 
 import time
@@ -18,13 +21,38 @@ getpage1  = lambda page:page if((page != None)&(page != "")&(page != "0")) else 
 getvalue = lambda amount: amount if((amount != None)&(amount != "")&(amount != "None")) else 0
 getstring = lambda text: text if((text != None)&(text != "")&(text != "None")) else ""
 getbool =   lambda text: text if((text != None)&(text != "")&(text != "None")) else False
-getboolean =   lambda text: True if((text != None)&(text != "")&(text != "None")&((text == "True")|(text==True)|(text=="1"))) else False
+getboolean =   lambda text: True if((text != None)&(text != "")&(text != "None")&((text == "True")|(text == "true")|(text==True)|(text=="1")|(text=="on")|(text=="On"))) else False
+
+
+getyesno = lambda text: "yes" if((text == "True")) else ("no" if(text=="False") else "yes")
+gettruefalse = lambda text: "True" if((text == "yes")) else ("False" if(text=="no") else "True")
 
 #getmode    = lambda mode:mode if(mode != None) else 'None'
 
 fmt = "%Y-%m-%d %H:%M:%S"
 
 
+
+def getregioncodefromcity(db,city):
+        rgn = db((db.groupregion.region == city) & (db.groupregion.is_active == True)).select()
+        return rgn[0].groupregion if(len(rgn) != 0) else "JAI"
+
+def getregionidfromcity(db,city):
+        rgn = db((db.groupregion.region == city) & (db.groupregion.is_active == True)).select()
+        return rgn[0].id if(len(rgn) != 0) else 0
+
+        
+def convert24to12clock(timestr):
+
+        if((timestr.upper().find("AM") == -1)|(timestr.upper().find("PM") == -1)):
+                return timestr
+        
+        d = datetime.datetime.strptime(timestr,"%H:%M")
+
+        e = d.strftime("%I:%M %p")
+        return e
+
+        
 def getkeyvalue(jobj, key1, defval):
         
 
@@ -32,7 +60,7 @@ def getkeyvalue(jobj, key1, defval):
 
         for key in keys:
                 if(key.lower() == key1.lower()):
-                        return jobj.get(key,"defval")
+                        return jobj.get(key,defval)
 
 
         return defval
@@ -47,26 +75,46 @@ def setcookies(response):
         return True
 
 def getstringfromdate(dateobj,fmt):
-        
+        if(dateobj == None):
+                return ""
         dtstr = dateobj.strftime(fmt)
         
         return dtstr
 
 def getdatefromstring(strdate,fmt):
+        if(strdate == ""):
+                return datetime.date.today()
         
         dt = datetime.datetime.strptime(strdate,fmt)
         return dt
         
 def gettimefromstring(strtime,fmt):
+        if(strtime == ""):
+                return None
+        
         t = time.strptime(strtime, fmt)
         return t
 
 def getstringfromtime(timeobj, fmt):
+        if(timeobj == None):
+                return ""
         strtime = timeobj.strftime(fmt)
         
        
         return strtime
+
+
+#this returns local current (IST) date  as datetime object
+def getISTFormatCurrentLocatDate():
+        loctime = getISTCurrentLocatTime()
+        dttodaydate =   datetime.datetime.strptime(loctime.strftime("%d") + "/" + loctime.strftime("%m") + "/" + loctime.strftime("%Y"),\
+                                                   "%d/%m/%Y")
+        str1 = getstringfromdate(dttodaydate,"%d/%m/%Y")
+        dt1 = getdatefromstring(str1,"%d/%m/%Y")
         
+        return dt1
+
+
 #this returns local current (IST) date and time as datetime object
 def getISTFormatCurrentLocatTime():
         loctime = getISTCurrentLocatTime()
@@ -290,6 +338,7 @@ def getprovider(auth,db):
     latitude = ""
     longitude = ""
     locationurl = ""
+    
     
     if(auth.has_membership('provider')):
         rows = db((db.provider.sitekey == auth.user.sitekey) & (db.provider.is_active == True)).select()
@@ -589,7 +638,7 @@ def gettreatmentgrid(db,page, imagepage, providerid, providername, treatment,mem
     
     query = (db.vw_treatmentlist.memberid == memberid) if(memberid > 0) else (1==1)
     
-    query = query & (db.vw_treatmentlist.patientid == patientid) if(memberid > 0) else (1==1)
+    query = query & (db.vw_treatmentlist.patientid == patientid) if(memberid > 0) else query
 
     query =  (query )
      
@@ -671,12 +720,16 @@ def gettreatmentgrid(db,page, imagepage, providerid, providername, treatment,mem
 
 
 def modify_cell(cell):
-   
+        if((cell == None)|(cell == "")):
+                return "0000000000"
+        
         cellno = cell.lstrip('0')  # remove leading zero  in case cell  = 078901234544
         if(len(cellno) == 10):     # pure number with no Country code
-                cellno = "91" + cellno 
+                cellno = "+91" + cellno 
         elif(not cellno.startswith("91")):
-                cellno = "91" + cellno
+                cellno = "+91" + cellno
+        elif(cellno.startswith("91")):
+                cellno = "+" + cellno
 
         return cellno
 
@@ -699,3 +752,10 @@ def generateackid(base,digits):
         for j in range(0,(digits-len(base))):
                 ackid += str(random.randint(0,9))  
         return ackid
+
+def getmessage(db,message_code):
+        
+        mssgs = db((db.mdpmessages.message_code == message_code)).select()
+        
+        return "" if(len(mssgs) != 1) else mssgs[0].mdpmessage
+        

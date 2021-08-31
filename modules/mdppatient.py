@@ -16,6 +16,8 @@ from applications.my_pms2.modules import gender
 from applications.my_pms2.modules import states
 from applications.my_pms2.modules import status
 from applications.my_pms2.modules import relations
+from applications.my_pms2.modules import mdpmedia
+from applications.my_pms2.modules import mdpbenefits
 from applications.my_pms2.modules import logger
 
 class Patient:
@@ -23,6 +25,65 @@ class Patient:
     self.db = db
     self.providerid = providerid
     return 
+
+  #returns the policy which the patient has subscribed to  
+  def getMemberPolicy(self,avars):
+    logger.loggerpms2.info("Enter getMemberPolicy==> " + str(avars))
+    db = self.db
+    rspobj={}
+    
+    try:
+      
+      
+      p = db((db.provider.provider == "P0001") & (db.provider.is_active == True)).select(db.provider.id)
+      defproviderid = int(common.getid(p[0].id if(len(p) >=1) else 0))
+      
+      providerid = int(common.getid(common.getkeyvalue(avars,"providerid",str(defproviderid))))
+      prov = db((db.provider.id == providerid) & (db.provider.is_active == True)).select(db.provider.city)
+      
+      #region regiond code      
+      city = prov[0].city if(len(prov) != 0) else "Jaipur"
+      regionid = common.getregionidfromcity(db,city)
+      regioncode =  common.getregioncodefromcity(db,city)         
+    
+      #get company code
+      memberid = int(common.getid(common.getkeyvalue(avars,"memberid","0")))
+      members = db((db.patientmember.id == memberid) & (db.patientmember.is_active == True)).select(db.patientmember.company,db.patientmember.hmoplan)
+    
+      companyid = int(common.getid(members[0].company) if (len(members) == 1) else "0")
+      c = db((db.company.id == companyid) & (db.company.is_active == True)).select(db.company.company)
+      companycode = c[0].company if (len(c) ==1) else ""
+    
+    
+      #get hmoplan code
+      hmoplanid = int(common.getid(members[0].hmoplan) if (len(members) == 1) else "0")  #members hmoplan assigned
+      h = db((db.hmoplan.id == hmoplanid) & (db.hmoplan.is_active == True)).select()    
+      hmoplancode = h[0].hmoplancode if(len(h) == 1) else "PREMWALKIN"
+    
+      #get policy from provider-region-plan corr to companycode, regioncode and hmoplancode
+      prp = db((db.provider_region_plan.companycode == companycode) &\
+               (db.provider_region_plan.regioncode == regioncode) &\
+               (db.provider_region_plan.plancode == hmoplancode) &\
+               (db.provider_region_plan.is_active == True)).select() 
+    
+      policy = prp[0].policy if(len(prp) == 1) else "PREMWALKIN"  #get policy corr.
+      
+      rspobj = {}
+      rspobj["memberid"] = str(memberid)
+      rspobj["providerid"] = str(providerid)
+      rspobj["plan"] = policy
+      
+
+    except Exception as e:
+      mssg = "Get Member Policy Exception:\n" + str(e)
+      logger.loggerpms2.info(mssg)      
+      excpobj = {}
+      excpobj["result"] = "fail"
+      excpobj["error_message"] = mssg
+      return json.dumps(excpobj)     
+    
+    logger.loggerpms2.info("Exit getMemberPolicy==> " + json.dumps(rspobj))
+    return json.dumps(rspobj)
   
   def relations(self):
     return json.dumps(relations.RELATIONS)
@@ -86,7 +147,7 @@ class Patient:
     
     db = self.db
     
-    rgns = db(db.groupregion.is_active == True).select(db.groupregion.groupregion)
+    rgns = db(db.groupregion.is_active == True).select(db.groupregion.groupregion,orderby=db.groupregion.groupregion)
     
     
     rgnlist = []
@@ -94,6 +155,7 @@ class Patient:
     for rgn in rgns:
       rgnlist.append(rgn.groupregion)
     
+    rgnlist[0] = "--Select Region--"
     
     
     
@@ -101,7 +163,7 @@ class Patient:
     return json.dumps(rgnlist)
   
   def getMedicalHistory(self,memberid,patientid):
-  
+    
     db = self.db
     providerid = self.providerid    
     medhistobj = {}
@@ -110,7 +172,7 @@ class Patient:
       medhist = db((db.medicalnotes.patientid == patientid) & (db.medicalnotes.memberid == memberid)).select()
       
       pats = db((db.vw_memberpatientlist.patientid == patientid) & (db.vw_memberpatientlist.primarypatientid == memberid)).\
-        select(db.vw_memberpatientlist.dob,db.vw_memberpatientlist.gender)
+        select(db.vw_memberpatientlist.dob,db.vw_memberpatientlist.gender,db.vw_memberpatientlist.fullname)
       
       
       ageyear = pats[0].dob.year if(pats[0].dob != None) else datetime.date.today().year
@@ -151,6 +213,9 @@ class Patient:
           medhistobj["dob"] = pats[0].dob.strftime("%d/%m/%Y")  if(pats[0].dob != None) else ""
           medhistobj["age"] = age
           medhistobj["gender"] = pats[0].gender
+          medhistobj["memberid"] = memberid
+          medhistobj["patientid"] = patientid
+          medhistobj["membername"] = pats[0].fullname
           
           medhistobj["result"] = "success"
           medhistobj["error_message"] = ""
@@ -313,155 +378,239 @@ class Patient:
     
     return json.dumps({"patientcount":len(pats),"page":page+1,"patientlist":patlist, "runningcount":xcount, "maxcount":maxcount, "next":bnext, "prev":bprev} )
   
-  #Searches for a patient in member, memberdependants, non-members for the patientsearch phrase
-  #filters on cell, email, patientcode, patient fname/lname
-  #
-  #returns:
-  #result as follows:
-  #{
-  # results: True or False
-  # count
-  # [
-  #   {
-  #      member, patientid, memberid, patientmember, fname, lname, cell,email, relation,patienttype,primary
-  #   }
-  # ]
   
   
+  # Display all Walk-in Patients assigned to the Provider matching the 'Search'
+  # For Members, Display all those Patients who have seeked appointments in the past or in future. This means that
+  # since taking an appointment, they have agreed to the Provider. List these members based on the search phrase filter
   
-  def searchpatient(self,page,patientsearch,maxcount,patientmembersearch,hmopatientmember, company=""):
-    
-    
-    result = False
-    patlist = []
-    db = self.db
-    providerid = self.providerid
-    pats=None
-    
-    urlprops = db(db.urlproperties.id >0 ).select(db.urlproperties.pagination)
-    
-    page = page -1
-    urlprops = db(db.urlproperties.id >0 ).select(db.urlproperties.pagination)
-    items_per_page = 10 if(len(urlprops) <= 0) else int(common.getvalue(urlprops[0].pagination))
-    limitby = None if page < 0 else ((page)*items_per_page,(page+1)*items_per_page)      
-    
-    
-    
-    c = db(db.company.company == company).select(db.company.id)
-    companyid = 0 if(len(c) != 1) else int(common.getid(c[0].id))
-    
-    #if(page >= -1):
-    if(hmopatientmember == True):
-      qry = ((db.vw_memberpatientlist.hmopatientmember == True) &  (datetime.date.today().strftime('%Y-%m-%d') <= db.vw_memberpatientlist.premenddt))
-    elif(hmopatientmember==False):
-      qry = (db.vw_memberpatientlist.hmopatientmember == False)
-    else:
-      qry = (db.vw_memberpatientlist.hmopatientmember == False) | (  (db.vw_memberpatientlist.hmopatientmember == True) &  (datetime.date.today().strftime('%Y-%m-%d') <= db.vw_memberpatientlist.premenddt) )
-    
-    if(companyid >0):
-      qry = (qry) & (db.vw_memberpatientlist.company == companyid)
-    
-    #is it numeric only, then search on cell numbero
-    if(patientsearch.replace("+",'').replace(' ','').isdigit()):
-      pats=db((db.vw_memberpatientlist.cell.like("%" + patientsearch + "%")) & (db.vw_memberpatientlist.providerid == providerid) & \
-              (qry) & \
-              (db.vw_memberpatientlist.is_active == True)).select(db.vw_memberpatientlist.hmopatientmember,\
-                                                                  db.vw_memberpatientlist.patientmember,\
-                                                                  db.vw_memberpatientlist.fname,\
-                                                                  db.vw_memberpatientlist.lname,\
-                                                                  db.vw_memberpatientlist.primarypatientid,\
-                                                                  db.vw_memberpatientlist.patientid,\
-                                                                  db.vw_memberpatientlist.patienttype,\
-                                                                  db.vw_memberpatientlist.relation,\
-                                                                  db.vw_memberpatientlist.cell,\
-                                                                  db.vw_memberpatientlist.email,\
-                                                                  limitby=limitby)
-      if(maxcount == 0):
-        maxcount = db((db.vw_memberpatientlist.cell.like("%" + patientsearch + "%")) & (db.vw_memberpatientlist.providerid == providerid) & \
-                      (qry) & \
-                      (db.vw_memberpatientlist.is_active == True)).count()
-      
-    
-    #is it email only
-    elif(patientsearch.find("@") >= 0):
-      pats=db((db.vw_memberpatientlist.email.like("%"+patientsearch+"%")) & (db.vw_memberpatientlist.providerid == providerid) & \
-              (qry) & \
-              (db.vw_memberpatientlist.is_active == True)).select(db.vw_memberpatientlist.hmopatientmember,\
-                                                                  db.vw_memberpatientlist.patientmember,\
-                                                                  db.vw_memberpatientlist.fname,\
-                                                                  db.vw_memberpatientlist.lname,\
-                                                                  db.vw_memberpatientlist.primarypatientid,\
-                                                                  db.vw_memberpatientlist.patientid,\
-                                                                  db.vw_memberpatientlist.patienttype,\
-                                                                  db.vw_memberpatientlist.relation,\
-                                                                  db.vw_memberpatientlist.cell,\
-                                                                  db.vw_memberpatientlist.email,\
-                                                                  limitby=limitby)
-      
-      if(maxcount == 0):
-        maxcount = db((db.vw_memberpatientlist.email.like("%"+patientsearch+"%")) & (db.vw_memberpatientlist.providerid == providerid) & \
-                      (qry) & \
-                      (db.vw_memberpatientlist.is_active == True)).count()
-      
-    #if pats is empty, then search for phrase in patient (fname lname:membercode)
-    else:
-      pats = db((db.vw_memberpatientlist.patient.like("%" + patientsearch + "%")) & (db.vw_memberpatientlist.patientmember.like("%" + patientmembersearch + "%")) & (db.vw_memberpatientlist.providerid == providerid) & \
-                (qry) & \
-                (db.vw_memberpatientlist.is_active == True)).select(db.vw_memberpatientlist.hmopatientmember,\
-                                                                  db.vw_memberpatientlist.patientmember,\
-                                                                  db.vw_memberpatientlist.fname,\
-                                                                  db.vw_memberpatientlist.lname,\
-                                                                  db.vw_memberpatientlist.primarypatientid,\
-                                                                  db.vw_memberpatientlist.patientid,\
-                                                                  db.vw_memberpatientlist.patienttype,\
-                                                                  db.vw_memberpatientlist.relation,\
-                                                                  db.vw_memberpatientlist.cell,\
-                                                                  db.vw_memberpatientlist.email,\
-                                                                  limitby=limitby)
-      if(maxcount == 0):
-        maxcount = db((db.vw_memberpatientlist.patient.like("%" + patientsearch + "%")) & (db.vw_memberpatientlist.patientmember.like("%" + patientmembersearch + "%")) &(db.vw_memberpatientlist.providerid == providerid) & \
-                      (qry) & \
-                      (db.vw_memberpatientlist.is_active == True)).count()
-        
+  #def searchpatient(self,page,patientsearch,maxcount,patientmembersearch,hmopatientmember, company=""):
+  def searchpatient(self,avars):    
+    logger.loggerpms2.info("Enter Search Patient " + json.dumps(avars))
 
+    
+    try:
+      db = self.db
+
+      page = common.getkeyvalue(avars,"page","0")
+      page = 0 if((page==None)|(page == "")) else int(common.getid(page))
+
+      maxcount = common.getkeyvalue(avars,"maxcount","0")
+      maxcount = 0 if((maxcount==None)|(maxcount == "")) else int(common.getid(maxcount))
+
+      
+      patientsearch = common.getkeyvalue(avars,"searchphrase","")
+      patientsearch = "" if((patientsearch==None)) else patientsearch
+      
+      patientmembersearch = common.getkeyvalue(avars,"patientmembersearch",patientsearch)
+      patientmembersearch = patientsearch if((patientmembersearch==None)|(patientmembersearch=="")) else patientmembersearch
+      
+      hmopatientmember = common.getkeyvalue(avars,"member","")
+      hmopatientmember = "" if((hmopatientmember==None)|(hmopatientmember=="")) else common.getboolean(hmopatientmember)  #default to walk-in members
+      
+
+      company = common.getkeyvalue(avars,"company","")
+      company = "" if((company==None)) else company
+
+      c = db(db.company.company == company).select(db.company.id)
+      companyid = 0 if(len(c) != 1) else int(common.getid(c[0].id))      
+
+      providerid = common.getkeyvalue(avars,"providerid","0")
+      providerid = 0 if((providerid==None)|(providerid == "")) else int(common.getid(providerid))
+      
+      
+      result = False
+      patlist = []
+      
+      
+     
+        
+        
+      pats=None
+      
+      urlprops = db(db.urlproperties.id >0 ).select(db.urlproperties.pagination)
+      
+      page = page -1
+      urlprops = db(db.urlproperties.id >0 ).select(db.urlproperties.pagination)
+      items_per_page = 10 if(len(urlprops) <= 0) else int(common.getvalue(urlprops[0].pagination))
+      limitby = None if page < 0 else ((page)*items_per_page,(page+1)*items_per_page)      
+      memberset = set()
+      
+      #display all those patients who have seeked appointments with this provider. Appointment guarantees that these patient/members have 
+      #agreed to this provider.
+      memberset = set()
+    
+      appts = db((db.t_appointment.is_active == True)&\
+                 (db.t_appointment.f_status != 'Cancelled')&\
+                 (db.t_appointment.provider == providerid)).select(db.t_appointment.patientmember, db.t_appointment.patient)
+    
+      for appt in appts:
+        if(appt.patientmember in memberset):
+          continue
+        memberset.add(appt.patientmember)      
+
+      #also add those patients & members who is assigned to this Provider outside the Appt. but from Customer Support
+      
+      qry = (db.vw_memberpatientlist.is_active == True)
+
+      if(providerid > 0):
+        q = (qry) & ((db.vw_memberpatientlist.hmopatientmember == True) & (db.vw_memberpatientlist.providerid == providerid))
+        pats = db(q).select(db.vw_memberpatientlist.primarypatientid)
+        for pat in pats:
+          if(pat.primarypatientid in memberset):
+            continue
+          memberset.add(pat.primarypatientid)
+      
+      if(hmopatientmember == True):
+        qry = (qry) & ((db.vw_memberpatientlist.primarypatientid.belongs(memberset)) & (db.vw_memberpatientlist.hmopatientmember == True))
+        #qry = (qry) & ((db.vw_memberpatientlist.primarypatientid.belongs(memberset)) & (db.vw_memberpatientlist.hmopatientmember == True) &  (datetime.date.today().strftime('%Y-%m-%d') <= db.vw_memberpatientlist.premenddt))
+        #qry = (qry) & ((patientsearch != "") & (db.vw_memberpatientlist.hmopatientmember == True) &  (datetime.date.today().strftime('%Y-%m-%d') <= db.vw_memberpatientlist.premenddt))
+      
+      elif(hmopatientmember==False):
+        #display all Walk-in Patients for this Provider
+        if(providerid > 0):
+          qry = (qry) & (db.vw_memberpatientlist.hmopatientmember == False) & (db.vw_memberpatientlist.providerid == providerid)
+        else:
+          qry = qry & ( 1 !=1 ) #display no walk in patients
+         
+      else:
+        if(providerid > 0):  #list of walk-in patients for this Provider + list of MDP Members matching the search phrase  (removed premenddt check)
+          qry = (qry) & (((db.vw_memberpatientlist.hmopatientmember == False) & (db.vw_memberpatientlist.providerid == providerid)) |\
+                         ((db.vw_memberpatientlist.primarypatientid.belongs(memberset)) &  (db.vw_memberpatientlist.hmopatientmember == True)))
+        else: # list of MDP Members matching the search phrase
+          qry = (qry) & ((db.vw_memberpatientlist.primarypatientid.belongs(memberset)) &  (db.vw_memberpatientlist.hmopatientmember == True))
+
+
+
+        #if(providerid > 0):  #list of walk-in patients for this Provider + list of MDP Members matching the search phrase
+          #qry = (qry) & (((db.vw_memberpatientlist.hmopatientmember == False) & (db.vw_memberpatientlist.providerid == providerid)) |\
+                         #((patientsearch != "") &  (db.vw_memberpatientlist.hmopatientmember == True) &  (datetime.date.today().strftime('%Y-%m-%d') <= db.vw_memberpatientlist.premenddt) ))
+        #else: # list of MDP Members matching the search phrase
+          #qry = (qry) & ((patientsearch != "") &  (db.vw_memberpatientlist.hmopatientmember == True) &  (datetime.date.today().strftime('%Y-%m-%d') <= db.vw_memberpatientlist.premenddt))
+          ##qry = (qry) & ((db.vw_memberpatientlist.hmopatientmember == False) | (  (db.vw_memberpatientlist.hmopatientmember == True) &  (datetime.date.today().strftime('%Y-%m-%d') <= db.vw_memberpatientlist.premenddt) ))
+    
+      if(companyid >0):
+        qry = (qry) & (db.vw_memberpatientlist.company == companyid)
   
     
-    
-    
-    for pat in pats:
-      
-      patobj = {
-        "member":common.getboolean(pat.hmopatientmember),  #False for walk in patient
-        "patientmember" : pat.patientmember,
-        "fname":pat.fname,
-        "lname":pat.lname,
-        "memberid":int(common.getid(pat.primarypatientid)),
-        "patientid":int(common.getid(pat.patientid)),
-        "primary":True if(pat.patienttype == "P") else False,   #True if "P" False if "D"
-        "relation":pat.relation,
-        "cell":pat.cell,
-        "email":pat.email
+      #if(patientsearch != ""):
+        #qry = ((qry) & ((db.vw_memberpatientlist.patient.like("%" + patientsearch + "%")) | (db.vw_memberpatientlist.patientmember.like("%" + patientmembersearch + "%"))))
         
-      }
-      patlist.append(patobj)   
-    
-    xcount = ((page+1) * items_per_page) - (items_per_page - len(pats)) 
-    
-    bnext = True
-    bprev = True
-    
-    #first page
-    if((page+1) == 1):
+      logger.loggerpms2.info("Search Query = " + str(qry))
+      
+      
+      #is it numeric only, then search on cell numbero
+      if(patientsearch.replace("+",'').replace(' ','').isdigit()):
+          pats=db((qry) & (db.vw_memberpatientlist.cell.like("%" + patientsearch + "%")))\
+                  .select(db.vw_memberpatientlist.hmopatientmember,\
+                                db.vw_memberpatientlist.patientmember,\
+                                db.vw_memberpatientlist.fname,\
+                                db.vw_memberpatientlist.lname,\
+                                db.vw_memberpatientlist.primarypatientid,\
+                                db.vw_memberpatientlist.patientid,\
+                                db.vw_memberpatientlist.patienttype,\
+                                db.vw_memberpatientlist.relation,\
+                                db.vw_memberpatientlist.cell,\
+                                db.vw_memberpatientlist.email,\
+                                db.vw_memberpatientlist.dob,\
+                                db.vw_memberpatientlist.gender,\
+                                db.vw_memberpatientlist.age,\
+                                limitby=limitby,orderby=db.vw_memberpatientlist.fname)
+          maxcount = maxcount if (maxcount > 0 ) else db((qry) & (db.vw_memberpatientlist.cell.like("%" + patientsearch + "%"))).count()
+      
+      #is it email only
+      elif(patientsearch.find("@") >= 0):
+        pats=db((qry) & (db.vw_memberpatientlist.email.like("%" + patientsearch + "%")))\
+                .select(db.vw_memberpatientlist.hmopatientmember,\
+                              db.vw_memberpatientlist.patientmember,\
+                              db.vw_memberpatientlist.fname,\
+                              db.vw_memberpatientlist.lname,\
+                              db.vw_memberpatientlist.primarypatientid,\
+                              db.vw_memberpatientlist.patientid,\
+                              db.vw_memberpatientlist.patienttype,\
+                              db.vw_memberpatientlist.relation,\
+                              db.vw_memberpatientlist.cell,\
+                              db.vw_memberpatientlist.email,\
+                              db.vw_memberpatientlist.dob,\
+                              db.vw_memberpatientlist.gender,\
+                              db.vw_memberpatientlist.age,\
+                              limitby=limitby,orderby=db.vw_memberpatientlist.fname)
+        maxcount = maxcount if (maxcount > 0 ) else db((qry) & (db.vw_memberpatientlist.email.like("%" + patientsearch + "%"))),count()
+        
+      #if pats is empty, then search for phrase in patient (fname lname:membercode)
+      else:
+        if(patientsearch != ""):
+          qry = ((qry) & ((db.vw_memberpatientlist.patient.like("%" + patientsearch + "%")) | (db.vw_memberpatientlist.patientmember.like("%" + patientmembersearch + "%"))))        
+          logger.loggerpms2.info("Search Patient Query = " + str(qry))
+        
+        pats = db((qry))\
+          .select(db.vw_memberpatientlist.hmopatientmember,\
+                  db.vw_memberpatientlist.patientmember,\
+                  db.vw_memberpatientlist.fname,\
+                  db.vw_memberpatientlist.lname,\
+                  db.vw_memberpatientlist.primarypatientid,\
+                  db.vw_memberpatientlist.patientid,\
+                  db.vw_memberpatientlist.patienttype,\
+                  db.vw_memberpatientlist.relation,\
+                  db.vw_memberpatientlist.cell,\
+                  db.vw_memberpatientlist.email,\
+                  db.vw_memberpatientlist.dob,\
+                  db.vw_memberpatientlist.gender,\
+                  db.vw_memberpatientlist.age,\
+                  limitby=limitby,orderby=db.vw_memberpatientlist.fname)
+        
+        maxcount = maxcount if (maxcount > 0) else db((qry)).count()
+      
+      
+      
+      for pat in pats:
+        
+        patobj = {
+          "member":common.getboolean(pat.hmopatientmember),  #False for walk in patient
+          "patientmember" : pat.patientmember,
+          "fname":pat.fname,
+          "lname":pat.lname,
+          "memberid":int(common.getid(pat.primarypatientid)),
+          "patientid":int(common.getid(pat.patientid)),
+          "primary":True if(pat.patienttype == "P") else False,   #True if "P" False if "D"
+          "relation":pat.relation,
+          "cell":pat.cell,
+          "email":pat.email,
+          "age":pat.age,
+          "dob":common.getstringfromdate(pat.dob,"%d/%m/%Y"),
+          "gender":pat.gender
+          
+        }
+        patlist.append(patobj)   
+      
+      xcount = ((page+1) * items_per_page) - (items_per_page - len(pats)) 
+      
       bnext = True
-      bprev = False
-    
-    #last page
-    if(len(pats) < items_per_page):
-      bnext = False
       bprev = True
-    
-    return json.dumps({"patientcount":len(pats),"page":page+1,"patientlist":patlist, "runningcount":xcount, "maxcount":maxcount, "next":bnext, "prev":bprev,\
-                       "patientsearch":patientsearch,"patientmembersearch":patientmembersearch,"member":hmopatientmember,"company":company} )
+      
+      #first page
+      if((page+1) == 1):
+        bnext = True
+        bprev = False
+      
+      #last page
+      if(len(pats) < items_per_page):
+        bnext = False
+        bprev = True
+      
+      rsp = {"patientcount":len(pats),"page":page+1,"patientlist":patlist, "runningcount":xcount, "maxcount":maxcount, "next":bnext, "prev":bprev,\
+                         "patientsearch":patientsearch,"patientmembersearch":patientmembersearch,"member":hmopatientmember,"company":company,"result":"success","error_message":"","error_code":""} 
+      
+      #logger.loggerpms2.info("Exit Search Patient " + json.dumps(rsp))
+    except Exception as e:
+      mssg = "Search Patient Exception:\n" + str(e)
+      logger.loggerpms2.info(mssg)
+      excpobj = {}
+      excpobj["result"] = "fail"
+      excpobj["error_message"] = mssg
+      return json.dumps(excpobj)  
+        
+    return json.dumps(rsp )
   
   
   def getcompanypatients(self,page,company,patientsearch,maxcount,patientmembersearch,hmopatientmember):
@@ -606,7 +755,7 @@ class Patient:
   # "dependants":{[]}
   #}
   def getpatient(self,memberid,patientid,imageurl):
-    
+    logger.loggerpms2.info("Enter GetPatient API =>> " + str(memberid) + " " + str(patientid))
     db = self.db
     providerid = self.providerid
     memobj = {}
@@ -715,7 +864,7 @@ class Patient:
       excpobj["error_message"] = "Get Patient API Exception Error - " + str(e)
       return json.dumps(excpobj)  
                    
-    
+    logger.loggerpms2.info(json.dumps(memobj))
     return json.dumps(memobj)
   
   #def xsearchpatient(self,page,patientsearch,maxcount):
@@ -1148,6 +1297,7 @@ class Patient:
     
   #memberid, patientid, title, fname, mname, lname, gender, dob(dd/mm/yyyy), addr1, addr2, addr3, city, st, pin, cell, email  
   def updatewalkinpatient(self,patobj):
+    logger.loggerpms2.info("Enter Update Walk In Patient ==> "+ json.dumps(patobj))
     
     db = self.db
     providerid = self.providerid
@@ -1155,29 +1305,37 @@ class Patient:
     retobj = {}
     try:
       memberid = int(common.getid(patobj["memberid"]))
+      patientid = int(common.getid(patobj["patientid"]))
+      
+      pats = db((db.patientmember.id == memberid) & (db.patientmember.is_active == True)).select()              
+      
+      
+      dobstr = common.getkeyvalue(patobj,"dob","")
+      dob = common.getdatefromstring(dobstr,"%d/%m/%Y") if(dobstr != "") else (None if(len(pat) == 0) else pat[0].dob)
       
       db(db.patientmember.id == memberid).update(\
     
-        title = patobj['title'],
-        fname = patobj["fname"],
-        mname = patobj["mname"],
-        lname = patobj["lname"],
-        dob = datetime.datetime.strptime(patobj['dob'], "%d/%m/%Y"),
-        cell = patobj["cell"],
-        email = patobj["email"],
-        gender = patobj["gender"],
-        address1 = patobj["address1"],
-        address2 = patobj["address2"],
-        address3 = patobj["address3"],
-        city = patobj["city"],
-        st = patobj["st"],
-        pin = patobj["pin"],
+        title = common.getkeyvalue(patobj,'title', pats[0].title if(len(pats) > 0) else ""),
+        fname = common.getkeyvalue(patobj,'fname', pats[0].fname if(len(pats) > 0) else ""),
+        mname = common.getkeyvalue(patobj,'mname', pats[0].mname if(len(pats) > 0) else ""),
+        lname = common.getkeyvalue(patobj,'lname', pats[0].lname if(len(pats) > 0) else ""),
+        dob = dob,
+        cell = common.getkeyvalue(patobj,'cell', pats[0].cell if(len(pats) > 0) else ""),
+        email = common.getkeyvalue(patobj,'email', pats[0].email if(len(pats) > 0) else ""),
+        gender = common.getkeyvalue(patobj,'gender', pats[0].gender if(len(pats) > 0) else ""),
+        address1 = common.getkeyvalue(patobj,'address1', pats[0].address1 if(len(pats) > 0) else ""),
+        address2 = common.getkeyvalue(patobj,'address2', pats[0].address2 if(len(pats) > 0) else ""),
+        address3 =common.getkeyvalue(patobj,'address3', pats[0].address3 if(len(pats) > 0) else ""),
+        city = common.getkeyvalue(patobj,'city', pats[0].city if(len(pats) > 0) else ""),
+        st = common.getkeyvalue(patobj,'st', pats[0].st if(len(pats) > 0) else ""),
+        pin = common.getkeyvalue(patobj,'pin', pats[0].pin if(len(pats) > 0) else ""),
+        status = common.getkeyvalue(patobj,'status', pats[0].status if(len(pats) > 0) else ""),
         modified_on = common.getISTFormatCurrentLocatTime(),
         modified_by = 1 if(auth.user == None) else auth.user.id     
         
       )
       
-      retobj = {"result":"success","error_message":""}
+      retobj = {"result":"success","error_message":"","memberid":str(memberid),"patientid":str(patientid)}
     except Exception as e:
       logger.loggerpms2.info("Update Walk-in Patient API  Exception:\n" + str(e))
       excpobj = {}
@@ -1216,23 +1374,24 @@ class Patient:
   
       #Create new WALK in patient
       todaydt = datetime.date.today()
-      patid = db.patientmember.insert(\
+      todaystr = common.getstringfromdate(todaydt,"%d/%m/%Y")
+      patid = db.patientmember.insert(
            patientmember = patientmember,
            groupref = 'walkin',
-           title = patobj['title'],
-           fname = patobj["fname"],
-           mname = patobj["mname"],
-           lname = patobj["lname"],
-           dob = datetime.datetime.strptime(patobj["dob"], "%d/%m/%Y"),
-           cell = patobj["cell"],
-           email = patobj["email"],
-           gender = patobj["gender"],
-           address1 = patobj["address1"],
-           address2 = patobj["address2"],
-           address3 = patobj["address3"],
-           city = patobj["city"],
-           st = patobj["st"],
-           pin = patobj["pin"],
+           title = common.getkeyvalue(patobj,"title",""),
+           fname = common.getkeyvalue(patobj,"fname",patientmember + "_FN"),
+           mname = common.getkeyvalue(patobj,"mname",""),
+           lname = common.getkeyvalue(patobj,"lname",patientmember + "_LN"),
+           dob =   common.getdatefromstring(common.getkeyvalue(patobj,"dob",todaystr),"%d/%m/%Y"),
+           cell = common.getkeyvalue(patobj,"cell","18001027526"),
+           email = common.getkeyvalue(patobj,"email","customersupport@mydentalplan.in"),
+           gender = common.getkeyvalue(patobj,"gender","Male"),
+           address1 = common.getkeyvalue(patobj,"address1","331-332 Ganpat Plaza"), 
+           address2 = common.getkeyvalue(patobj,"address2","M.I. Road"),
+           address3 = common.getkeyvalue(patobj,"address3",""),
+           city = common.getkeyvalue(patobj,"city","Jaipur"),
+           st = common.getkeyvalue(patobj,"st","Rajasthan (RA)"),
+           pin = common.getkeyvalue(patobj,"pin","302001"),
            status = 'Enrolled',
            groupregion = regionid,
            provider = providerid,
@@ -1279,6 +1438,7 @@ class Patient:
     provider = ""
     hmoplanid = 1
     companyid = 4 #default to MyDP
+    company = ""
     patobj = {}
     
     try:
@@ -1288,7 +1448,8 @@ class Patient:
       
       r = db((db.company.company == ' ') & (db.company.is_active == False)).select()
       if(len(r) > 0):
-          companyid = common.getid(r[0].id)    
+          companyid = common.getid(r[0].id)
+          company = r[0].company
       
       r = db((db.hmoplan.hmoplancode.lower() == 'premwalkin') & (db.hmoplan.is_active == False)).select()
       if(len(r) > 0):
@@ -1333,15 +1494,14 @@ class Patient:
       
       )
       
-     
-      #patobj={
-       
-        
-        #"memberid":patid,
-        #"patientid":patid,
-       
-      #}
+      obj={
+        "plan":company,
+        "memberid":patid
+      }
       
+      bnft = mdpbenefits.Benefit(db)
+      bnft.map_member_benefit(obj)
+
       pat = db((db.vw_memberpatientlist.primarypatientid == patid) & \
                      (db.vw_memberpatientlist.patientid == patid) & \
                      (db.vw_memberpatientlist.providerid == providerid)).select(db.vw_memberpatientlist.ALL)
@@ -1465,7 +1625,7 @@ class Patient:
                            created_on = common.getISTFormatCurrentLocatTime(),
                            created_by = 1 if(auth.user == None) else auth.user.id,
                            modified_on = common.getISTFormatCurrentLocatTime(),
-                           modified_by =1 if(auth.user == None) else auth.usr.id
+                           modified_by =1 if(auth.user == None) else auth.user.id
                            )
       noteobj = {
          "result":"success",
@@ -1487,6 +1647,7 @@ class Patient:
     db = self.db
     providerid = self.providerid
     
+    logger.loggerpms2.info("Enter newpatientifromcustomer " + json.dumps(avars))
     patobj = {}
     
     try:
@@ -1495,6 +1656,8 @@ class Patient:
       planid = common.getkeyvalue(avars,"planid",0)
       regionid = common.getkeyvalue(avars,"regionid",0)
       
+      premstartdt_str = common.getkeyvalue(avars,"premstartdt","")
+      premenddt_str = common.getkeyvalue(avars,"premenddt","")
       
       sql = "UPDATE membercount SET membercount = membercount + 1 WHERE company = " + str(companyid) + ";"
       db.executesql(sql)
@@ -1509,6 +1672,11 @@ class Patient:
       
       
       xrows = db(db.membercount.company == companyid).select()
+      if(len(xrows) == 0):
+        db.membercount.insert(company=companyid,dummy1= 'X')
+        db.commit()
+        xrows = db(db.membercount.company == companyid).select()
+        
       membercount = int(xrows[0].membercount)
      
       
@@ -1517,25 +1685,29 @@ class Patient:
       todaydt = datetime.date.today()
       enrolldate = common.getkeyvalue(avars,"enrolldate","")
       
-      
-      premstartdt = todaydt if(enrolldate == "") else (datetime.datetime.strptime(enrolldate,"%d/%m/%Y")).date()
-      
-      day  = timedelta(days = 1)
-      
-      if(calendar.isleap(premstartdt.year + 1)):
-        if(premstartdt > datetime.date(premstartdt.year,02,28)):
-          year            = timedelta(days=366)
-        else:
-          year = timedelta(days=365)
-      elif(calendar.isleap(premstartdt.year)):
-        if(premstartdt <= datetime.date(premstartdt.year,02,29)):
-          year            = timedelta(days=366)
+      if(premstartdt_str != ""):
+        premstartdt = common.getdatefromstring(premstartdt_str, "%d/%m/%Y")
+        premenddt = common.getdatefromstring(premenddt_str, "%d/%m/%Y")
+      else:
+        premstartdt = todaydt if((enrolldate == None)|(enrolldate == "")) else (datetime.datetime.strptime(enrolldate,"%d/%m/%Y")).date()
+        
+        day  = timedelta(days = 1)
+        
+        if(calendar.isleap(premstartdt.year + 1)):
+          if(premstartdt > datetime.date(premstartdt.year,02,28)):
+            year            = timedelta(days=366)
+          else:
+            year = timedelta(days=365)
+        elif(calendar.isleap(premstartdt.year)):
+          if(premstartdt <= datetime.date(premstartdt.year,02,29)):
+            year            = timedelta(days=366)
+          else:
+            year            = timedelta(days=365)
         else:
           year            = timedelta(days=365)
-      else:
-        year            = timedelta(days=365)
-    
-      premenddt = (premstartdt + year) - day  
+      
+       
+        premenddt = (premstartdt + year) - day  
       
       patid = db.patientmember.insert(\
         patientmember = patientmember,
@@ -1598,7 +1770,14 @@ class Patient:
           
           )
      
+      obj={
+        "plan":companycode,
+        "memberid":patid
+      }
       
+      bnft = mdpbenefits.Benefit(db)
+      bnft.map_member_benefit(obj)
+  
       pat = db((db.vw_memberpatientlist.primarypatientid == patid) & \
                      (db.vw_memberpatientlist.patientid == patid) & \
                      (db.vw_memberpatientlist.providerid == providerid)).select(db.vw_memberpatientlist.ALL)
@@ -1621,7 +1800,7 @@ class Patient:
         "patient":common.getstring(pat[0].patient), 
         "cell":common.getstring(pat[0].cell), 
         "email":common.getstring(pat[0].email), 
-        "dob":pat[0].dob.strftime("%d/%m/%Y"),
+        "dob":common.getstringfromdate(pat[0].dob,"%d/%m/%Y"),  #pat[0].dob.strftime("%d/%m/%Y"),
         "gender":common.getstring(pat[0].gender), 
         "relation":common.getstring(pat[0].relation), 
         
@@ -1634,8 +1813,8 @@ class Patient:
         "newmember":common.getboolean(pat[0].newmember), 
         "freetreatment":common.getboolean(pat[0].freetreatment), 
         "age" :int(common.getid(pat[0].age)) ,
-        "premstartdt":pat[0].premstartdt.strftime("%d/%m/%Y %H:%M"), 
-        "premenddt":pat[0].premenddt.strftime("%d/%m/%Y %H:%M"), 
+        "premstartdt":common.getstringfromdate(pat[0].premstartdt,"%d/%m/%Y"),   #pat[0].premstartdt.strftime("%d/%m/%Y"), 
+        "premenddt":common.getstringfromdate(pat[0].premenddt,"%d/%m/%Y"),       #pat[0].premenddt.strftime("%d/%m/%Y"), 
         "hmoplanname":pat[0].hmoplanname,
         "hmoplancode":pat[0].hmoplancode,
       
@@ -1671,4 +1850,145 @@ class Patient:
       
     return json.dumps(patobj)
    
+ 
   
+  
+  
+  def registerVCPatient(self,avars):
+    logger.loggerpms2.info("Enter Register VC Patient " + json.dumps(avars))
+    db = self.db
+    providerid = self.providerid
+    
+    try:
+      
+      if(providerid == 0):
+        prov = db(db.provider.provider == 'P0001').select(db.provider.id)
+        providerid = prov[0].id if(len(prov) > 0) else 0
+        
+        if(providerid == 0):
+          mssg = "Register VC Patient API - Invalid Providerid"
+          logger.loggerpms2.info(mssg)    
+          excpobj = {}
+          excpobj["result"] = "fail"
+          excpobj["error_message"] = mssg
+          return json.dumps(excpobj)
+      
+      
+    
+      
+      
+      cell = common.getkeyvalue(avars,"cell","")
+      email = common.getkeyvalue(avars,"email","")
+      name = common.getkeyvalue(avars,"name","")
+      
+      x = name.split(' ')
+      fname = name if(len(x) == 0) else x[0]
+      lname = "" if(len(x)<=1) else x[1]      
+
+      dobstr = common.getkeyvalue(avars,"dob",common.getstringfromdate(common.getISTFormatCurrentLocatTime(),"%d/%m/%Y"))
+      
+      reqObj={
+        "action":"searchpatient",
+        "providerid":str(providerid),
+        "searchphrase":cell
+      }
+      respObj = json.loads(self.searchpatient(reqObj))
+      
+      #error search patient
+      if(respObj["result"] != "success"):
+        mssg = "Register VC Patient API - Invalid Search Patient"
+        logger.loggerpms2.info(mssg)    
+        excpobj = {}
+        excpobj["result"] = "fail"
+        excpobj["error_message"] = mssg
+        return json.dumps(excpobj)
+      
+      #patient already registered
+      if(respObj["patientcount"] > 0):
+        xrespObj = {}
+        xrespObj["result"] = "success"
+        xrespObj["error_message"] = ""
+        patientlist = respObj["patientlist"]
+        xrespObj["patientmember"] = patientlist[0]["patientmember"]
+        xrespObj["memberid"] = patientlist[0]["memberid"]
+        xrespObj["patientid"] = patientlist[0]["patientid"]
+        
+        return json.dumps(xrespObj)
+      
+      
+      #register walk-in patient
+      reqObj = {
+        "action":"newalkinpatient",
+        "providerid":providerid,
+        "fname":fname,
+        "lname":lname,
+        "cell":cell,
+        "email":email,
+        "dob": dobstr
+      }
+      
+      self.providerid = providerid
+      self.db = db
+      respObj = json.loads(self.newalkinpatient(reqObj))
+      
+      if(respObj["result"] != "success"):
+        mssg = "Register VC Patient API - Error Registering Walk-in Patient " + name
+        logger.loggerpms2.info(mssg)    
+        excpobj = {}
+        excpobj["result"] = "fail"
+        excpobj["error_message"] = mssg
+        return json.dumps(excpobj)
+          
+    except Exception as e:
+      mssg = "Register VC Patient API  Exception:\n" + str(e)
+      logger.loggerpms2.info(mssg)      
+      excpobj = {}
+      excpobj["result"] = "fail"
+      excpobj["error_message"] =mssg
+      return json.dumps(excpobj)
+    
+    logger.loggerpms2.info("Exit Register VC Patient " + json.dumps(respObj))
+    return json.dumps(respObj)
+    
+    
+  def addpatientimage(self,avars):
+    
+    db = self.db
+    providerid = self.providerid
+    
+    try:
+      
+      
+      patientid = int(common.getid(common.getkeyvalue(avars,"patientid","0")))
+      memberid = int(common.getid(common.getkeyvalue(avars,"memberid","0")))
+      
+      avars["action"] = 'upload_media'
+      avars["providerid"] = str(providerid)
+      
+      avars["ref_code"] = "MEM"
+      avars["ref_id"] = str(memberid)
+      avars["mediatype"] = "image"
+      avars["mediaformat"] = "jpg"
+      
+      
+      
+      medobj = mdpmedia.Media(db, providerid, "image", "jpg")
+      rsp = json.loads(medobj.upload_media(avars))
+      
+      if(rsp["result"] == "success"):
+        
+        db(db.patientmember.id == memberid).update(imageid = common.getkeyvalue(rsp,"mediaid","0"))
+      
+    except Exception as e:
+        logger.loggerpms2.info("Add Patient Image API  Exception:\n" + str(e))      
+        excpobj = {}
+        excpobj["result"] = "fail"
+        excpobj["error_message"] = "Add Patient Image API Exception Error - " + str(e)
+        return json.dumps(excpobj)
+      
+    return json.dumps(rsp)
+    
+
+    
+      
+    

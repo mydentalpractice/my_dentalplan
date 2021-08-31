@@ -301,7 +301,7 @@ class Procedure:
                                       tooth, quadrant,remarks):
 
 
-        logger.loggerpms2.info(">>Add Company Procedure to Treatment\n")
+        logger.loggerpms2.info(">>Add Company Procedure to Treatment\n " + str(treatmentid) + " " + procedurepriceplancode + " " + procedurecode)
 
         db = self.db
         providerid = self.providerid
@@ -380,8 +380,9 @@ class Procedure:
                 "error_code":"MDP100",
             }
 
-
-        return json.dumps(jsonresp)      
+        rsp = json.dumps(jsonresp)
+        logger.loggerpms2.info("Exit Add Company Procedure To Treatment " + rsp)
+        return rsp      
     
     
     
@@ -456,11 +457,34 @@ class Procedure:
         
         return json.dumps(retobj)    
     
+    def getprocedure(self, avars):
+        
+        logger.loggerpms2.info("Enter getprocedure " + json.dumps(avars))
+        db = self.db
+        providerid = self.providerid
+        
+        procedurecode = common.getkeyvalue(avars,"procedurecode","")
+
+        procs = db((db.dentalprocedure.dentalprocedure==procedurecode)& (db.dentalprocedure.is_active == True)).select()
+        
+        rspobj = {}
+        
+        rspobj["result"] = "success"
+        rspobj["error_message"] = ""
+        rspobj["error_code"] = ""   
+        rspobj["procedureid"] = str(0) if (len(procs) == 0) else procs[0].id
+        rspobj["procedurecode"] = "" if  (len(procs) == 0) else procs[0].dentalprocedure
+        rspobj["procedurename"] = "" if (len(procs) == 0) else procs[0].shortdescription
+        
+        rsp = json.dumps(rspobj)
+        logger.loggerpms2.info("Exit Get Procedure " + rsp)
+        return rsp
     
     #returns a list of dental procedures matching the searchphrase for a specific plan
     #search phrase can be 'procedure code', 'keywords', 'short description'
     def getprocedures(self,treatmentid, searchphrase, page=0, maxcount=0):
         
+        logger.loggerpms2.info("Enter getprocedures API " + str(treatmentid) + " " + searchphrase)
         db = self.db
         providerid = self.providerid
         
@@ -510,7 +534,8 @@ class Procedure:
             if(maxcount == 0):
                 maxcount = db(query).count()            
 
-            
+        
+        
         proclist = []
         procobj = {}        
         
@@ -541,8 +566,10 @@ class Procedure:
             bnext = False
             bprev = True  
         
- 
-        return json.dumps({"count":len(procs), "proclist":proclist,"page":page+1,"runningcount":xcount, "maxcount":maxcount, "next":bnext, "prev":bprev})
+        obj1= {"count":len(procs), "proclist":proclist,"page":page+1,"runningcount":xcount, "maxcount":maxcount, "next":bnext, "prev":bprev}
+        rsp = json.dumps(obj1)
+        logger.loggerpms2.info("Exit 'getprocedures " + rsp)
+        return rsp
     
     #returns a list of procedures in the selected treatment
     def gettreatmentprocedures(self,treatmentid):
@@ -579,7 +606,7 @@ class Procedure:
     
     #this procedure adds a new procedure to the treatment
     def addproceduretotreatment(self, procedurecode, treatmentid, plan, tooth, quadrant,remarks):
-        
+        logger.loggerpms2.info("Enter Add Procedure To Treatment - " + str(procedurecode) + " " + str(treatmentid) + " " + plan)
         db = self.db
         providerid = self.providerid
         auth = current.auth
@@ -638,8 +665,92 @@ class Procedure:
             retobj1["error_message"] = "Add Procedure to Treatment API Exception Error " + str(e)
             json.dumps(retobj1)
     
-        return json.dumps(jsonObj)
+        rsp = json.dumps(jsonObj)
+        logger.loggerpms2.info("Exit Add Procedure To Treatment " + rsp)
+        return rsp
     
+    #this procedure adds a new procedure to the treatment
+    def addSPLproceduretotreatment(self, procedurecode, treatmentid, plan, tooth, quadrant,remarks):
+        logger.loggerpms2.info("Enter addSPLproceduretotreatment " + procedurecode)
+        db = self.db
+        providerid = self.providerid
+        auth = current.auth
+        jsonObj = {}
+        try:
+            procs = db((db.vw_procedurepriceplan.procedurepriceplancode == plan) & \
+                       (db.vw_procedurepriceplan.procedurecode == procedurecode)).select()
+            
+            procedureid = 0
+            ucrfee = 0
+            procedurefee = 0
+            copay = 0
+            companypays = 0
+            relgrproc = False
+            memberid = 0
+            
+            if(len(procs)>0):
+                    ucrfee = float(common.getvalue(procs[0].ucrfee))
+                    procedurefee = float(common.getvalue(procs[0].procedurefee))
+                    if(procedurefee == 0):
+                        procedurefee = ucrfee
+                    copay = float(common.getvalue(procs[0].copay))
+                    inspays = float(common.getvalue(procs[0].inspays))
+                    companypays = float(common.getvalue(procs[0].companypays))
+                    procedureid = int(common.getid(procs[0].id))    
+                    relgrproc = bool(common.getboolean(procs[0].relgrproc))
+    
+            #t = db(db.treatment.id == treatmentid).select(db.treatment.startdate,db.treatment.treatmentplan)
+            t = db(db.vw_treatmentlist.id == treatmentid).select(db.vw_treatmentlist.tplanid,db.vw_treatmentlist.startdate, db.vw_treatmentlist.memberid)
+            
+            procid = db.treatment_procedure.insert(treatmentid = treatmentid, dentalprocedure = procedureid,status="Started",\
+                                                   treatmentdate=t[0].startdate if(len(t)>0) else common.getISTFormatCurrentLocatTime(),\
+                                                 ucr = ucrfee, procedurefee=procedurefee, copay=copay,inspays=inspays,companypays=companypays,\
+                                                 tooth=tooth,quadrant=quadrant,remarks=remarks,authorized=False,relgrproc=relgrproc) 
+    
+            db.commit()
+            
+            tplanid = int(common.getid(t[0].tplanid)) if(len(t) > 0) else 0
+            memberid = int(common.getid(t[0].memberid)) if(len(t) > 0) else 0
+            
+            booking_amount = account.get_booking_amount(db, treatmentid)
+            tax = account.get_tax_amount(db, copay)
+            #logger.loggerpms2.info("Booking & Tax amount = " + str(booking_amount) + " " + json.dumps(tax))
+            if(booking_amount > 0):
+                #db(db.treatmentplan.id == tplanid).update(totalpaid = booking_amount)
+               
+                db(db.treatment_procedure.id == procid).update(copay = float(common.getvalue(tax["posttaxamount"])))
+                db.commit()                
+                
+            #update treatment with new treatment cost
+            account.updatetreatmentcostandcopay(db,auth.user,treatmentid)
+            
+            #update tplan with new treatment cost
+            #account.calculatecost(db,tplanid)
+            #account.calculatecopay(db, tplanid,memberid)
+            #account.calculateinspays(db,tplanid)
+            #account.calculatedue(db,tplanid)            
+    
+            jsonObj = {\
+                "result" : "success" if(procid > 0) else "fail",
+                "error_message" : "" if(procid > 0) else "Invalid Procedure",
+                "treatmentprocid":procid,
+                "originalcopay":copay+booking_amount,
+                "copay":common.getvalue(tax["posttaxamount"]),
+                "booking_amount":booking_amount,
+                "tax":common.getvalue(tax["tax"])
+                
+            }
+        
+        except Exception as e:
+            retobj1 = {}
+            retobj1["result"] = "fail"
+            retobj1["error_message"] = "Add Procedure to Treatment API Exception Error " + str(e)
+            logger.loggerpms2.info("addSPLproceduretotreatment Exceptionerror " + json.dumps(retobj1))
+            json.dumps(retobj1)
+            
+        rsp = json.dumps(jsonObj)
+        logger.loggerpms2.info("Exit addSPLprocedureToTreatment " + rsp)
+        return rsp
     
 
     #this procedure updates a treatment procedure record

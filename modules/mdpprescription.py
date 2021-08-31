@@ -58,7 +58,16 @@ class Prescription:
                     "medicine":pres.medicine + " " + pres.strength + " " + pres.strengthuom if((pres.medicine != "") & (pres.medicine != None)) else "",
                     "presdate":(pres.prescriptiondate).strftime("%d/%m/%Y"),
                     "frequency":pres.frequency,
-                    "duration":pres.dosage
+                    "duration":pres.dosage,
+                    
+                    "dosage":pres.dosage,
+                    "strength":pres.strength,
+                    "strengthuom":pres.strengthuom,
+                    "presdate":(pres.prescriptiondate).strftime("%d/%m/%Y"),
+                    "quantity":pres.quantity,                    
+                    
+                    "remarks":pres.remarks,
+                    "instructions":pres.remarks
                     
                 }
                 preslist.append(presobj)      
@@ -101,8 +110,16 @@ class Prescription:
 
         try:
             prescriptions = db( (db.vw_patientprescription.id == presid) & (db.vw_patientprescription.is_active == True)).select()
+            
            
+            
+            
             for pres in prescriptions:
+                pat = db((db.patientmember.id == pres.memberid) & (db.patientmember.is_active == True)).select(db.patientmember.cell,  db.patientmember.email)
+                prov = db((db.provider.id == pres.providerid)& (db.provider.is_active == True)).select(db.provider.cell, db.provider.email)
+                
+                clinics = db((db.clinic_ref.ref_code == "PRV") & (db.clinic_ref.ref_id == pres.providerid) & (db.clinic.primary_clinic == True) & (db.clinic.is_active == True)).\
+                    select(db.clinic.ALL, left=db.clinic.on(db.clinic.id == db.clinic_ref.clinic_id))
                            
                 presobj = {
                     
@@ -117,7 +134,7 @@ class Prescription:
                     "patient": pres.fullname,
                     "doctor":pres.doctorname,
                     "gender":pres.gender,
-                    "dob":(pres.dob).strftime("%d/%m/%Y"),
+                    "dob":(pres.dob).strftime("%d/%m/%Y") if(pres.dob != None) else common.getstringfromdate(common.getISTFormatCurrentLocatTime(),"%d/%m/%Y"),
                     "medicineid":pres.medicineid,
                     "medicinename":pres.medicine,
                     "medicinetype":pres.medicinetype,
@@ -125,11 +142,25 @@ class Prescription:
                     "dosage":pres.dosage,
                     "strength":pres.strength,
                     "strengthuom":pres.strengthuom,
-                    "presdate":(pres.prescriptiondate).strftime("%d/%m/%Y"),
+                    "presdate":(pres.prescriptiondate).strftime("%d/%m/%Y") if(pres.prescriptiondate != None) else common.getstringfromdate(common.getISTFormatCurrentLocatTime(),"%d/%m/%Y"),
                     "frequency":pres.frequency,
                     "duration":pres.dosage,
                     "quantity":pres.quantity,
-                    "remarks":pres.remarks
+                    "remarks":pres.remarks,
+                    "instructions":pres.remarks,
+                    
+                    "patcell":pat[0].cell if(len(pat) >0 ) else "",
+                    "patemail":pat[0].email if(len(pat) >0 ) else "",
+                    "provcell":prov[0].cell if(len(prov) >0 ) else "",
+                    "provemail":prov[0].email if(len(prov) >0 ) else "",
+                  
+                    "clinic_name":clinics[0].name if(len(clinics) >0 ) else "",
+                    "clinic_address1":clinics[0].address1 if(len(clinics) >0 ) else "",
+                    "clinic_address2":clinics[0].address2 if(len(clinics) >0 ) else "",
+                    "clinic_address3":clinics[0].address3 if(len(clinics) >0 ) else "",
+                    "clinic_city":clinics[0].city if(len(clinics) >0 ) else "",
+                    "clinic_st":clinics[0].st if(len(clinics) >0 ) else "",
+                    "clinic_pin":clinics[0].pin if(len(clinics) >0 ) else ""
                 
                 }
             
@@ -143,10 +174,12 @@ class Prescription:
             excpobj["error_message"] = "Get Prescription Error - " + str(e)
             return json.dumps(excpobj) 
         
+        logger.loggerpms2.info("Exit Get Prescription = " + json.dumps(presobj))
         return json.dumps(presobj)
     
     def newprescription(self,presdata):
         
+        logger.loggerpms2.info("Enter new pescriptions " + json.dumps(presdata))
         db = self.db
         providerid = self.providerid
         
@@ -184,10 +217,12 @@ class Prescription:
               "error_message":"Create Prescription Exception:\n" + str(e)
             }
         
-        return json.dumps(jsonresp)
+        rsp = json.dumps(jsonresp)        
+        logger.loggerpms2.info("Exit New Prescription " + rsp)
+        return rsp
         
     def updateprescription(self,presid,presdata):
-        
+        logger.loggerpms2.info("Enter Update Prescription " + str(presid) + " " + json.dumps(presdata))
         db = self.db
         providerid = self.providerid
         
@@ -196,7 +231,7 @@ class Prescription:
         try:
             #update prescription
             db(db.prescription.id == presid).update(\
-                prescriptiondate=datetime.datetime.strptime(presdata["presdate"],"%d/%m/%Y"),
+                prescriptiondate=common.getdatefromstring(presdata["presdate"], "%d/%m/%Y") if((presdata["presdate"] != None) & (presdata["presdate"] != "") ) else common.getISTFormatCurrentLocatTime() ,
                 medicineid=presdata["medicineid"],
                 treatmentid=presdata["treatmentid"],
                 dosage=presdata["dosage"],
@@ -222,6 +257,7 @@ class Prescription:
               "error_message":"Update Prescription Exception:\n" + str(e)
             }
         
+        logger.loggerpms2.info("Exit Update Prescription " + " " + json.dumps(jsonresp))
         return json.dumps(jsonresp)
     
     def deleteprescription(self,presid):
@@ -260,17 +296,22 @@ class Prescription:
         page = page -1
         urlprops = db(db.urlproperties.id >0 ).select(db.urlproperties.pagination)
         items_per_page = 10 if(len(urlprops) <= 0) else int(common.getvalue(urlprops[0].pagination))
-        limitby = ((page)*items_per_page,(page+1)*items_per_page) if page >= 0 else None        
+        limitby = ((page)*items_per_page,(page+1)*items_per_page) if page >= 0 else None     
+        if(page < 0):
+            limitby = None
+        
+        
         medobj = {}
         medlist = []
         try:
+            #query =((db.medicine_default.id > 0) & (db.medicine_default.is_active == True))
             if((searchphrase == "") | (searchphrase == None)):
-                query =((db.medicine.providerid == providerid) & (db.medicine.is_active == True))
+                query =((db.medicine_default.id > 0) & (db.medicine_default.is_active == True))
             else:
-                query= ((db.medicine.providerid == providerid) & (db.medicine.medicine.like('%' + searchphrase + '%')) & (db.medicine.is_active == True))
+                query= ((db.medicine_default.id > 0) & (db.medicine_default.medicine.like('%' + searchphrase + '%')) & (db.medicine_default.is_active == True))
     
         
-            medicines = db(query).select(db.medicine.ALL, limitby = limitby)
+            medicines = db(query).select(db.medicine_default.ALL, limitby=limitby)
             maxcount = db(query).count() if maxcount == 0 else maxcount    
     
             for medicine in medicines:
@@ -279,7 +320,7 @@ class Prescription:
                 
                     "medicineid":int(common.getid(medicine.id)),
                     "medicine":common.getstring(medicine.medicine),
-                    "medicinetype":common.getstring(medicine.medicinetype),
+                    "medicinetype":common.getstring(medicine.meditype),
                     "strength":common.getstring(medicine.strength),
                     "strengthuom":common.getstring(medicine.strengthuom)
                 }
@@ -316,7 +357,7 @@ class Prescription:
         medobj = {}
         
         try:
-            medicines = db((db.medicine.providerid == providerid) & (db.medicine.id == medicineid) & (db.medicine.is_active == True)).select()
+            medicines = db((db.medicine_default.id == medicineid) & (db.medicine_default.is_active == True)).select()
            
             for medicine in medicines:
                            
@@ -324,11 +365,10 @@ class Prescription:
                 
                     "medicineid":int(common.getid(medicine.id)),
                     "medicine":common.getstring(medicine.medicine),
-                    "medicinetype":common.getstring(medicine.medicinetype),
+                    "medicinetype":common.getstring(medicine.meditype),
                     "strength":common.getstring(medicine.strength),
                     "strengthuom":common.getstring(medicine.strengthuom),
-                    "instructions":common.getstring(medicine.instructions),
-                    "notes":common.getstring(medicine.notes)
+                    "instructions":common.getstring(medicine.instructions)
                 }
             
                 medobj["result"] = "success"    
@@ -352,19 +392,14 @@ class Prescription:
         try:
             auth = current.auth
             medicineid = int(common.getid(medobj["medicineid"]))
-            medid = db.medicine.update_or_insert(((db.medicine.id == medicineid) & (db.medicine.providerid == providerid) & (db.medicine.is_active == True)),
-                                         providerid  = providerid,
+            medid = db.medicine_default.update_or_insert(((db.medicine_default.id == medicineid) & (db.medicine_default.is_active == True)),
+                                        
                                          medicine = common.getstring(medobj["medicine"]),
-                                         medicinetype = common.getstring(medobj["medicinetype"]),
+                                         meditype = common.getstring(medobj["medicinetype"]),
                                          strength = common.getstring(medobj["strength"]),
                                          strengthuom = common.getstring(medobj["strengthuom"]),
                                          instructions = common.getstring(medobj["instructions"]),
-                                         notes = common.getstring(medobj["notes"]),
-                                         is_active = True,
-                                         created_on = common.getISTFormatCurrentLocatTime(),
-                                         created_by = 1 if(auth.user == None) else auth.user.id,
-                                         modified_on = common.getISTFormatCurrentLocatTime(),
-                                         modified_by = 1 if(auth.user == None) else auth.user.id
+                                         is_active = True
                                          )
                                          
                                          

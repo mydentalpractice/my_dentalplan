@@ -137,7 +137,7 @@ class Razorpay:
   
     
   def capture_razorpay_payment(self,amount,razorpay_id,razorpay_order_id,newpayment):
-    #logger.loggerpms2.info("Enter capture_razorpay_payment")
+    logger.loggerpms2.info("Enter capture_razorpay_payment " + str(amount) + " " + str(razorpay_id) + " " + str(razorpay_order_id) + " " + json.dumps(newpayment["addln_info"]))
     
     orderurl =   self.fp_produrl + "/payments/" + razorpay_id  +"/capture"
     paiseamount = int(amount * 100)
@@ -205,6 +205,8 @@ class Razorpay:
         strdetailobj = json.dumps(newpayment["addln_info"])
         payobj = {}
         
+       
+	                                          
         payobj["payment_reference"] = razorpay_id + "_" + razorpay_order_id
         payobj["amount"] = amount
         payobj["addln_detail"] = strdetailobj
@@ -212,7 +214,7 @@ class Razorpay:
         payobj["merchant_display"] = newpayment["merchant_display"]
         payobj["invoice"] = newpayment["invoice"]
         payobj["payment_detail"] =  respobj.get("card_id","") 
-        
+       
         if(respobj.get("card",None) == None):
           payobj["payment_type"] = "Non Card"
         else:
@@ -254,8 +256,9 @@ class Razorpay:
         "error_message": errstr
       }
     
-      
-    return json.dumps(jsonresp) 
+    dmp = json.dumps(jsonresp)  
+    logger.loggerpms2.info("Exit Captur Razorpay Payment " + dmp)
+    return dmp
 
   
   

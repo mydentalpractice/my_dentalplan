@@ -76,6 +76,8 @@ class Location:
     return
    
   
+ 
+  
   #Returns list of providers within a radius of the origin location
   def getproviderswithinradius(self,originlat,originlong,radius,unit):
         
@@ -236,3 +238,100 @@ class Location:
         return json.dumps(excpobj)    
     
     return
+  
+
+  
+    
+  #Returns list of clinics within a radius of the origin location
+  def getclinicswithinradius(self,originlat,originlong,radius,unit):
+        
+      db = self.db
+      auth = current.auth
+      
+      try:
+        
+        clnlist = []
+        clnobj = {}
+        
+        clns = db((db.vw_clinic.id > 0 ) &\
+                   db.vw_clinic.is_active == True).select(db.provider.id,
+                                                          db.provider.provider,
+                                                          db.provider.providername,
+                                                          db.provider.pa_practicename,
+                                                          db.provider.pa_practiceaddress,
+                                                          db.provider.pa_longitude,
+                                                          db.provider.pa_latitude,
+                                                          db.provider.pa_locationurl,
+                                                          db.vw_clinic.clinicid,
+                                                          db.vw_clinic.name,
+                                                          db.vw_clinic.city,
+                                                          db.vw_clinic.pin,
+                                                          db.vw_clinic.cell,
+                                                          db.vw_clinic.email,
+                                                          db.vw_clinic.longitude,
+                                                          db.vw_clinic.latitude,
+                                                          db.vw_clinic.gps_location,
+                                                          db.vw_clinic.primary_clinic,
+                                                          left = db.provider.on((db.provider.id == db.vw_clinic.ref_id) & (db.vw_clinic.ref_code == "PRV")))
+
+        for cln in clns:
+          if((common.isfloat(common.getvalue(cln.vw_clinic.latitude)) == False) | (common.isfloat(common.getvalue(cln.vw_clinic.longitude)) == False)):
+            continue
+        
+          
+          destlat = float(common.getid(cln.vw_clinic.latitude))
+          destlong = float(common.getid(cln.vw_clinic.longitude))
+          
+          jsonobj = json.loads(self.getdistance(originlat,originlong,destlat,destlong,unit))
+          
+          dist = round(float(common.getstring(jsonobj.get("distance","0.0"))),2)
+          
+          #if provider distance is within radius, then add to the list
+          if(dist <= radius):
+            logger.loggerpms2.info("Radius="+ str(radius) + "-Long/Lat:" + cln.vw_clinic.name + ":" + str(cln.vw_clinic.longitude) + ":" + str(cln.vw_clinic.latitude))
+            clnobj={
+            
+              "providerid":int(common.getid(cln.provider.id)),
+              "provider":common.getstring(cln.provider.provider),
+              "providername":common.getstring(cln.provider.providername),
+              "practicename":common.getstring(cln.provider.pa_practicename),
+              "practiceaddress":common.getstring(cln.provider.pa_practiceaddress),
+              "clinicid":int(common.getid(cln.vw_clinic.clinicid)),
+              "name":cln.vw_clinic.name,
+              "city":cln.vw_clinic.city,
+              "pin":cln.vw_clinic.pin,
+              "cell":cln.vw_clinic.cell,
+              "email":cln.vw_clinic.email,
+              "primary_clinic":common.getboolean(cln.vw_clinic.primary_clinic),
+              "latitude":cln.vw_clinic.latitude,
+              "longitude":cln.vw_clinic.longitude,
+              "location":cln.vw_clinic.gps_location
+            }
+            
+            clnlist.append(clnobj)
+        
+        clnobj = {
+        
+          "result":"success",
+          "error_message":"",
+          "radius":radius,
+          "unit":unit,
+           
+           "originlat":originlat,
+           "originlong":originlong,
+           "clnlist":clnlist,
+        } 
+        
+        return json.dumps(clnobj)
+      
+      except Exception as e:
+          error_message = "Get Clinics within Radius Exception Error - " + str(e)
+          logger.loggerpms2.info(error_message)
+          excpobj = {}
+          excpobj["result"] = "fail"
+          excpobj["error_message"] = error_message
+          return json.dumps(excpobj)    
+      
+      return
+  
+        
