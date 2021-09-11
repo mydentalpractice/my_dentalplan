@@ -344,6 +344,8 @@ def update_clinic():
     city = "" if(len(clinics) !=1 ) else common.getstring(clinics[0].city)
     st = "" if(len(clinics) !=1 ) else common.getstring(clinics[0].st)
     pin = "" if(len(clinics) !=1 ) else common.getstring(clinics[0].pin)
+    latitude = "" if(len(clinics) !=1 ) else common.getstring(clinics[0].latitude)
+    longitude = "" if(len(clinics) !=1 ) else common.getstring(clinics[0].longitude)
     
     bank_id = 0 if(len(clinics) != 1) else int(common.getid(clinics[0].bank_id))
   
@@ -435,6 +437,9 @@ def update_clinic():
         Field('city', 'string',default=city,label='City',length=50,requires = IS_IN_SET(CITIES)),
         Field('st', 'string',default=st,label='State',length=50,requires = IS_IN_SET(STATES)),
         Field('pin','string',default=pin),
+
+        Field('latitude','string',default=latitude),
+        Field('longitude','string',default=longitude),
         
         Field('cell','string',default=cell),
         Field('telephone','string',default=telephone),
@@ -508,6 +513,9 @@ def update_clinic():
                         city=formA.vars.city if(formA.vars.city != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].city)),
                         st=formA.vars.st if(formA.vars.st != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].st)),
                         pin=formA.vars.pin if(formA.vars.pin != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].pin)),
+
+                        latitude=formA.vars.latitude if(formA.vars.latitude != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].latitude)),
+                        longitude=formA.vars.longitude if(formA.vars.longitude != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].longitude)),
                         
                         cell=formA.vars.cell if(formA.vars.cell != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].cell)),
                         telephone=formA.vars.telephone if(formA.vars.telephone != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].telephone)),

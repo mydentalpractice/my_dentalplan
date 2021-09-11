@@ -8654,18 +8654,18 @@ XXXZZZZupdate role in doctor to refer to role_default
 
 5/10/2021
 ==========
-1. YYYZZZadd is_active flag in medicine_default 
-2. YYYZZZmodify medicine_default strngthuom to strengthuom
-3. YYYZZZadd imageid col in doctor table
+1. XXXYYYZZZadd is_active flag in medicine_default 
+2. XXXXYYYZZZmodify medicine_default strngthuom to strengthuom
+3. XXXYYYZZZadd imageid col in doctor table
 
 5/22/2021
 =========
-1. YYYZZZNew tables for Cities & States
-2. YYYZZZAdded field 'newcity' in prospects table
-3. YYYYZZZAdded hmopatientmember in vw_appointments
-4, ZZZZadding clinicid to vw_appointment* views
-5. YYYZZZ vw_patientprescription
-6. New Table Shopsee Properties to add SHOPSEE specific 
+1. XXXYYYZZZNew tables for Cities & States
+2. XXXYYYZZZAdded field 'newcity' in prospects table
+3. XXXXYYYYZZZAdded hmopatientmember in vw_appointments
+4, XXXXYYYZZZZadding clinicid to vw_appointment* views
+5. XXXXYYYZZZ vw_patientprescription
+6. XXXYYYZZZZNew Table Shopsee Properties to add SHOPSEE specific 
 CREATE TABLE `shopsee_properties` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `shopsee_stg_url` varchar(512) DEFAULT NULL,
@@ -8691,28 +8691,239 @@ ADD COLUMN `shopsee_url` VARCHAR(512) NULL DEFAULT NULL AFTER `id`,
 ADD COLUMN `shopsee_returnURL` VARCHAR(512) NULL DEFAULT NULL AFTER `shopsee_url`;
 
 
-7. YYYYZZZZAdded longitude & latitude fileds in clinic table
+7. XXXXYYYYZZZZAdded longitude & latitude fileds in clinic table
 
 
-8. YYYZZZ Add IND_IS_SYNC in auth_user
+8. XXXXYYYZZZ Add IND_IS_SYNC in auth_user
 ALTER TABLE `mydp_prod`.`auth_user` 
 ADD COLUMN `IND_IS_SYNC` CHAR(1) NULL DEFAULT NULL AFTER `impersonatorlname`;
 
-9. YYYZZZ Add IND_VC in provider
+9. XXXXYYYZZZ Add IND_VC in provider
 ALTER TABLE `mydp_prod`.`provider` 
 ADD COLUMN `IND_VC` CHAR(1) NULL DEFAULT 'F' AFTER `imageid`;
 
-10 YYYYZZZ Add IND_IS_SYNCH
+10 XXXXYYYYZZZ Add IND_IS_SYNCH
 ALTER TABLE `mydp_prod`.`doctor` 
 ADD COLUMN `IND_IS_SYNC` CHAR(1) NULL AFTER `modified_on`;
 
-11. ZZZ vw_doctor (IND_IS_SYNC)
+11. XXXXYYYZZZ vw_doctor (IND_IS_SYNC)
 
-12. ZZZ vw_provider (IND_VC)
+12. XXXXYYYYZZZ vw_provider (IND_VC)
 
-13. YYYZZZ added col IND_IS_SYNC in Company table
+13. XXXXYYYZZZ added col IND_IS_SYNC in Company table
 ALTER TABLE `mydp_prod`.`company` 
 ADD COLUMN `IND_IS_SYNC` CHAR(1) NULL AFTER `chequepayment`;
+
+
+24/06/2021
+===========
+1. XXXYYYZZZZAdd Product Name & Product ID fields Shopsee Properties
+ALTER TABLE `mydp_prod`.`shopsee_properties` 
+ADD COLUMN `product_name` VARCHAR(512) NULL DEFAULT NULL AFTER `shopsee_hdfc_db_card_otp`,
+ADD COLUMN `product_id` VARCHAR(512) NULL DEFAULT NULL AFTER `product_name`;
+
+2.XXXXYYYYZZZZAdd webHookUrl
+ALTER TABLE `mydp_prod`.`shopsee_properties` 
+ADD COLUMN `webhookUrl` VARCHAR(512) NULL DEFAULT NULL AFTER `product_id`;
+
+
+
+
+10/07/2021
+===========
+
+1. XXXYYYZZZAdded tables benefit_master, benefit_master_x_plan,benefit_master_x_message,benefit_master_x_slabs,benefit_member,benefit_messages,benefit_redeem_slabs,benefit_member_x_benfit_master
+
+2. XXXXYYYZZZModified Customer table by adding 'clinicid'
+
+3. XXXXYYYYZZZdelete benefit_message, benefit_master_x_message
+
+4. XXXXYYYZZZAdd mdpmessages table (populate)
+
+5. XXXYYZZPopulate Benefit Master, Benefit Master Slabs, benefit_master_x_message,benefit_master_x_slabs,
+
+
+19/07/2021
+=============
+1. XXXYYZZZ modified vw_clinic : addd latitude & longitude
+
+2. XXXYYYZZZ modified benefit_master : added benefit_premium  
+
+3. XXXYYYYZZZZmodified customer table to add payment related information - tx_id, payment_id, payment_amount, payment_date,amount_paid, payment_status
+
+22/07/2021
+===========
+1. XXYYZZModify treatmentplan table to add totalcompanypays
+
+2. XXXYYZZModify payment table to add companypays,policy,precommitamount
+
+3. XXXYYZZModify vw_paymentlist,vw_payments,vw_treatmentplancost,vw_treatmentplansummarybypatient,vw_treatmentplansummarybytreatment
+
+4. XXXYYZZNew Table company_policy
+
+5. XXXYYZZUpdate urlprops table mydp_getrsa_url = http://www.smscountry.com/smscwebservice_bulk.aspx
+   
+6. XXXYYYZZZCopy SMS Templates to templates\sms folder
+
+7. XXXYYYZZZModify payment table - add column precommitamount
+ALTER TABLE `mydp_prod`.`payment` 
+ADD COLUMN `precommitamount` DOUBLE NULL DEFAULT 0 AFTER `policy`;
+
+
+8. XXXXZZZ modify vw_payments,  changes totaldue to subtract totalcompanypays
+
+
+18/08/2021
+===========
+1.  ZZZAdded  regioncode fields in CITIES table
+
+2. Added 4 regions RG101, RG102, RG 103, RG104 in GroupRegion table
+
+
+19/08/2021
+==========
+1. YYYZZZAdded tables for Home Visit Doctor ^ Customer
+
+   ZZZZ hv_doctor
+   ALTER TABLE `mydp_prod`.`hv_doctor` 
+ADD COLUMN `doctorid` INT(11) NULL AFTER `modified_by`;
+   
+YYYZZZALTER TABLE `mydp_prod`.`hv_doc_appointment` 
+ADD COLUMN `hv_appt_created_on` DATETIME NULL AFTER `hv_doctorid`,
+ADD COLUMN `hv_appt_created_by` VARCHAR(45) NULL AFTER `hv_appt_created_on`,
+ADD COLUMN `hv_appt_confirmed_on` DATETIME NULL AFTER `hv_appt_created_by`,
+ADD COLUMN `hv_appt_confirmed_by` VARCHAR(45) NULL AFTER `hv_appt_confirmed_on`,
+ADD COLUMN `hv_appt_checkedin_on` DATETIME NULL AFTER `hv_appt_confirmed_by`,
+ADD COLUMN `hv_appt_checkedin_by` VARCHAR(45) NULL AFTER `hv_appt_checkedin_on`,
+ADD COLUMN `hv_appt_checkedout_on` DATETIME NULL AFTER `hv_appt_checkedin_by`,
+ADD COLUMN `hv_appt_checkedout_by` VARCHAR(45) NULL AFTER `hv_appt_checkedout_on`;
+
+ALTER TABLE `mydp_prod`.`hv_doc_appointment` 
+ADD COLUMN `hv_appt_distance` FLOAT NULL AFTER `hv_appt_checkedout_by`;
+
+ALTER TABLE `mydp_prod`.`hv_doc_appointment` 
+ADD COLUMN `hv_appt_cancelled_on` DATETIME NULL DEFAULT NULL AFTER `hv_appt_distance`,
+ADD COLUMN `hv_appt_cancelled_by` VARCHAR(45) NULL DEFAULT NULL AFTER `hv_appt_cancelled_on`,
+ADD COLUMN `hv_appt_notes` MEDIUMTEXT NULL AFTER `hv_appt_cancelled_by`;
+
+
+
+2. YYYYZZZAdded table pinelab_properties for pinelans fields
+CREATE TABLE `mydp_prod`.`pinelab_properties` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `pl_url` VARCHAR(512) NULL DEFAULT 'https://uat.pinepg.in/api/v2/accept/payment',
+  `pl_uat` VARCHAR(512) NULL DEFAULT 'https://uat.pinepg.in/api/v2/accept/payment',
+  `pl_prod` VARCHAR(512) NULL DEFAULT 'https://pinepg.in/api/v2/accept/payment',
+  `pl_mid` VARCHAR(45) NULL DEFAULT '106598',
+  `pl_key` VARCHAR(45) NULL DEFAULT '55E0F73224EC458A8EC0B68F7B47ACAE',
+  `pl_ac` VARCHAR(45) NULL DEFAULT '4a39a6d4-46b7-474d-929d-21bf0e9ed607',
+  `pl_card` VARCHAR(45) NULL DEFAULT '4012001037141112',
+  `pl_name` VARCHAR(45) NULL DEFAULT 'HDFC TEST',
+  `pl_expiry` VARCHAR(45) NULL DEFAULT '11/23',
+  `pl_cvv` VARCHAR(45) NULL DEFAULT '123',
+  PRIMARY KEY (`id`));
+ALTER TABLE `mydp_prod`.`pinelabs` 
+ADD COLUMN `pl_callback` VARCHAR(1024) NULL AFTER `pl_cvv`;
+
+3. YYYZZZUpdate doctor table with fields for HV
+ALTER TABLE `mydp_prod`.`doctor` 
+ADD COLUMN `hv_doc` CHAR(1) NULL DEFAULT 'F' AFTER `imageid`,
+ADD COLUMN `hv_doc_address1` VARCHAR(45) NULL AFTER `hv_doc`,
+ADD COLUMN `hv_doc_address2` VARCHAR(45) NULL AFTER `hv_doc_address1`,
+ADD COLUMN `hv_doc_address3` VARCHAR(45) NULL AFTER `hv_doc_address2`,
+ADD COLUMN `hv_doc_city` VARCHAR(45) NULL AFTER `hv_doc_address3`,
+ADD COLUMN `hv_doc_st` VARCHAR(45) NULL AFTER `hv_doc_city`,
+ADD COLUMN `hv_doc_pin` VARCHAR(45) NULL AFTER `hv_doc_st`,
+ADD COLUMN `hv_doc_dob` DATE NULL AFTER `hv_doc_pin`,
+ADD COLUMN `hv_doc_gender` VARCHAR(45) NULL AFTER `hv_doc_dob`,
+ADD COLUMN `hv_doc_profile_image` VARCHAR(1024) NULL AFTER `hv_doc_gender`;
+
+
+4. YYYZZZNew table hv_doc_appointment
+CREATE TABLE `mydp_prod`.`hv_doc_appointment` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `appointmentid` INT(11) NULL COMMENT 'This field refers to appointment in t_appointment table',
+  `hv_doctorid` INT(11) NULL COMMENT 'This referd to the HV Doctor (hv_doctor table)',
+  `hv_memberid` INT(11) NULL COMMENT 'Points to id in patientmember table',
+  `hv_patientid` INT(11) NULL COMMENT 'this points to the dependant member of the member in patientmember table',
+  PRIMARY KEY (`id`));
+
+ALTER TABLE `mydp_prod`.`hv_doc_appointment` 
+DROP COLUMN `hv_patientid`,
+DROP COLUMN `hv_memberid`;
+
+2/9/2018
+=========
+1. YYYZZZZAdded table hv_treatmentid
+ALTER TABLE `mydp_prod`.`hv_treatment` 
+CHANGE COLUMN `treatmentid` `treatmentid` INT(11) NULL DEFAULT NULL AFTER `id`,
+ADD COLUMN `hv_appointmentid` INT(11) NULL AFTER `hv_doctorid`;
+ALTER TABLE `mydp_prod`.`hv_treatment` 
+CHANGE COLUMN `hv_appointmentid` `hv_doc_appointmentid` INT(11) NULL DEFAULT NULL ;
+
+2. YYYZZZcreated a new vieww vw_payments_fast
+
+3. YYYZZZCities Population
+           ALTER TABLE `mydp_prod`.`cities` 
+           ADD COLUMN `HV` CHAR(1) NULL DEFAULT 'F' AFTER `regioncode`,
+           ADD COLUMN `VC` CHAR(1) NULL DEFAULT 'F' AFTER `HV`;
+
+           Populate cities with cities.xls
+
+           Moidified City table to add HV and VC flags
+
+4. YYYZZZAdded fields to hv_doc_appointment table
+ALTER TABLE `mydp_prod`.`hv_doc_appointment` 
+CHANGE COLUMN `hv_appt_distance` `hv_appt_distance` FLOAT NULL DEFAULT NULL AFTER `hv_appt_notes`,
+ADD COLUMN `hv_appt_address1` VARCHAR(45) NULL AFTER `hv_appt_distance`,
+ADD COLUMN `hv_appt_address2` VARCHAR(45) NULL AFTER `hv_appt_address1`,
+ADD COLUMN `hv_appt_address3` VARCHAR(45) NULL AFTER `hv_appt_address2`,
+ADD COLUMN `hv_appt_city` VARCHAR(45) NULL AFTER `hv_appt_address3`,
+ADD COLUMN `hv_appt_city_id` VARCHAR(45) NULL AFTER `hv_appt_city`,
+ADD COLUMN `hv_appt_st` VARCHAR(45) NULL AFTER `hv_appt_city_id`,
+ADD COLUMN `hv_appt_latitude` VARCHAR(45) NULL AFTER `hv_appt_st`,
+ADD COLUMN `hv_appt_longitude` VARCHAR(45) NULL AFTER `hv_appt_latitude`,
+ADD COLUMN `hv_appt_payment_txid` VARCHAR(45) NULL AFTER `hv_appt_longitude`,
+ADD COLUMN `hv_appt_payment_amount` FLOAT NULL AFTER `hv_appt_payment_txid`,
+ADD COLUMN `hv_appt_payment_date` DATE NULL AFTER `hv_appt_payment_amount`;
+ALTER TABLE `mydp_prod`.`hv_doc_appointment` 
+CHANGE COLUMN `hv_appt_st` `hv_appt_st` VARCHAR(45) NULL DEFAULT NULL AFTER `hv_appt_notes`,
+CHANGE COLUMN `hv_appt_payment_txid` `hv_appt_payment_txid` INT(11) NULL DEFAULT NULL ;
+
+ALTER TABLE `mydp_prod`.`hv_doc_appointment` 
+CHANGE COLUMN `hv_appt_st` `hv_appt_st` VARCHAR(45) NULL DEFAULT NULL AFTER `hv_appt_city`,
+ADD COLUMN `hv_appt_pin` VARCHAR(45) NULL AFTER `hv_appt_st`;
+
+ALTER TABLE `mydp_prod`.`hv_doc_appointment` 
+ADD COLUMN `hv_appt_feedback` VARCHAR(1024) NULL AFTER `hv_appt_payment_date`,
+ADD COLUMN `hv_appt_rating` VARCHAR(45) NULL AFTER `hv_appt_feedback`,
+ADD COLUMN `hv_appt_feedback_on` DATETIME NULL AFTER `hv_appt_rating`,
+ADD COLUMN `hv_appt_feedback_by` VARCHAR(45) NULL AFTER `hv_appt_feedback_on`;
+
+ALTER TABLE `mydp_prod`.`hv_doc_appointment` 
+CHANGE COLUMN `hv_appt_feedback_by` `hv_appt_feedback_by` INT(11) NULL DEFAULT NULL ;
+
+
+4. YYYZZZNew Device table
+CREATE TABLE `mydp_prod`.`hv_device_info` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `hv_doctor_id` INT(11) NULL,
+  `hv_device_id` VARCHAR(45) NULL,
+  `hv_device_type` VARCHAR(45) NULL,
+  `hv_device_fcm_token` VARCHAR(45) NULL,
+  PRIMARY KEY (`id`));
+
+5. YYYZZZZAdded phpurl in urlproperties
+ALTER TABLE `mydp_prod`.`urlproperties` 
+ADD COLUMN `php_url` TEXT NULL AFTER `pagination`;
+
+6. YYYZZZRenamce hv_device_info to device_info
+ALTER TABLE `mydp_prod`.`hv_device_info` 
+DROP COLUMN `hv_doctor_id`,
+CHANGE COLUMN `hv_device_id` `device_id` VARCHAR(45) NULL DEFAULT NULL ,
+CHANGE COLUMN `hv_device_type` `device_type` VARCHAR(45) NULL DEFAULT NULL ,
+CHANGE COLUMN `hv_device_fcm_token` `device_fcm_token` VARCHAR(45) NULL DEFAULT NULL , RENAME TO  `mydp_prod`.`device_info` ;
+
 
 Script file to clear user for sign-up
 =====================================
