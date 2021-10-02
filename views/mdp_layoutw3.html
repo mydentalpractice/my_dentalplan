@@ -100,6 +100,15 @@
   <li><a href="{{=URL('doctor', 'list_roles')}}" ></i><b style="font-size:18px">Roles</b></a></li>
   <li><a href="{{=URL('doctor', 'list_specialities')}}" ></i><b style="font-size:18px">Specialities</b></a></li>
   <li><a href="{{=URL('prospect', 'list_prospect')}}" ></i><b style="font-size:18px">Prospects</b></a></li>
+  <li><a href="{{=URL('homeassessment', 'ha_dashboard')}}" ></i><b style="font-size:18px">Home Assessment</b></a></li>
+  <li class="w3-dropdown-hover">
+    <a href="#"><b style="font-size:18px">Clinic List</b><i class="fa fa-caret-down"></i></a>
+    <div class="w3-dropdown-content w3-white w3-card-4">
+      <a href="{{=URL('clinic', 'list_provider_clinics',vars=dict(page=1,ref_code='PRV',prev_ref_code = 'PRV'))}}" ></i><b style="font-size:18px">List All Provider Clinics</b></a>
+      <a href="{{=URL('clinic', 'list_prospect_clinics',vars=dict(page=1,ref_code='PST',prev_ref_code = 'PST'))}}" ></i><b style="font-size:18px">List All Prospect Clinics</b></a>
+    </div>
+  </li>
+  
   <li class="w3-dropdown-hover">
     <a href="#"><b style="font-size:18px">Renewal</b><i class="fa fa-caret-down"></i></a>
     <div class="w3-dropdown-content w3-white w3-card-4">

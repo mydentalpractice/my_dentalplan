@@ -234,7 +234,75 @@ def list_clinic_images():
     return dict(username=username,returnurl=returnurl,form=form, formheader=formheader,page=common.getgridpage(request.vars),ref_code=ref_code,ref_id=ref_id,\
                 prev_ref_code=prev_ref_code,prev_ref_id=prev_ref_id)    
     
+
+
+def list_all_clinics():
+    username = auth.user.first_name + ' ' + auth.user.last_name
+    formheader = "Clinic List"
+    page = common.getpage1(request.vars.page)
+
+    query = ((db.clinic.is_active==True))
     
+    
+    fields=(
+                   
+            db.clinic.id,
+            db.clinic.name,
+            db.clinic.cell,
+            db.clinic.address1,
+            db.clinic.address2,
+            db.clinic.address3,
+            db.clinic.city,
+            db.clinic.pin
+            )
+    
+    headers={
+       
+        
+        'clinic.name':'Name',
+        'clinic.cell' : 'Cell',
+        'clinic.address1' : 'Addr1',
+        'clinic.address2' : 'Addr2',
+        'clinic.address3' : 'Addr3',
+        'clinic.city' : 'Cty',
+        'clinic.pin' : 'Pin'
+   
+       
+        }    
+    
+    left = None
+    orderby = (db.clinic.clinic_ref)
+    exportlist = dict( csv=False,csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)
+    links = [
+             lambda row: A('Update',_href=URL("clinic","update_clinic",vars=dict(page=page,clinicid=row.id))),
+             lambda row: A('Bank Details',_href=URL("clinic","bank_clinic",vars=dict(page=page,clinicid=row.id))),
+             lambda row: A('Clinic Images',_href=URL("clinic","list_clinic_images",vars=dict(page=page,ref_code="CLN",ref_id=row.id))),
+             lambda row: A('Delete',_href=URL("clinic","delete_clinic",vars=dict(page=page,clinicid=row.id)))
+            ]
+
+    
+    form = SQLFORM.grid(query=query,
+                 headers=headers,
+                 fields=fields,
+                 links=links,
+                 left=left,
+                 orderby=orderby,
+                 exportclasses=exportlist,
+                 paginate=10,
+                 links_in_grid=True,
+                 searchable=True,
+                 create=False,
+                 deletable=False,
+                 editable=False,
+                 details=False,
+                 user_signature=False
+                )            
+
+    returnurl = URL('clinic','list_all_clinics')
+    return dict(username=username,returnurl=returnurl,form=form, formheader=formheader,page=common.getgridpage(request.vars),ref_code=ref_code,ref_id=ref_id,\
+                prev_ref_code=prev_ref_code,prev_ref_id=prev_ref_id)    
+
+
 @auth.requires_membership('webadmin')
 @auth.requires_login()
 def list_clinic():
@@ -242,15 +310,17 @@ def list_clinic():
     formheader = "Clinic List"
     page = common.getpage1(request.vars.page)
 
-    prev_ref_code = "AGN" if (common.getstring(request.vars.prev_ref_code) == "") else request.vars.prev_ref_code
+    prev_ref_code = "PRV" if (common.getstring(request.vars.prev_ref_code) == "") else request.vars.prev_ref_code
     prev_ref_id = 0 if (common.getstring(request.vars.prev_ref_id) == "") else int(request.vars.prev_ref_id)
 
     
     ref_code = "PRV" if (common.getstring(request.vars.ref_code) == "") else request.vars.ref_code
     ref_id = 0 if (common.getstring(request.vars.ref_id) == "") else int(request.vars.ref_id)
     
-    
-    query = ((db.clinic_ref.ref_code == ref_code)& (db.clinic_ref.ref_id == ref_id) & (db.clinic.is_active==True))
+    if(ref_id == 0):
+        query = ((db.clinic_ref.ref_code == ref_code) & (db.clinic.is_active==True))
+    else:
+        query = ((db.clinic_ref.ref_code == ref_code)& (db.clinic_ref.ref_id == ref_id) & (db.clinic.is_active==True))
     
     fields=(
                    
@@ -278,6 +348,160 @@ def list_clinic():
        
         }    
     left = [db.clinic.on(db.clinic.id==db.clinic_ref.clinic_id)]
+    orderby = (db.clinic.clinic_ref)
+    exportlist = dict( csv=False,csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)
+    links = [
+             lambda row: A('Update',_href=URL("clinic","update_clinic",vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,clinicid=row.clinic.id))),
+             lambda row: A('Bank Details',_href=URL("clinic","bank_clinic",vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,clinicid=row.clinic.id))),
+             lambda row: A('Clinic Images',_href=URL("clinic","list_clinic_images",vars=dict(page=page,ref_code="CLN",ref_id=row.clinic.id,prev_ref_code=ref_code,prev_ref_id=ref_id))),
+             lambda row: A('Delete',_href=URL("clinic","delete_clinic",vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,clinicid=row.clinic.id)))
+            ]
+
+    
+    form = SQLFORM.grid(query=query,
+                 headers=headers,
+                 fields=fields,
+                 links=links,
+                 left=left,
+                 orderby=orderby,
+                 exportclasses=exportlist,
+                 paginate=10,
+                 links_in_grid=True,
+                 searchable=True,
+                 create=False,
+                 deletable=False,
+                 editable=False,
+                 details=False,
+                 user_signature=False
+                )            
+
+    returnurl = URL('prospect','list_prospect',vars=dict(page=page,ref_code=prev_ref_code,ref_id=prev_ref_id))
+    return dict(username=username,returnurl=returnurl,form=form, formheader=formheader,page=common.getgridpage(request.vars),ref_code=ref_code,ref_id=ref_id,\
+                prev_ref_code=prev_ref_code,prev_ref_id=prev_ref_id)    
+
+@auth.requires_membership('webadmin')
+@auth.requires_login()
+def list_provider_clinics():
+    username = auth.user.first_name + ' ' + auth.user.last_name
+    formheader = "Clinic List"
+    page = common.getpage1(request.vars.page)
+
+    prev_ref_code = "PRV" if (common.getstring(request.vars.prev_ref_code) == "") else request.vars.prev_ref_code
+    prev_ref_id = 0 if (common.getstring(request.vars.prev_ref_id) == "") else int(request.vars.prev_ref_id)
+
+    
+    ref_code = "PRV" if (common.getstring(request.vars.ref_code) == "") else request.vars.ref_code
+    ref_id = 0 if (common.getstring(request.vars.ref_id) == "") else int(request.vars.ref_id)
+    
+    if(ref_id == 0):
+        query = ((db.clinic_ref.ref_code == ref_code) & (db.clinic.is_active==True))
+    else:
+        query = ((db.clinic_ref.ref_code == ref_code)& (db.clinic_ref.ref_id == ref_id) & (db.clinic.is_active==True))
+    
+    fields=(
+            db.clinic.id,       
+            db.provider.provider,
+            db.provider.providername,
+            db.clinic.name,
+            db.clinic.cell,
+            db.clinic.city,
+            db.clinic.pin
+            
+            
+            )
+    
+    db.clinic.id.readonly = False
+    
+    headers={
+       
+        'provider.provider' : 'Provider',
+        'provider.providername' : 'Provider Name',
+        'clinic.name':'Clinic Name',
+        'clinic.cell' : 'Cell',
+        'clinic.city' : 'Cty',
+        'clinic.pin' : 'Pin'
+        
+   
+       
+        }    
+    left = [db.clinic.on(db.clinic.id==db.clinic_ref.clinic_id),db.provider.on(db.provider.id == db.clinic_ref.ref_id)]
+    orderby = (db.clinic.clinic_ref)
+    exportlist = dict( csv=False,csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)
+    links = [
+             lambda row: A('Update',_href=URL("clinic","update_clinic",vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,clinicid=row.clinic.id))),
+             lambda row: A('Bank Details',_href=URL("clinic","bank_clinic",vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,clinicid=row.clinic.id))),
+             lambda row: A('Clinic Images',_href=URL("clinic","list_clinic_images",vars=dict(page=page,ref_code="CLN",ref_id=row.clinic.id,prev_ref_code=ref_code,prev_ref_id=ref_id))),
+             lambda row: A('Delete',_href=URL("clinic","delete_clinic",vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,clinicid=row.clinic.id)))
+            ]
+
+    
+    form = SQLFORM.grid(query=query,
+                 headers=headers,
+                 fields=fields,
+                 links=links,
+                 left=left,
+                 orderby=orderby,
+                 exportclasses=exportlist,
+                 paginate=10,
+                 links_in_grid=True,
+                 searchable=True,
+                 create=False,
+                 deletable=False,
+                 editable=False,
+                 details=False,
+                 user_signature=False
+                )            
+
+    returnurl = URL('prospect','list_prospect',vars=dict(page=page,ref_code=prev_ref_code,ref_id=prev_ref_id))
+    return dict(username=username,returnurl=returnurl,form=form, formheader=formheader,page=common.getgridpage(request.vars),ref_code=ref_code,ref_id=ref_id,\
+                prev_ref_code=prev_ref_code,prev_ref_id=prev_ref_id)    
+
+@auth.requires_membership('webadmin')
+@auth.requires_login()
+def list_prospect_clinics():
+    username = auth.user.first_name + ' ' + auth.user.last_name
+    formheader = "Clinic List"
+    page = common.getpage1(request.vars.page)
+
+    prev_ref_code = "PRV" if (common.getstring(request.vars.prev_ref_code) == "") else request.vars.prev_ref_code
+    prev_ref_id = 0 if (common.getstring(request.vars.prev_ref_id) == "") else int(request.vars.prev_ref_id)
+
+    
+    ref_code = "PRV" if (common.getstring(request.vars.ref_code) == "") else request.vars.ref_code
+    ref_id = 0 if (common.getstring(request.vars.ref_id) == "") else int(request.vars.ref_id)
+    
+    if(ref_id == 0):
+        query = ((db.clinic_ref.ref_code == ref_code) & (db.clinic.is_active==True))
+    else:
+        query = ((db.clinic_ref.ref_code == ref_code)& (db.clinic_ref.ref_id == ref_id) & (db.clinic.is_active==True))
+    
+    fields=(
+            db.clinic.id,       
+            db.provider.provider,
+            db.provider.providername,
+            db.clinic.name,
+            db.clinic.cell,
+            db.clinic.city,
+            db.clinic.pin
+            
+            
+            )
+    
+    db.clinic.id.readonly = False
+    
+    headers={
+       
+        'provider.provider' : 'Prospect',
+        'provider.providername' : 'Prospect Name',
+        'clinic.name':'Clinic Name',
+        'clinic.cell' : 'Cell',
+        'clinic.city' : 'Cty',
+        'clinic.pin' : 'Pin'
+        
+   
+       
+        }    
+    left = [db.clinic.on(db.clinic.id==db.clinic_ref.clinic_id),db.provider.on(db.provider.id == db.clinic_ref.ref_id)]
     orderby = (db.clinic.clinic_ref)
     exportlist = dict( csv=False,csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)
     links = [
