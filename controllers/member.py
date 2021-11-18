@@ -18,6 +18,7 @@ from decimal  import Decimal
 from applications.my_pms2.modules  import account
 from applications.my_pms2.modules  import common
 from applications.my_pms2.modules  import mail
+from applications.my_pms2.modules  import mdpbenefits
 
 #from gluon.contrib import account
 #from gluon.contrib import mail
@@ -2067,7 +2068,7 @@ def enroll_webmember():
         memberid = groupregion + companycode[:3] + str(companyid).zfill(3) + str(membercount)
         db(db.webmember.id == webmemberid).update(webmember = memberid, groupref=groupref,status = 'Enrolled')
         
-
+        
         db.patientmember.update_or_insert(((db.patientmember.patientmember == memberid) & (db.patientmember.webkey == webkey) & (db.patientmember.fname == fname) & (db.patientmember.dob == dob) & \
                                            (db.patientmember.is_active == True) & (db.patientmember.hmopatientmember==True)),
                                           patientmember = memberid,
@@ -2151,6 +2152,17 @@ def enroll_webmember():
     db(db.paymenttxlog.webmember == webmemberid).update(patientmember = patientid)
     db((db.patientmember.id == patientid) & (db.patientmember.is_active == True) & (db.patientmember.hmopatientmember == True)).update(premium = premium)
     db.commit()
+    
+    #map the benefits
+    #get plancode RPIP599 ID
+    c = db(db.company.company == "RPIP599").select(db.company.company)
+    reqobj = {}
+    reqobj["memberid"] = patientid
+    reqobj["plan"] = c[0].company if len(c) > 0 else ""
+    bnft = mdpbenefits.Benefit(db)
+    bnft.map_member_benefit(reqobj) 
+
+  
     
     deprows = db(db.webmemberdependants.webmember == webmemberid).select()
     for r in deprows:
@@ -2738,12 +2750,13 @@ def medi_member_card():
     mems = db((db.vw_memberpatientlist.primarypatientid == memberid) & (db.vw_memberpatientlist.patientid == memberid)).select()    
     membername = common.getstring(mems[0].fullname)
     patientmember = common.getstring(mems[0].patientmember)
-    validfrom = mems[0].premstartdt.strftime("%d/%m/%Y") if(mems[0].premstartdt !=None) else "00/00/0000"
-    validtill = mems[0].premenddt.strftime("%d/%m/%Y") if(mems[0].premenddt !=None) else "00/00/0000"
     groupref = mems[0].groupref
     
     comp = db(db.company.id == int(common.getid(mems[0].company))).select()
     companyname = common.getstring(comp[0].name) if(len(comp)>0) else ""
+    companycode = common.getstring(comp[0].company) if(len(comp)>0) else ""
+    validfrom = mems[0].premstartdt.strftime("%d/%m/%Y") if(mems[0].premstartdt !=None) else "00/00/0000"
+    validtill = "Lifetime" if(companycode == "RPIP99") else (mems[0].premenddt.strftime("%d/%m/%Y") if(mems[0].premenddt !=None) else "00/00/0000")
 
     plans = db(db.hmoplan.id == int(common.getstring(mems[0].hmoplan))).select()
     planname = common.getstring(plans[0].name) if(len(plans)>0) else ""
@@ -2795,12 +2808,15 @@ def member_card():
     mems = db((db.vw_memberpatientlist.primarypatientid == memberid) & (db.vw_memberpatientlist.patientid == memberid)).select()
     membername = common.getstring(mems[0].fullname)
     patientmember = common.getstring(mems[0].patientmember)
-    validfrom = mems[0].premstartdt.strftime("%d/%m/%Y") if(mems[0].premstartdt !=None) else "00/00/0000"
-    validtill = mems[0].premenddt.strftime("%d/%m/%Y") if(mems[0].premenddt !=None) else "00/00/0000"
     
     
     comp = db(db.company.id == int(common.getid(mems[0].company))).select()
     companyname = common.getstring(comp[0].name) if(len(comp)>0) else ""
+    companycode = common.getstring(comp[0].company) if(len(comp)>0) else ""
+
+    validfrom = mems[0].premstartdt.strftime("%d/%m/%Y") if(mems[0].premstartdt !=None) else "00/00/0000"
+    validtill = "Lifetime" if(companycode == 'RPIP99') else (mems[0].premenddt.strftime("%d/%m/%Y") if(mems[0].premenddt !=None) else "00/00/0000")
+
 
     plans = db(db.hmoplan.id == int(common.getstring(mems[0].hmoplan))).select()
     planname = common.getstring(plans[0].name) if(len(plans)>0) else ""

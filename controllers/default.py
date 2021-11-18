@@ -708,6 +708,9 @@ def member_resetpassword():
 
 
 def index():
+    
+   
+    
     logger.loggerpms2.info("Enter Index")
     formlogin = SQLFORM.factory(
         

@@ -34,8 +34,7 @@ from applications.my_pms2.modules  import mdpimage
 from applications.my_pms2.modules  import mdpcustomer
 from applications.my_pms2.modules  import mdpmedia
 from applications.my_pms2.modules  import mdpclinic
-#from gluon.contrib import common
-#from gluon.contrib import mail
+from applications.my_pms2.modules  import mdpbenefits
 
 from applications.my_pms2.modules import logger
 
@@ -1903,3 +1902,25 @@ def list_webmember():
     returnurl = URL('default','index')
     return dict(username=username, returnurl=returnurl, form=form, formheader=formheader,page=page)
 
+@auth.requires_membership('webadmin')
+@auth.requires_login()
+def map_member_benefits():
+    logger.loggerpms2.info("Enter Map Member Benefits")
+    
+    #get plancode RPIP599 ID
+    c = db(db.company.company == "RPIP599").select(db.company.id,db.company.company)
+    companyid = int(common.getid(c[0].id)) if len(c) > 0 else 0
+    
+    pats = db((db.patientmember.id > 0) & (db.patientmember.company == companyid)).select()
+    
+    bnft = mdpbenefits.Benefit(db)
+    count = 0
+    for pat in pats:
+	count = count+1
+	reqobj = {}
+	reqobj["memberid"] = pat.id
+	reqobj["plan"] = c[0].company if len(c) > 0 else ""
+	bnft.map_member_benefit(reqobj)
+
+    return dict(count=count)
+    
