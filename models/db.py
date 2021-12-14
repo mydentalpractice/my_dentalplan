@@ -160,6 +160,7 @@ db.hv_treatment._plural   = "hv_treatment"
 
 
 db.define_table('device_info',
+                Field('user_id','integer'),
                 Field('device_id','string'),
                 Field('device_type','string'),
                 Field('device_fcm_token','string')
@@ -191,6 +192,7 @@ db.define_table('hv_doc_appointment',
                 Field('hv_appt_city_id','integer'),
                 Field('hv_appt_latitude','string'),
                 Field('hv_appt_longitude','string'),
+                Field('hv_appt_status','string'),
                 Field('hv_appt_payment_txid','integer'),
           
                 Field('hv_appt_payment_amount','float'),
@@ -200,6 +202,10 @@ db.define_table('hv_doc_appointment',
                 Field('hv_appt_rating','string'),
                 Field('hv_appt_feedback_on','date'),
                 Field('hv_appt_feedback_by','integer'),
+
+                Field('hv_treatmentid','integer'),
+                Field('treatmentid','integer'),
+                Field('paymentid','integer')
                 
                 )
 
@@ -224,6 +230,7 @@ db.define_table('hv_doctor',
                 Field('hv_doc_registration','string'),
                 Field('hv_doc_certification','string'),
                 Field('hv_doc_profile_image','string'),
+                Field('hv_doc_imageid','integer'),
                 Field('hv_doc_dob','date'),
                 Field('hv_doc_gender','string'),
                 Field('hv_doc_cell','string'),
@@ -347,6 +354,7 @@ db.define_table('cities',
                 Field('regioncode','string'),
                 Field('HV','boolean'),
                 Field('VC','boolean'),
+                Field('hv_fees','double'),
                 )
 db.cities._singular = "cities"
 db.cities._plural   = "cities"
@@ -534,7 +542,7 @@ db.ops_timing_ref._plural = "ops_timing_ref"
 db.define_table('loginblock',
                 Field('ip_address','string'),
                 Field('username','string'),
-                Field('attempts','integer'),
+                Field('attempts','integer',default=0),
                 Field('lastlogin','datetime', default=request.now, requires=IS_DATETIME(format=T('%d/%m/%Y %H:%M:%S'))),
                 auth.signature)
 
@@ -667,7 +675,13 @@ db.define_table('hmoplan',
                 Field('procedurepriceplancode','string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'), default='',label='Name',length=32),
                 Field('planfile','string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'), default='',label='Plan File'),
                 Field('welcomeletter','string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'), default='',label='Welcome Letter'),
-                Field('groupregion','reference groupregion'),                
+                Field('groupregion','reference groupregion'),  
+                Field('voucher_code','string'),
+                Field('discount_amount','double',default=0),
+                Field('walletamount','double',default=0),
+                Field('authorizationrequired','boolean',default=False),
+                Field('company_code','string',default=None),
+                
                 auth.signature,
                 format = '%(name)s (%(hmoplancode)s)'
                )
@@ -704,7 +718,9 @@ db.agent._plural = "Agent"
 
 db.define_table('companypolicy',
                 Field('companycode','string'),
-                Field('policy','string')
+                Field('policy','string'),
+                Field('region','string'),
+                Field('premium','double'),
                 )
 db.companypolicy._singular = "companypolicy"
 db.companypolicy._plural = "companypolicy"
@@ -747,7 +763,7 @@ db.define_table('company',
                 Field('IND_IS_SYNC','boolean'),
                 Field('hmoplan', 'reference hmoplan'),
                 Field('agent', 'reference agent'),
-                Field('groupkey', 'string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'),default='', label='Group Key', length=20),
+                Field('groupkey', 'string', label='Group Key', length=20),
                 auth.signature,
                 format='%(name)s (%(company)s)')
 
@@ -806,6 +822,9 @@ db.define_table('vw_procedurepriceplan',
                 Field('copay', 'double'),
                 Field('inspays', 'double'),
                 Field('companypays', 'double'),
+                Field('walletamount', 'double'),
+                Field('discount_amount', 'double'),
+                Field('voucher_code', 'string'),
                 Field('remarks', 'string'),
                 Field('is_free','boolean',default=False),
                 Field('relgrproc','boolean',default=False),
@@ -838,6 +857,9 @@ db.define_table('vw_procedurepriceplan_relgr',
                 Field('relgrcopay', 'double'),
                 Field('relgrinspays', 'double'),
                 Field('companypays', 'double'),
+                Field('walletamount', 'double'),
+                Field('discount_amount', 'double'),
+                Field('voucher_code', 'string'),
                 Field('remarks', 'string'),
                 Field('is_free','boolean',default=False),
                 Field('relgrproc','boolean',default=False),
@@ -867,6 +889,9 @@ db.define_table('vw_procedurepriceplan_x999',
                 Field('copay', 'double'),
                 Field('inspays', 'double'),
                 Field('companypays', 'double'),
+                Field('walletamount', 'double'),
+                Field('discount_amount', 'double'),
+                Field('voucher_code', 'string'),
                 Field('remarks', 'string'),
                 Field('is_free','boolean',default=False),
                 Field('relgrproc','boolean',default=False),
@@ -1091,6 +1116,7 @@ db.define_table('provider',
                 Field('bankid','reference providerbank'),                
                 Field('imageid','integer'),                
                 Field('IND_VC','boolean',default=False),
+                Field('available','boolean',default=True),
                 
                 auth.signature,
                 format='%(providername)s (%(provider)s')
@@ -1107,6 +1133,7 @@ db.define_table('provider_region_plan',
                 Field('plancode', 'string'),
                 Field('procedurepriceplancode', 'string'),
                 Field('policy', 'string'),
+                Field('premium', 'double'),
                 auth.signature
                 )
 
@@ -1405,6 +1432,10 @@ db.define_table('treatmentplan',
                 Field('totalcopaypaid','double',represent=lambda v, r: 0.00 if v is None else v,widget = lambda field, value:SQLFORM.widgets.double.widget(field, value, _class='form_details'), default=0.00,label='Total Copay Paid'),
                 Field('totalinspaid','double',represent=lambda v, r: 0.00 if v is None else v,widget = lambda field, value:SQLFORM.widgets.double.widget(field, value, _class='form_details'), default=0.00,label='Total Insurance Paid'),
                 Field('totalcompanypays','double',represent=lambda v, r: 0.00 if v is None else v,widget = lambda field, value:SQLFORM.widgets.double.widget(field, value, _class='form_details'), default=0.00,label='Total Company Pays'),
+                Field('totalwalletamount','double',represent=lambda v, r: 0.00 if v is None else v,widget = lambda field, value:SQLFORM.widgets.double.widget(field, value, _class='form_details'), default=0.00,label='Total Wallet Amount'),
+                Field('totaldiscount_amount','double',represent=lambda v, r: 0.00 if v is None else v,widget = lambda field, value:SQLFORM.widgets.double.widget(field, value, _class='form_details'), default=0.00,label='Total Discount Amount'),
+                Field('voucher_code','string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'), default=''),
+                Field('wallet_type','string',represent=lambda v, r: '' if v is None else v,widget = lambda field, value:SQLFORM.widgets.string.widget(field, value, _class='form_details'), default=''),
                 auth.signature
                 )
 db.treatmentplan._singular = "Treatment_Plan"
@@ -1425,11 +1456,15 @@ db.treatmentplannotes._plural = "Treatment_Notes"
 db.define_table('treatment_procedure',
                  Field('treatmentid', 'integer'),
                  Field('dentalprocedure', 'integer'),
-                 Field('ucr', 'double'),
-                 Field('procedurefee', 'double'),
-                 Field('copay', 'double'),
-                 Field('inspays', 'double'),
-                 Field('companypays', 'double'),
+                 Field('ucr', 'double',default=0.00),
+                 Field('procedurefee', 'double',default=0.00),
+                 Field('copay', 'double',default=0.00),
+                 Field('inspays', 'double',default=0.00),
+                 Field('companypays', 'double',default=0.00),
+                 Field('walletamount', 'double',default=0.00),
+                 Field('discount_amount', 'double',default=0.00),
+                 Field('voucher_code', 'string'),
+                 
                  Field('quadrant', 'string'),
                  Field('tooth', 'string'),
                  Field('status', 'string'),
@@ -1495,6 +1530,10 @@ db.define_table('treatment',
                 Field('copay','double',represent=lambda v, r: 0.00 if v is None else v,widget = lambda field, value:SQLFORM.widgets.double.widget(field, value, _class='form_details'), default=0.00,label='Copay'),
                 Field('inspay','double',represent=lambda v, r: 0.00 if v is None else v,widget = lambda field, value:SQLFORM.widgets.double.widget(field, value, _class='form_details'), default=0.00,label='Ins. Pays'),
                 Field('companypay','double',represent=lambda v, r: 0.00 if v is None else v,widget = lambda field, value:SQLFORM.widgets.double.widget(field, value, _class='form_details'), default=0.00,label='Co. Pays'),
+                Field('walletamount','double',represent=lambda v, r: 0.00 if v is None else v,widget = lambda field, value:SQLFORM.widgets.double.widget(field, value, _class='form_details'),default=0.00,label='Wallet Amount'),
+                Field('discount_amount','double',represent=lambda v, r: 0.00 if v is None else v,widget = lambda field, value:SQLFORM.widgets.double.widget(field, value, _class='form_details'),default=0.00,label='Discount Amount'),
+                Field('voucher_code','string'),
+                Field('wallet_type', 'string' ),                
                 Field('authorized', 'boolean'),
                 Field('treatmentplan','reference treatmentplan',label='Member/Patient'),
                 Field('provider','reference provider',label='Member/Patient'),
@@ -1748,6 +1787,9 @@ db.define_table('urlproperties',
 
                 Field('pagination','integer',default=10),
                 Field('php_url','text'),
+                Field('vw_url','text'),
+                Field('vw_stg_url','text'),
+                Field('vw_prod_url','text'),
 
                 auth.signature
                 )
@@ -2178,6 +2220,9 @@ db.define_table('vw_treatmentplancost',
                 Field('totalinspays','double',represent=lambda v, r: 0.00 if v is None else v),  
                 Field('totalmemberpays','double',represent=lambda v, r: 0.00 if v is None else v),  
                 Field('totalcompanypays','double',represent=lambda v, r: 0.00 if v is None else v),  
+                Field('totalwalletamount','double',represent=lambda v, r: 0.00 if v is None else v),  
+                Field('totaldiscount_amount','double',represent=lambda v, r: 0.00 if v is None else v),  
+                Field('voucher_code','atring'),  
                 migrate = False
                 )
 db.vw_treatmentplancost._singular = "vw_treatmentplancost"
@@ -2452,8 +2497,12 @@ db.define_table('payment',
                 Field('treatmentplan', widget = lambda field, value:SQLFORM.widgets.options.widget(field, value,_style="width:100%;height:35px",_class='w3-input w3-border w3-small'), requires=IS_IN_DB(db, 'treatmentplan.id', '%(treatmentplan)s')),
                 Field('provider', widget = lambda field, value:SQLFORM.widgets.options.widget(field, value,_style="width:100%;height:35px",_class='w3-input w3-border w3-small'), requires=IS_IN_DB(db, 'provider.id', '%(provider)s')),
                 Field('is_active','boolean'),
-                Field('paymentcommit','boolean',default=True),
-                Field('precommitamount', 'double'),
+                Field('paymentcommit','boolean',default=False),
+                Field('precommitamount', 'double',default=0.00),
+                Field('walletamount', 'double',default=0.00),
+                Field('discount_amount', 'double',default=0.00),
+                Field('voucher_code', 'string' ),
+                Field('wallet_type', 'string' ),
                 
                 Field('fp_status', 'string' ),
                 Field('fp_paymentref', 'string'),
@@ -2464,9 +2513,9 @@ db.define_table('payment',
                 Field('fp_merchantid', 'string'),
                 Field('fp_merchantdisplay', 'string'),
                 Field('fp_invoice', 'string'),
-                Field('fp_invoiceamt', 'double'),
-                Field('fp_amount', 'double'),
-                Field('fp_fee', 'double'),
+                Field('fp_invoiceamt', 'double',default=0.00),
+                Field('fp_amount', 'double',default=0.00),
+                Field('fp_fee', 'double',default=0.00),
                 Field('fp_error', 'string'),
                 Field('fp_errormsg', 'string'),
                 Field('fp_otherinfo', 'string'),
@@ -2492,9 +2541,11 @@ db.define_table('vw_paymentlist',
                 Field('patientid','integer',represent=lambda v, r: 0 if v is None else v),  
                 Field('paymentdate','date',requires=IS_DATE(format=T('%d/%m/%Y'))),  
                 Field('amount','double',represent=lambda v, r: 0.00 if v is None else v),  
+                Field('discount_amount','double',represent=lambda v, r: 0.00 if v is None else v),  
                 Field('paymenttype','string',represent=lambda v, r: '' if v is None else v),  
                 Field('paymentmode','string',represent=lambda v, r: '' if v is None else v),  
                 Field('payor','string',represent=lambda v, r: '' if v is None else v),  
+                Field('voucher_code','string',represent=lambda v, r: '' if v is None else v),  
                 Field('treatmentplan','string',represent=lambda v, r: '' if v is None else v),  
                 Field('treatment','string',represent=lambda v, r: '' if v is None else v),  
                 Field('title','string',represent=lambda v, r: '' if v is None else v),  
@@ -2508,6 +2559,8 @@ db.define_table('vw_paymentlist',
                 Field('totalinspaid','double',represent=lambda v, r: 0.00 if v is None else v),
                 Field('totaldue','double',represent=lambda v, r: 0.00 if v is None else v),
                 Field('totalcompanypays','double',represent=lambda v, r: 0.00 if v is None else v),
+                Field('totalwalletamount','double',represent=lambda v, r: 0.00 if v is None else v),
+                Field('totaldiscount_amount','double',represent=lambda v, r: 0.00 if v is None else v),
                 Field('fppaymentstatus','string',represent=lambda v, r: '' if v is None else v),  
                 Field('fppaymentref','string',represent=lambda v, r: '' if v is None else v),  
                 Field('fppaymenttype','string',represent=lambda v, r: '' if v is None else v),  
@@ -2611,6 +2664,27 @@ db.define_table('vw_treatmentlist',
 db.vw_treatmentlist._singular = "vw_treatmentlist"
 db.vw_treatmentlist._plural   = "vw_treatmentlist"
 
+        
+db.define_table('vw_treatmentlist_fast',
+                Field('tplanid','integer'),     
+                Field('providerid','integer',represent=lambda v, r: 0 if v is None else v, label='Provider ID'),     
+                Field('treatment','string',represent=lambda v, r: '' if v is None else v, label='Treatment'),  
+                Field('startdate','date', label='Start Date',requires=IS_DATE(format=T('%d/%m/%Y'),error_message='must be d/m/Y!')),  
+                Field('enddate','date', label='End Date',requires=IS_DATE(format=T('%d/%m/%Y'),error_message='must be d/m/Y!')),  
+                Field('status','string',represent=lambda v, r: '' if v is None else v,label='Status'),  
+                Field('patientname','string',represent=lambda v, r: '' if v is None else v, label='Patient'),  
+                Field('memberid','integer',represent=lambda v, r: 0 if v is None else v, label='Member ID'),                  
+                Field('patientid','integer',represent=lambda v, r: 0 if v is None else v, label='Patient ID'),  
+                Field('doctorname','string'),  
+                Field('clinicid','integer',represent=lambda v, r: 0 if v is None else v, label='Clinic ID'),  
+                Field('clinicname','string'),  
+                Field('pattern','string'),  
+                Field('is_active','boolean', default=True)
+                )
+db.vw_treatmentlist_fast._singular = "vw_treatmentlist_fast"
+db.vw_treatmentlist_fast._plural   = "vw_treatmentlist_fast"
+
+
 db.define_table('vw_appointmentmemberlist',
                 Field('patientid','integer',represent=lambda v, r: 0 if v is None else v), 
                 Field('primarypatientid','integer',represent=lambda v, r: 0 if v is None else v), 
@@ -2669,6 +2743,20 @@ db.define_table('vw_memberpatientlist',
 db.vw_memberpatientlist._singular = "vw_memberpatientlist"
 db.vw_memberpatientlist._plural   = "vw_memberpatientlist"
 
+
+
+db.define_table('vw_memberpatientlist_fast',
+                Field('patientid','integer'), 
+                Field('primarypatientid','integer'), 
+                Field('providerid','integer'), 
+                Field('patientmember','string'),  
+                Field('cell','string'), 
+                Field('email','string'), 
+                Field('hmopatientmember','boolean'),
+                Field('pattern','string')
+                )
+db.vw_memberpatientlist_fast._singular = "vw_memberpatientlist_fast"
+db.vw_memberpatientlist_fast_plural   = "vw_memberpatientlist+fast"
 
 
 
@@ -2808,6 +2896,8 @@ db.define_table('vw_treatmentplansummarybytreatment',
                 Field('totalcost','double'),  
                 Field('totalinspays','double'),  
                 Field('totalcompanypays','double'),  
+                Field('totalwalletamount','double'),  
+                Field('totaldiscount_amount','double'),  
                 Field('totalcopay','double'),  
                 Field('totalpaid','double'),
                 Field('totaldue','double'),
@@ -2827,6 +2917,8 @@ db.define_table('vw_treatmentplansummarybypatient',
                 Field('totalcost','double'),  
                 Field('totalinspays','double'),  
                 Field('totalcompanypays','double'),  
+                Field('totalwalletamount','double'),  
+                Field('totaldiscount_amount','double'),  
                 Field('totalcopay','double'),  
                 Field('totalpaid','double'),
                 Field('totaldue','double'),
@@ -3119,6 +3211,9 @@ db.define_table('procedurepriceplan',
                 Field('procedurefee','double',default=0,label='Procedure Fee'),
                 Field('copay','double',default=0, label='CoPay'),
                 Field('companypays','double',default=0,label='Co. Pays'),
+                Field('walletamount','double',default=0,label='Wallet Amount'),
+                Field('discount_amount','double',default=0,label='Discount Amount'),
+                
                 Field('relgrprocfee','double',default=0,label='RLG Proc Fee'),
                 Field('relgrcopay','double',default=0,label='RLG Copay'),
                 Field('relgrinspays','double',default=0,label='RLG. Inspays'),
@@ -3126,9 +3221,12 @@ db.define_table('procedurepriceplan',
                 Field('is_free','boolean',default=False),
                 Field('relgrproc','boolean',default=False),
                 Field('relgrprocdesc','string'),
+                Field('voucher_code','string'),
+                Field('remarks','string'),
                 Field('service_id','string'),
                 Field('service_name','string'),
                 Field('service_category','string'),
+                Field('authorizationrequired','boolean', default = False),
                 Field('is_active','boolean', default = True),
                 auth.signature                
                 )
@@ -3630,7 +3728,7 @@ db.define_table('vw_payments',
     Field('patientid', 'integer',represent=lambda v, r: 0 if v is None else v),
     Field('providerid','integer',represent=lambda v, r: 0 if v is None else v),
     Field('patientname', 'string',represent=lambda v, r: '' if v is None else v),
-    Field('paymentscount', 'integer',represent=lambda v, r: 0 if v is None else v),
+    Field('voucher_code', 'string',represent=lambda v, r: '' if v is None else v),
     Field('lastpayment', 'double',represent=lambda v, r: 0 if v is None else v),
     Field('lastpaymentdate', 'date',represent=lambda v, r: '' if v is None else v,requires=IS_DATE(format=T('%d/%m/%Y'))),
     Field('totaltreatmentcost', 'double',represent=lambda v, r: 0 if v is None else v),
@@ -3642,6 +3740,8 @@ db.define_table('vw_payments',
     Field('totalinspaid', 'double',represent=lambda v, r: 0 if v is None else v),
     Field('totaldue', 'double',represent=lambda v, r: 0 if v is None else v),
     Field('totalcompanypays', 'double',represent=lambda v, r: 0 if v is None else v),
+    Field('totalwalletamount', 'double',represent=lambda v, r: 0 if v is None else v),
+    Field('totaldiscount_amount', 'double',represent=lambda v, r: 0 if v is None else v),
     Field('is_active', 'boolean',represent=lambda v, r: 0 if v is None else v),
    
 
@@ -3665,8 +3765,7 @@ db.define_table('vw_payments_fast',
     Field('memberid', 'integer',represent=lambda v, r: 0 if v is None else v),
     Field('patientid', 'integer',represent=lambda v, r: 0 if v is None else v),
     Field('providerid','integer',represent=lambda v, r: 0 if v is None else v),
-    #Field('patientname', 'string',represent=lambda v, r: '' if v is None else v),
-    #Field('paymentscount', 'integer',represent=lambda v, r: 0 if v is None else v),
+    Field('voucher_code', 'string',represent=lambda v, r: '' if v is None else v),
     #Field('lastpayment', 'double',represent=lambda v, r: 0 if v is None else v),
     Field('lastpaymentdate', 'date',represent=lambda v, r: '' if v is None else v,requires=IS_DATE(format=T('%d/%m/%Y'))),
     Field('totaltreatmentcost', 'double',represent=lambda v, r: 0 if v is None else v),
@@ -3678,6 +3777,8 @@ db.define_table('vw_payments_fast',
     Field('totalinspaid', 'double',represent=lambda v, r: 0 if v is None else v),
     Field('totaldue', 'double',represent=lambda v, r: 0 if v is None else v),
     Field('totalcompanypays', 'double',represent=lambda v, r: 0 if v is None else v),
+    Field('totalwalletamount', 'double',represent=lambda v, r: 0 if v is None else v),
+    Field('totaldiscount_amount', 'double',represent=lambda v, r: 0 if v is None else v),
     Field('is_active', 'boolean',represent=lambda v, r: 0 if v is None else v)
    
 
@@ -4717,6 +4818,80 @@ db.define_table('vw_clinic',
 db.clinic._singular = "clinic"
 db.clinic._plural   = "clinic"
 
+db.define_table('redeem_voucher_wallet',
+                
+                Field('paymentid','integer'),
+                Field('treatmentid','integer'),
+                Field('treatment','string'),
+                Field('paymentdate','date'),
+                Field('treatmentdate','date'),
+                Field('discount_amount','double',default=0.00),
+                Field('wallet_amount','double',default=0.00),
+                Field('voucher_code','string')
+                
+                )
+
+db.consentform._singular = "consentform"
+db.consentform._plural   = "consentform"   
+
+db.define_table('kytc_category',
+                
+                Field('name','string'),
+                Field('parent_id','integer'),
+                Field('child_id','integer',default=0),
+                Field('status','integer',default=1)
+                )
+db.kytc_category._singular = "kytc_category"
+db.kytc_category._plural   = "kytc_category"  
+
+db.define_table('kytc_procedure',
+                
+                Field('code','string'),
+                Field('name','string'),
+                Field('tcat_id','integer'),
+                
+                Field('rg101_ucr','integer'),
+                Field('rg101_copay','integer'),
+                Field('rg102_copay','integer'),
+                Field('rg102_ucr','integer'),
+                Field('rg103_ucr','integer'),
+                Field('rg103_copay','integer'),
+                Field('rg104_ucr','integer'),
+                Field('rg104_copay','integer'),
+                Field('rg104_copay','integer'),
+                Field('status','string', default=1)
+                
+                )
+db.kytc_procedure._singular = "kytc_procedure"
+db.kytc_procedure._plural   = "kytc_procedure"  
+
+
+db.define_table('kytc_track_log',
+                Field('user_id','integer'),
+                
+                Field('city','string'),
+                Field('mobile','string'),
+                Field('log_data','text')
+                
+                )
+db.kytc_track_log._singular = "kytc_track_log"
+db.kytc_track_log._plural   = "kytc_track_log"  
+
+db.define_table('rules',
+                Field('treatment_id','integer'),
+                
+                Field('procedure_code','string'),
+                Field('company_code','string'),
+                Field('plan_code','string'),
+                Field('rule_code','string'),
+                Field('description','string'),
+                Field('rule_event','string'),
+                Field('rule_order','integer',default=0),
+                Field('is_active','boolean', default = True),
+                auth.signature  
+                )
+db.rules._singular = "rules"
+db.rules._plural   = "rules"
 
 def geocode2(form):
     from gluon.tools import geocode

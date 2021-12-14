@@ -1126,9 +1126,15 @@ def import_customers():
         try:
             xcsvfile = request.vars.csvfile
             code = ""
+            customer_ref  = ""
+            p_d  = ""
+            relation = ""
+            dependant_ref = ""
+            
             with open(xcsvfile, 'r') as csvfile:
                 reader = csv.reader(csvfile)
                 count = 0
+                cutomers_to_enroll = []
                 for row in reader:
                     count = count+1
 
@@ -1142,13 +1148,16 @@ def import_customers():
                     for j in range(0,4):
                         text += str(random.randint(0,9))                
                 
-                    customer_ref = row[2] + "_" + text if(row[2] != "") else text
-                    
+                    p_d = row[26]
+                    if(p_d == 'P'):
+                        customer_ref = row[2] + "_" + text if(row[2] != "") else text                   
+                        
                     strsql = "INSERT INTO importcustomers(id, customer,customer_ref,fname,mname,lname,\
                     address1,address2,address3,city,st,pin,gender,cell,email,telephone,dob,enrolldate,\
-                    status,providercode,companycode,regioncode,plancode,appointment_id, appointment_datetime,notes)\
+                    status,providercode,companycode,regioncode,plancode,appointment_id, appointment_datetime,notes,P_D,relation)\
                     VALUES("\
-
+                    
+                    
                     strsql = strsql + row[0] + ","\
                         + "TRIM('" + row[1] + "'),"\
                         + "TRIM('" + customer_ref + "'),"\
@@ -1174,7 +1183,9 @@ def import_customers():
                         + "TRIM('" + row[22] + "'),"\
                         + "TRIM('" + row[23] + "'),"\
                         + "TRIM('" + row[24] + "'),"\
-                        + "TRIM('" + row[25] + "')"\
+                        + "TRIM('" + row[25] + "'),"\
+                        + "TRIM('" + row[26] + "'),"\
+                        + "TRIM('" + row[27] + "')"\
                         +")"
                     #logger.loggerpms2.info("SQL\n" + strsql)
                     db.executesql(strsql)
@@ -1207,47 +1218,355 @@ def import_customers():
                     strsql = strsql + " WHERE id = " + str(row[0])
                     db.executesql(strsql)
                     db.commit()                    
-
-                    strsql = "INSERT INTO `customer`(\
-                      `customer`,`customer_ref`,`fname`,`mname`,`lname`,`address1`,`address2`,`address3`,`city`,`st`,`pin`,\
-                     `gender`,`telephone`,`cell`,`email`,`dob`,`status`,`providerid`,`companyid`,`regionid`,`planid`,`enrolldate`,`pin1`,`pin2`,`pin3`,\
-                     `appointment_id`,`appointment_datetime`,`notes`,`is_active`,`created_on`,`created_by`,`modified_on`,`modified_by`)"
                     
+                    cust_id = row[0]
+                    
+                    if(p_d == 'P'):
+                        customer_ref = row[2] + "_" + text if(row[2] != "") else text
+                        
+                        strsql = "INSERT INTO `customer`(\
+                          `customer`,`customer_ref`,`fname`,`mname`,`lname`,`address1`,`address2`,`address3`,`city`,`st`,`pin`,\
+                         `gender`,`telephone`,`cell`,`email`,`dob`,`status`,`providerid`,`companyid`,`regionid`,`planid`,`enrolldate`,`pin1`,`pin2`,`pin3`,\
+                         `appointment_id`,`appointment_datetime`,`notes`,`is_active`,`created_on`,`created_by`,`modified_on`,`modified_by`)"
+                        
+                
+                        strsql = strsql +" SELECT\
+                        `importcustomers`.`customer`,\
+                        `importcustomers`.`customer_ref`,\
+                        `importcustomers`.`fname`,\
+                        `importcustomers`.`mname`,\
+                        `importcustomers`.`lname`,\
+                        `importcustomers`.`address1`,\
+                        `importcustomers`.`address2`,\
+                        `importcustomers`.`address3`,\
+                        `importcustomers`.`city`,\
+                        `importcustomers`.`st`,\
+                        `importcustomers`.`pin`,\
+                        `importcustomers`.`gender`,\
+                        `importcustomers`.`telephone`,\
+                        `importcustomers`.`cell`,\
+                        `importcustomers`.`email`,\
+                        `importcustomers`.`dob`,\
+                        `importcustomers`.`status`,\
+                        `importcustomers`.`providerid`,\
+                        `importcustomers`.`companyid`,\
+                        `importcustomers`.`regionid`,\
+                        `importcustomers`.`planid`,\
+                        `importcustomers`.`enrolldate`,\
+                        `importcustomers`.`pin1`,\
+                        `importcustomers`.`pin2`,\
+                        `importcustomers`.`pin3`,\
+                        `importcustomers`.`appointment_id`,\
+                        `importcustomers`.`appointment_datetime`,\
+                        `importcustomers`.`notes`,\
+                        'T',now(),1,now(),1\
+                        FROM `importcustomers`  where id = " + cust_id
+                        db.executesql(strsql)
+                        db.commit()
+                        c = db(db.customer.customer_ref == customer_ref).select(db.customer.id)
+                        customer_id = c[0].id if(len(c) == 1) else 0
+                        cutomers_to_enroll.append(customer_id)
+                        strsql = "UPDATE customer SET customer = " + str(customer_id)   
+                        strsql = strsql + " WHERE id = " + str(customer_id)
+                        db.executesql(strsql)
+                        db.commit()                    
+                        
+                        
+                    if(p_d == "D"):
+                        #add to customerdependants
+                        i = 0
+                        relation = row[27]
+                        dependant_ref = customer_ref + "_" + relation
+
+                        c = db(db.customer.customer_ref == customer_ref).select(db.customer.id)
+                        customer_id = c[0].id if(len(c) == 1) else 0
+                                         
+                        
+                        strsql = "INSERT INTO `customerdependants`(\
+                          `dependant`,`dependant_ref`,`customer_id`,`fname`,`lname`,`depdob`,\
+                         `gender`,`relation`,`is_active`,`created_on`,`created_by`,`modified_on`,`modified_by`)"
+                        
+                
+                        strsql = strsql +" SELECT\
+                        `importcustomers`.`customer`,"
+                        strsql = strsql + "'" + dependant_ref + "', " + str(customer_id) + "," 
+                        strsql = strsql + "`importcustomers`.`fname`,\
+                        `importcustomers`.`lname`,\
+                        `importcustomers`.`dob`,\
+                        `importcustomers`.`gender`,"
+                        strsql = strsql + "'" + relation + "',"
+                        strsql = strsql + "'T',now(),1,now(),1"
+                        strsql = strsql + " FROM `importcustomers`  where id = " + cust_id 
+                        db.executesql(strsql)
+                        db.commit()
+                        c = db(db.customerdependants.dependant_ref == dependant_ref).select(db.customerdependants.id)
+                        customerdep_id = c[0].id if(len(c) == 1) else 0
+                      
+                        strsql = "UPDATE customerdependants SET dependant = " + str(customerdep_id)   
+                        strsql = strsql + " WHERE id = " + str(customerdep_id)
+                        db.executesql(strsql)
+                        db.commit()                                            
+
+
+                    
+                    
+               
+                for i in xrange(0,len(cutomers_to_enroll)):    
+                    c = db((db.customer.id == cutomers_to_enroll[i]) & (db.customer.is_active == True)).select()
+                    customer_ref = c[0].customer_ref if (len(c)==1) else ""
+                    customerid = c[0].id if(len(c)==1) else 0
+                    providerid = c[0].providerid if(len(c)==1) else 0
+                    clinicid = c[0].clinicid if(len(c)==1) else 0
+                    appointment_id = c[0].appointment_id if(len(c)==1) else ""                
+                    custobj = mdpcustomer.Customer(db)
+                    avars = {"customerid":customerid,"customer_ref":customer_ref}
+                    patobj  = json.loads(custobj.enroll_customer(avars))
+                    member = common.getkeyvalue(patobj, "fullname", "") 
+
+                    if(patobj["result"] == "success"):
+                        appPath = current.globalenv["request"].folder
+                        mdpappt = mdpappointment.Appointment(db, providerid)
+                        docs = db((db.doctor.providerid == providerid) & 
+                                  (db.doctor.practice_owner == True) & 
+                                  (db.doctor.is_active == True)).select()
+                        
+                        if(len(docs)>0):
+                            doctorid = docs[0].id
+                            
+                        else:
+                            doctorid = 0
+                        
+                        db((db.customer.id == customerid) & (db.customer.is_active == True)).update(status = 'Enrolled')
+                        
+                        jsonreq = {}
+                        jsonreq["memberid"]=patobj["primarypatientid"]
+                        jsonreq["patientid"]=patobj["patientid"]
+                        jsonreq["doctorid"]=str(doctorid)
+                        jsonreq["clinicid"]=str(clinicid)
+                        jsonreq["startdt"]=common.getstringfromdate(c[0].appointment_datetime,"%d/%m/%Y %H:%M")
+                        jsonreq["duration"]=str(30)
+                        jsonreq["providernotes"]="Auto-Appointment created\nAppointment_ID: " + c[0].appointment_id + "\n" + c[0].notes, 
+                        jsonreq["appPath"]=appPath
+                        jsonreq["cell"]=c[0].cell                        
             
-                    strsql = strsql +" SELECT\
-                    `importcustomers`.`customer`,\
-                    `importcustomers`.`customer_ref`,\
-                    `importcustomers`.`fname`,\
-                    `importcustomers`.`mname`,\
-                    `importcustomers`.`lname`,\
-                    `importcustomers`.`address1`,\
-                    `importcustomers`.`address2`,\
-                    `importcustomers`.`address3`,\
-                    `importcustomers`.`city`,\
-                    `importcustomers`.`st`,\
-                    `importcustomers`.`pin`,\
-                    `importcustomers`.`gender`,\
-                    `importcustomers`.`telephone`,\
-                    `importcustomers`.`cell`,\
-                    `importcustomers`.`email`,\
-                    `importcustomers`.`dob`,\
-                    `importcustomers`.`status`,\
-                    `importcustomers`.`providerid`,\
-                    `importcustomers`.`companyid`,\
-                    `importcustomers`.`regionid`,\
-                    `importcustomers`.`planid`,\
-                    `importcustomers`.`enrolldate`,\
-                    `importcustomers`.`pin1`,\
-                    `importcustomers`.`pin2`,\
-                    `importcustomers`.`pin3`,\
-                    `importcustomers`.`appointment_id`,\
-                    `importcustomers`.`appointment_datetime`,\
-                    `importcustomers`.`notes`,\
-                    'T',now(),1,now(),1\
-                    FROM `importcustomers`"
+                        apptobj = json.loads(mdpappt.newappointment(jsonreq))
+                        #email Welcome Kit
+                        #ret = mail.emailWelcomeKit(db,request,patobj["primarypatientid"],providerid)
+                        #message += "Customer " + member + " has been successfully enrolled in MDP\n Welcome Kit has been sent to the registered email address\n"
+                        
+                    else:
+                        message += "ERROR enrolling Customer " + member + " in MDP"
+        except Exception as e:
+            message = "Import Customers Exception Error - " + str(e)        
+
+    count = 0 if(count==0) else count-1
+    return dict(form=form, count=count,error=message)
+
+def ximport_customers():
+
+    strsql = "Truncate table importcustomers"
+    db.executesql(strsql)
+    db.commit()    
+
+    count = 0
+    form = SQLFORM.factory(
+        Field('csvfile','string',label='CSV File', requires= IS_NOT_EMPTY())
+    )    
+
+    submit = form.element('input',_type='submit')
+    submit['_value'] = 'Import'    
+
+    xcsvfile = form.element('input',_id='no_table_csvfile')
+    xcsvfile['_class'] =  'w3-input w3-border w3-small'
+
+
+
+    error = ""
+
+   
+    
+   
+    
+   
+   
+    
+    message = ""
+    if form.accepts(request,session,keepvalues=True):
+        try:
+            xcsvfile = request.vars.csvfile
+            code = ""
+            with open(xcsvfile, 'r') as csvfile:
+                reader = csv.reader(csvfile)
+                count = 0
+                for row in reader:
+                    count = count+1
+
+                    if(count == 1):
+                        continue
+
+                    text = "";
+                    
+                    random.seed(int(time.time()) + 1)
+                   
+                    for j in range(0,4):
+                        text += str(random.randint(0,9))                
+                
+                    customer_ref = row[2] + "_" + text if(row[2] != "") else text
+                    p_d = row[26]
+                    relation = row[27]
+                    
+                    if((p_d).upper() == "D"):
+                        customer_ref = customer_ref + "_" + relation
+                        
+                    strsql = "INSERT INTO importcustomers(id, customer,customer_ref,fname,mname,lname,\
+                    address1,address2,address3,city,st,pin,gender,cell,email,telephone,dob,enrolldate,\
+                    status,providercode,companycode,regioncode,plancode,appointment_id, appointment_datetime,notes,P_D,relation)\
+                    VALUES("\
+                    
+                    
+                    strsql = strsql + row[0] + ","\
+                        + "TRIM('" + row[1] + "'),"\
+                        + "TRIM('" + customer_ref + "'),"\
+                        + "TRIM('" + row[3] + "'),"\
+                        + "TRIM('" + row[4] + "'),"\
+                        + "TRIM('" + row[5] + "'),"\
+                        + "TRIM('" + row[6] + "'),"\
+                        + "TRIM('" + row[7] + "'),"\
+                        + "TRIM('" + row[8] + "'),"\
+                        + "TRIM('" + row[9] + "'),"\
+                        + "TRIM('" + row[10] + "'),"\
+                        + "TRIM('" + row[11] + "'),"\
+                        + "TRIM('" + row[12] + "'),"\
+                        + "TRIM('" + row[13] + "'),"\
+                        + "TRIM('" + row[14] + "'),"\
+                        + "TRIM('" + row[15] + "'),"\
+                        + "TRIM('" + row[16] + "'),"\
+                        + "TRIM('" + row[17] + "'),"\
+                        + "TRIM('" + row[18] + "'),"\
+                        + "TRIM('" + row[19] + "'),"\
+                        + "TRIM('" + row[20] + "'),"\
+                        + "TRIM('" + row[21] + "'),"\
+                        + "TRIM('" + row[22] + "'),"\
+                        + "TRIM('" + row[23] + "'),"\
+                        + "TRIM('" + row[24] + "'),"\
+                        + "TRIM('" + row[25] + "'),"\
+                        + "TRIM('" + row[26] + "'),"\
+                        + "TRIM('" + row[27] + "')"\
+                        +")"
+                    #logger.loggerpms2.info("SQL\n" + strsql)
                     db.executesql(strsql)
                     db.commit()
                     
+                   
+                    
+                    
+                    strsql = "SELECT id FROM provider WHERE provider = '" + row[19] + "'"
+                    ds = db.executesql(strsql)
+                    providerid = int(ds[0][0])
+                
+                    #get company id and company code 
+                    strsql = "SELECT id FROM company WHERE company = '" + row[20] + "'"
+                    ds = db.executesql(strsql)
+                    companyid = int(ds[0][0])
+                    
+                    #get regionid id 
+                    strsql = "SELECT id FROM groupregion WHERE groupregion = '" + row[21] + "'"
+                    ds = db.executesql(strsql)
+                    regionid = int(ds[0][0])
+                    
+                
+                    strsql = "SELECT id FROM hmoplan WHERE hmoplancode = '" + row[22] + "'"
+                    ds = db.executesql(strsql)
+                    planid = int(ds[0][0])   
+                    
+                    #update providerid, companyid, regionid, planid
+                    strsql = "UPDATE importcustomers SET providerid = " + str(providerid) + ", companyid = " + str(companyid) + ", planid=" + str(planid) + ", regionid = " + str(regionid)  
+                    strsql = strsql + " WHERE id = " + str(row[0])
+                    db.executesql(strsql)
+                    db.commit()                    
+                    
+                    cust_id = row[0]
+                   
+                    
+                    if(p_d == 'P'):
+                        strsql = "INSERT INTO `customer`(\
+                          `customer`,`customer_ref`,`fname`,`mname`,`lname`,`address1`,`address2`,`address3`,`city`,`st`,`pin`,\
+                         `gender`,`telephone`,`cell`,`email`,`dob`,`status`,`providerid`,`companyid`,`regionid`,`planid`,`enrolldate`,`pin1`,`pin2`,`pin3`,\
+                         `appointment_id`,`appointment_datetime`,`notes`,`is_active`,`created_on`,`created_by`,`modified_on`,`modified_by`)"
+                        
+                
+                        strsql = strsql +" SELECT\
+                        `importcustomers`.`customer`,\
+                        `importcustomers`.`customer_ref`,\
+                        `importcustomers`.`fname`,\
+                        `importcustomers`.`mname`,\
+                        `importcustomers`.`lname`,\
+                        `importcustomers`.`address1`,\
+                        `importcustomers`.`address2`,\
+                        `importcustomers`.`address3`,\
+                        `importcustomers`.`city`,\
+                        `importcustomers`.`st`,\
+                        `importcustomers`.`pin`,\
+                        `importcustomers`.`gender`,\
+                        `importcustomers`.`telephone`,\
+                        `importcustomers`.`cell`,\
+                        `importcustomers`.`email`,\
+                        `importcustomers`.`dob`,\
+                        `importcustomers`.`status`,\
+                        `importcustomers`.`providerid`,\
+                        `importcustomers`.`companyid`,\
+                        `importcustomers`.`regionid`,\
+                        `importcustomers`.`planid`,\
+                        `importcustomers`.`enrolldate`,\
+                        `importcustomers`.`pin1`,\
+                        `importcustomers`.`pin2`,\
+                        `importcustomers`.`pin3`,\
+                        `importcustomers`.`appointment_id`,\
+                        `importcustomers`.`appointment_datetime`,\
+                        `importcustomers`.`notes`,\
+                        'T',now(),1,now(),1\
+                        FROM `importcustomers`  where id = " + cust_id
+                        db.executesql(strsql)
+                        db.commit()
+                        
+                    if(p_d == "D"):
+                        #add to customerdependants
+                        i = 0
+                        #dependant varchar(45) 
+                        #dependant_ref varchar(45) 
+                        #customer_id int(11) 
+                        #fname varchar(50) 
+                        #mname varchar(50) 
+                        #lname varchar(50) 
+                        #depdob date 
+                        #gender varchar(10) 
+                        #relation varchar(50) 
+                        #is_active char(1) 
+                        #created_on datetime 
+                        #created_by int(11) 
+                        #modified_on datetime 
+                        #modified_by int(11)                        
+
+                        strsql = "INSERT INTO `customerdependants`(\
+                          `dependant`,`dependant_ref`,`customer_id`,`fname`,`lname`,`depdob`,\
+                         `gender`,`relation`,`is_active`,`created_on`,`created_by`,`modified_on`,`modified_by`)"
+                        
+                
+                        strsql = strsql +" SELECT\
+                        `importcustomers`.`customer`,\
+                        `importcustomers`. customer_ref,\
+                        cust_id,\
+                        `importcustomers`.`fname`,\
+                        `importcustomers`.`mname`,\
+                        `importcustomers`.`dob`,\
+                        `importcustomers`.`gender`,\
+                        'relation',\
+                        'T',now(),1,now(),1\
+                        FROM `importcustomers`  where id = " + cust_id 
+                        db.executesql(strsql)
+                        db.commit()
+
+
                     c = db(db.customer.customer_ref == customer_ref).select()
                     customerid = c[0].id if(len(c)==1) else 0
                     providerid = c[0].providerid if(len(c)==1) else 0
@@ -1259,7 +1578,9 @@ def import_customers():
                     patobj  = json.loads(custobj.enroll_customer(avars))
                     member = common.getkeyvalue(patobj, "fullname", "") 
                     
+                    
                     if(patobj["result"] == "success"):
+                        
                         appPath = current.globalenv["request"].folder
                         mdpappt = mdpappointment.Appointment(db, providerid)
                         docs = db((db.doctor.providerid == providerid) & 
@@ -1298,7 +1619,7 @@ def import_customers():
                                              #)
                         #email Welcome Kit
                         ret = mail.emailWelcomeKit(db,request,patobj["primarypatientid"],providerid)
-                        message += "Customer " + member + " has been successfully enrolled in MDP\n Welcome Kit has been sent to the registered email address\n"
+                        #message += "Customer " + member + " has been successfully enrolled in MDP\n Welcome Kit has been sent to the registered email address\n"
                         
                     else:
                         message += "ERROR enrolling Customer " + member + " in MDP"

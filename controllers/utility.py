@@ -1428,9 +1428,9 @@ def importprocedurepriceplan():
 		    if(count == 1):
 			continue		    
                     code = row[1]
-                    strsql = "INSERT INTO importprocedurepriceplan(id, priceplancode,procedurecode,proceduredescription,UCR,copay,is_free,relgrproc,relgrprocdesc,service_id,service_name,service_category)VALUES("
+                    strsql = "INSERT INTO importprocedurepriceplan(id, priceplancode,procedurecode,proceduredescription,UCR,copay,is_free,relgrproc,relgrprocdesc,service_id,service_name,service_category,authorizationrequired)VALUES("
                     strsql = strsql + row[0] + ",'" + row[1] + "','" + row[2] + "','" + row[3] + "'," + row[4] + "," + row[5] + ",'" + row[6] + "','" + row[7] + "','" + \
-                        row[8] +"','" + row[9] + "','" + row[10] + "','" + row[11] + "')" 
+                        row[8] +"','" + row[9] + "','" + row[10] + "','" + row[11] + "','" + row[12] + "')" 
                     db.executesql(strsql)    
             db.commit()
             
@@ -1439,9 +1439,9 @@ def importprocedurepriceplan():
             db.executesql(strsql)    
             db.commit()
             
-            strsql = "insert into procedurepriceplan (providerid, procedurepriceplancode, procedurecode, ucrfee, procedurefee,copay, companypays,inspays,remarks,is_free,"
+            strsql = "insert into procedurepriceplan (providerid, procedurepriceplancode, procedurecode, ucrfee, procedurefee,copay, companypays,inspays,remarks,is_free,authorizationrequired,"
             strsql = strsql + "relgrproc,relgrprocdesc,service_id,service_name,service_category,is_active, created_by,created_on, modified_by, modified_on)"
-            strsql = strsql + "select 0, priceplancode,procedurecode,ucr,0,copay,0,0,remarks,is_free,relgrproc,relgrprocdesc,service_id,service_name,service_category,'T',1,NOW(),1,NOW() FROM importprocedurepriceplan"    
+            strsql = strsql + "select 0, priceplancode,procedurecode,ucr,0,copay,0,0,remarks,is_free,autorizationrequired,relgrproc,relgrprocdesc,service_id,service_name,service_category,'T',1,NOW(),1,NOW() FROM importprocedurepriceplan"    
             db.executesql(strsql)    
             db.commit()
         except Exception as e:
@@ -1486,8 +1486,10 @@ def importplans():
 			continue
 		    
                     code = row[1]
-                    strsql = "INSERT INTO importplan(id, hmoplancode,name,procedurepriceplancode,is_active,created_on,created_by,modified_on,modified_by,planfile,groupregion,welcomeletter)VALUES("
-                    strsql = strsql + row[0] + ",TRIM('" + row[1] + "'),TRIM('" + row[2] + "'),TRIM('" + row[3] + "'),'" + row[4] + "','" + row[5] + "',1,'" + row[7] + "',1,'" + row[9] + "'," + row[10] + ",'" + row[11] + "')" 
+                    strsql = "INSERT INTO importplan(id, hmoplancode,name,procedurepriceplancode,is_active,created_on,created_by,modified_on,modified_by,planfile,groupregion,welcomeletter,voucher_code,discount_amount,walletamount,authorizationrequired,company_code)VALUES("
+                    strsql = strsql + row[0] + ",TRIM('" + row[1] + "'),TRIM('" + row[2] + "'),TRIM('" + row[3] + "'),'" + row[4] + "','" +\
+		        row[5] + "',1,'" + row[7] + "',1,'" + row[9] + "'," + row[10] + ",'" + row[11] + "','" + row[12] + "'," +\
+		        row[13] + "," + row[14] + ",'" + row[15] + "','"  + row[16] + "')"
 		    #logger.loggerpms2.info("SQL\n" + strsql)
                     db.executesql(strsql)    
             db.commit()
@@ -1495,8 +1497,10 @@ def importplans():
            
             
             
-            strsql = "insert into hmoplan (hmoplancode,name,procedurepriceplancode,is_active,created_on,created_by,modified_on,modified_by,planfile,groupregion,welcomeletter)"
-            strsql = strsql + " select hmoplancode,name,procedurepriceplancode,is_active,created_on,created_by,modified_on,modified_by,planfile,groupregion,welcomeletter from importplan" 
+            strsql = "insert into hmoplan (hmoplancode,name,procedurepriceplancode,is_active,created_on,created_by,modified_on,modified_by,planfile,\
+	    groupregion,welcomeletter,voucher_code,discount_amount,walletamount,authorizationrequired,company_code)"
+            strsql = strsql + " select hmoplancode,name,procedurepriceplancode,is_active,created_on,created_by,modified_on,modified_by,planfile,groupregion,\
+	    welcomeletter,voucher_code,discount_amount,walletamount, authorizationrequired,company_code from importplan" 
             db.executesql(strsql)
             db.commit()
         
@@ -1923,4 +1927,96 @@ def map_member_benefits():
 	bnft.map_member_benefit(reqobj)
 
     return dict(count=count)
+
+@auth.requires_membership('webadmin')
+@auth.requires_login()
+def change_of_provider():
+    form = SQLFORM.factory(
+               Field('source','string',label='Source'),
+               Field('target', 'string',label='Target'),
+               )
+       
+    submit = form.element('input',_type='submit')
+    submit['_value'] = 'Transfer'     
+    
+    x = form.element('input',_id='no_table_source')
+    x['_class'] =  'w3-input w3-border w3-small'
+    y = form.element('input',_id='no_table_target')
+    y['_class'] =  'w3-input w3-border  w3-small'  
+    
+    result = ''
+    if form.accepts(request,session,keepvalues=True):
+
+	source = form.vars.source
+	target = form.vars.target
+	
+	p = db((db.provider.provider == source) & (db.provider.is_active == True)).select()
+	srcid = p[0].id if(len(p) > 0) else 0
+	
+	t = db((db.provider.provider == target) & (db.provider.is_active == True)).select()
+	trgtid = t[0].id if(len(t) > 0) else 0
+	
+	db(db.activitytracker.providerid == srcid).update(providerid = trgtid,
+	                                                providername = t[0].providername if(len(t) > 0) else "")
+	
+	
+	db(db.bank_details.providerid == srcid).update(providerid = trgtid)
+	db(db.casereport.providerid == srcid).update(providerid = trgtid)
+	
+	db((db.clinic_ref.ref_code == "PRV") & (db.clinic_ref.ref_id == srcid)).update(ref_id = trgtid)
+	
+	db(db.consentform.providerid == srcid).update(providerid = trgtid)
+	db(db.customer.providerid == srcid).update(providerid = trgtid)
+	db(db.dentalcasesheet.providerid == srcid).update(providerid = trgtid)
+	db(db.dentalchart.providerid == srcid).update(providerid = trgtid)
+	
+	db((db.dentalimage_ref.ref_code == "PRV") & (db.dentalimage_ref.ref_id == srcid)).update(ref_id = trgtid)
+	
+	db(db.dentalprocedure_chart.providerid == srcid).update(providerid = trgtid)
+	
+	db(db.doctor.providerid == srcid).update(providerid = trgtid)
+	db((db.doctor_ref.ref_code == "PRV") & (db.doctor_ref.ref_id == srcid)).update(ref_id = trgtid)
+	
+	db(db.webmember.provider == srcid).update(provider = trgtid)
+
+	db(db.medicaltest.providerid == srcid).update(providerid = trgtid)
+
+	db(db.medicine.providerid == srcid).update(providerid = trgtid)
+	
+	db(db.mediclaim.providerid == srcid).update(providerid = trgtid)
+
+	db(db.patientmember.provider == srcid).update(provider = trgtid)
+	
+	db(db.payment.provider == srcid).update(provider = trgtid)
+	
+	db(db.preregister.provider == srcid).update(provider = trgtid)
+	
+	db(db.prescription.providerid == srcid).update(providerid = trgtid)
+	
+	db(db.procedurepriceplan.providerid == srcid).update(providerid = trgtid)
+
+	db(db.providerbank.providerid == srcid).update(providerid = trgtid)
+
+	db(db.prospect_ref.provider_id == srcid).update(provider_id = trgtid)
+
+	
+	
+	db(db.providercapitationreportparam.provider == srcid).update(provider = trgtid)
+
+	db(db.rldprovider.providerid == srcid).update(providerid = trgtid,providercode=target)
+
+	db(db.role.providerid == srcid).update(providerid = trgtid)
+	
+	db(db.speciality.providerid == srcid).update(providerid = trgtid)
+
+	db(db.t_appointment.provider == srcid).update(provider = trgtid)
+	db(db.t_appointment_archive.provider == srcid).update(provider = trgtid)
+
+	db(db.treatment.provider == srcid).update(provider = trgtid)
+	db(db.treatmentplan.provider == srcid).update(provider = trgtid)
+
+	db(db.ind_meeting.provider_id == srcid).update(provider_id = trgtid)
+	db(db.ind_meeting_document.provider_id == srcid).update(provider_id = trgtid)
+
+    return dict(form=form)
     

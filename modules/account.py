@@ -823,6 +823,8 @@ def _calculatepayments(db,tplanid,policy=None):
     inspays = 0
     companypays = 0
     precopay = 0
+    walletamount=0
+    discount_amount = 0
 
     totaltreatmentcost = 0
     totalcopay = 0
@@ -831,6 +833,8 @@ def _calculatepayments(db,tplanid,policy=None):
     totaldue = 0
     totalpaid = 0
     totalcompanypays = 0
+    totalwalletamount = 0
+    total
 
     r = None
     tplan = db(db.treatmentplan.id == tplanid).select()
@@ -841,6 +845,7 @@ def _calculatepayments(db,tplanid,policy=None):
         copay = float(common.getvalue(tplan[0].totalcopay)) - companypays
         inspays = float(common.getvalue(tplan[0].totalinspays))
         memberid = int(common.getid(tplan[0].primarypatient))
+        walletamount = float(common.getvalue(tplan[0].totalwalletamount))
 
         r = db((db.vw_treatmentplansummarybytreatment.id == tplanid)).select()
         if(len(r)>0):
@@ -851,6 +856,7 @@ def _calculatepayments(db,tplanid,policy=None):
             totalcopay = float(common.getvalue(r[0].totalcopay)) - totalcompanypays
             totalpaid = float(common.getvalue(r[0].totalpaid))
             totaldue = totalcopay - totalpaid
+            totalwalletamount = float(common.getvalue(r[0].totalwalletamount))
 
             respobj = {}
             respobj["totaltreatmentcost"]=totaltreatmentcost
@@ -860,12 +866,14 @@ def _calculatepayments(db,tplanid,policy=None):
             respobj["totalcopay"]=totalcopay
             respobj["totalpaid"]=totalpaid
             respobj["totaldue"]=totaldue
+            respobj["totalwalletamount"]=totalwalletamount
 
             respobj["treatmentcost"]=treatmentcost
             respobj["copay"]=copay
             respobj["precopay"]=precopay
             respobj["inspays"]=inspays
             respobj["companypays"]=companypays
+            respobj["walletamount"]=walletamount
 
             respobj["result"] = "success"
             respobj["error_message"] = ""

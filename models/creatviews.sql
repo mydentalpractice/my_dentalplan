@@ -8775,20 +8775,20 @@ ADD COLUMN `precommitamount` DOUBLE NULL DEFAULT 0 AFTER `policy`;
 
 18/08/2021
 ===========
-1.  ZZZAdded  regioncode fields in CITIES table
+1.  XXXYYYZZZAdded  regioncode fields in CITIES table
 
 2. Added 4 regions RG101, RG102, RG 103, RG104 in GroupRegion table
 
 
 19/08/2021
 ==========
-1. YYYZZZAdded tables for Home Visit Doctor ^ Customer
+1. XXXYYYZZZAdded tables for Home Visit Doctor ^ Customer
 
-   ZZZZ hv_doctor
+   XXXYYYZZZZ hv_doctor
    ALTER TABLE `mydp_prod`.`hv_doctor` 
 ADD COLUMN `doctorid` INT(11) NULL AFTER `modified_by`;
    
-YYYZZZALTER TABLE `mydp_prod`.`hv_doc_appointment` 
+XXXYYYZZZALTER TABLE `mydp_prod`.`hv_doc_appointment` 
 ADD COLUMN `hv_appt_created_on` DATETIME NULL AFTER `hv_doctorid`,
 ADD COLUMN `hv_appt_created_by` VARCHAR(45) NULL AFTER `hv_appt_created_on`,
 ADD COLUMN `hv_appt_confirmed_on` DATETIME NULL AFTER `hv_appt_created_by`,
@@ -8808,7 +8808,7 @@ ADD COLUMN `hv_appt_notes` MEDIUMTEXT NULL AFTER `hv_appt_cancelled_by`;
 
 
 
-2. YYYYZZZAdded table pinelab_properties for pinelans fields
+2. XXXYYYYZZZAdded table pinelab_properties for pinelans fields
 CREATE TABLE `mydp_prod`.`pinelab_properties` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `pl_url` VARCHAR(512) NULL DEFAULT 'https://uat.pinepg.in/api/v2/accept/payment',
@@ -8825,7 +8825,7 @@ CREATE TABLE `mydp_prod`.`pinelab_properties` (
 ALTER TABLE `mydp_prod`.`pinelabs` 
 ADD COLUMN `pl_callback` VARCHAR(1024) NULL AFTER `pl_cvv`;
 
-3. YYYZZZUpdate doctor table with fields for HV
+3. XXXYYYZZZUpdate doctor table with fields for HV
 ALTER TABLE `mydp_prod`.`doctor` 
 ADD COLUMN `hv_doc` CHAR(1) NULL DEFAULT 'F' AFTER `imageid`,
 ADD COLUMN `hv_doc_address1` VARCHAR(45) NULL AFTER `hv_doc`,
@@ -8839,7 +8839,7 @@ ADD COLUMN `hv_doc_gender` VARCHAR(45) NULL AFTER `hv_doc_dob`,
 ADD COLUMN `hv_doc_profile_image` VARCHAR(1024) NULL AFTER `hv_doc_gender`;
 
 
-4. YYYZZZNew table hv_doc_appointment
+4. XXXYYYZZZNew table hv_doc_appointment
 CREATE TABLE `mydp_prod`.`hv_doc_appointment` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `appointmentid` INT(11) NULL COMMENT 'This field refers to appointment in t_appointment table',
@@ -8854,16 +8854,16 @@ DROP COLUMN `hv_memberid`;
 
 2/9/2018
 =========
-1. YYYZZZZAdded table hv_treatmentid
+1. XXXYYYZZZZAdded table hv_treatmentid
 ALTER TABLE `mydp_prod`.`hv_treatment` 
 CHANGE COLUMN `treatmentid` `treatmentid` INT(11) NULL DEFAULT NULL AFTER `id`,
 ADD COLUMN `hv_appointmentid` INT(11) NULL AFTER `hv_doctorid`;
 ALTER TABLE `mydp_prod`.`hv_treatment` 
 CHANGE COLUMN `hv_appointmentid` `hv_doc_appointmentid` INT(11) NULL DEFAULT NULL ;
 
-2. YYYZZZcreated a new vieww vw_payments_fast
+2. XXXYYYZZZcreated a new vieww vw_payments_fast
 
-3. YYYZZZCities Population
+3. XXXXYYYZZZCities Population
            ALTER TABLE `mydp_prod`.`cities` 
            ADD COLUMN `HV` CHAR(1) NULL DEFAULT 'F' AFTER `regioncode`,
            ADD COLUMN `VC` CHAR(1) NULL DEFAULT 'F' AFTER `HV`;
@@ -8872,7 +8872,7 @@ CHANGE COLUMN `hv_appointmentid` `hv_doc_appointmentid` INT(11) NULL DEFAULT NUL
 
            Moidified City table to add HV and VC flags
 
-4. YYYZZZAdded fields to hv_doc_appointment table
+4. XXXYYYZZZAdded fields to hv_doc_appointment table
 ALTER TABLE `mydp_prod`.`hv_doc_appointment` 
 CHANGE COLUMN `hv_appt_distance` `hv_appt_distance` FLOAT NULL DEFAULT NULL AFTER `hv_appt_notes`,
 ADD COLUMN `hv_appt_address1` VARCHAR(45) NULL AFTER `hv_appt_distance`,
@@ -8904,7 +8904,7 @@ ALTER TABLE `mydp_prod`.`hv_doc_appointment`
 CHANGE COLUMN `hv_appt_feedback_by` `hv_appt_feedback_by` INT(11) NULL DEFAULT NULL ;
 
 
-4. YYYZZZNew Device table
+4. XXXYYYZZZNew Device table
 CREATE TABLE `mydp_prod`.`hv_device_info` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `hv_doctor_id` INT(11) NULL,
@@ -8913,16 +8913,225 @@ CREATE TABLE `mydp_prod`.`hv_device_info` (
   `hv_device_fcm_token` VARCHAR(45) NULL,
   PRIMARY KEY (`id`));
 
-5. YYYZZZZAdded phpurl in urlproperties
+5. XXXYYYZZZZAdded phpurl in urlproperties
 ALTER TABLE `mydp_prod`.`urlproperties` 
 ADD COLUMN `php_url` TEXT NULL AFTER `pagination`;
 
-6. YYYZZZRenamce hv_device_info to device_info
+6. XXXYYYZZZRenamce hv_device_info to device_info
 ALTER TABLE `mydp_prod`.`hv_device_info` 
 DROP COLUMN `hv_doctor_id`,
 CHANGE COLUMN `hv_device_id` `device_id` VARCHAR(45) NULL DEFAULT NULL ,
 CHANGE COLUMN `hv_device_type` `device_type` VARCHAR(45) NULL DEFAULT NULL ,
 CHANGE COLUMN `hv_device_fcm_token` `device_fcm_token` VARCHAR(45) NULL DEFAULT NULL , RENAME TO  `mydp_prod`.`device_info` ;
+
+6. XXXYYYZZZAdd user_id col. in device_info
+ALTER TABLE `mydp_prod`.`device_info` 
+ADD COLUMN `user_id` VARCHAR(45) NULL AFTER `id`;
+
+7. XXXYYYYZZZ New view vw_treatmentlist_fast
+
+8. XXXYYYZZZZModified hv_doc_appointment table.
+ALTER TABLE `mydp_prod`.`hv_doc_appointment` 
+ADD COLUMN `hv_treatmentid` INT(11) NULL COMMENT 'This points to the record in hv_treatment table' AFTER `hv_appt_feedback_by`,
+ADD COLUMN `trreatmentid` INT(11) NULL COMMENT 'This points to a record in \'treatment\' table' AFTER `hv_treatmentid`,
+ADD COLUMN `paymentid` INT(11) NULL COMMENT 'This points to a record in payment table' AFTER `trreatmentid`;
+
+10.  XXXXYYYZZRename trreatmentid to treatmentid in hv_doc_appointment
+
+11.  XXXYYYZZZ Modify table companypolicy
+ALTER TABLE `mydp_prod`.`companypolicy` 
+ADD COLUMN `premium` DOUBLE NULL AFTER `policy`;
+ALTER TABLE `mydp_prod`.`companypolicy` 
+ADD COLUMN `region` VARCHAR(45) NULL AFTER `policy`;
+
+12. XXXYYYZZZModify provider region plan
+ALTER TABLE `mydp_prod`.`provider_region_plan` 
+ADD COLUMN `premium` DOUBLE NULL AFTER `procedurepriceplancode`;
+
+13. XXXYYYZZZModify hv_doc_appointment to add apointment status field
+ALTER TABLE `mydp_prod`.`hv_doc_appointment` 
+ADD COLUMN `hv_appt_status` VARCHAR(45) NULL AFTER `paymentid`;
+
+14. XXXYYYZZZModify vw_memberpatientlit, vw_memberpatientlist_fast
+
+15. XXXYYYZZZ Modified cities table with hv_fees
+ALTER TABLE `mydp_prod`.`cities` 
+ADD COLUMN `hv_fees` DOUBLE NULL AFTER `VC`;
+
+
+16. XXXYYYZZZZ Update cities with hv_fees
+UPDATE `mydp_prod`.`cities` SET `hv_fees`='299' WHERE `city`='Bengaluru';
+UPDATE `mydp_prod`.`cities` SET `hv_fees`='199' WHERE `id`='Jaipur';
+UPDATE `mydp_prod`.`cities` SET `hv_fees`='399' WHERE `id`='Mumbai';
+
+
+17/10/2021
+==========
+1. XXXYYYZZ Modify payment table, add walletamount
+ALTER TABLE `mydp_prod`.`payment` 
+ADD COLUMN `walletamount` DOUBLE NULL AFTER `precommitamount`;
+ADD COLUMN `discount_amount` DOUBLE NULL AFTER `walletamount`;
+ADD COLUMN `voucher_code` DOUBLE NULL AFTER `discount_amount`;
+
+2. XXXYYYZZ Modify treatment table, add walletamount
+ALTER TABLE `mydp_prod`.`treatment` 
+ADD COLUMN `walletamount` DOUBLE NULL DEFAULT 0 AFTER `companypay`;
+ADD COLUMN `discount_amount` DOUBLE NULL AFTER `walletamount`;
+ADD COLUMN `voucher_code` DOUBLE NULL AFTER `discount_amount`;
+
+
+3. XXXYYYZZZ Modify treatment_procedure table, add walletamount
+ALTER TABLE `mydp_prod`.`treatment_procedure` 
+ADD COLUMN `walletamount` DOUBLE NULL DEFAULT 0 AFTER `companypays`;
+ADD COLUMN `discount_amount` DOUBLE NULL AFTER `walletamount`;
+ADD COLUMN `voucher_code` DOUBLE NULL AFTER `discount_amount`;
+
+4.XXXYYYZZZ Modify treatmentplan, add totalwalletamount
+ALTER TABLE `mydp_prod`.`treatmentplan` 
+ADD COLUMN `totalwalletamount` DOUBLE NULL DEFAULT 0 AFTER `totalcompanypays`;
+ADD COLUMN `totaldiscount_amount` DOUBLE NULL AFTER `totalwalletamount`;
+ADD COLUMN `voucher_code` DOUBLE NULL AFTER `totaldiscount_amount`;
+
+5. YYYZZZ Modidy vw_paymentlist, add totalwalletamount,totaldiscount_amount, discount_amount, voucher_code 
+
+6. YYYZZZ Modidy vw_payments, add totalwalletamount,totaldiscount_amount, voucher_code 
+
+7. YYYZZZ Modidy vw_payments_fast, add totalwalletamount,totaldiscount_amount, voucher_code
+
+8. XXXYYYZZZ Modify procedurepriceplan, add walletamount,discount_amount,voucher_code
+ALTER TABLE `mydp_prod`.`procedurepriceplan` 
+ADD COLUMN `walletamount` DOUBLE NULL AFTER `relgrinspays`,
+ADD COLUMN `discount_amount` DOUBLE NULL AFTER `walletamount`,
+ADD COLUMN `voucher_code` VARCHAR(45) NULL AFTER `discount_amount`;
+
+9. XXYYYZZZ Modify vw_procedurepriceplan, add walletamount,discount_amount,voucher_code
+
+10. XXXYYYZZZ Modify vw_procedurepriceplan_relgr, add walletamount,discount_amount,voucher_code
+
+11. XXXYYYZZZ Modify vw_procedurepriceplan_x999, add walletamount,discount_amount,voucher_code
+
+12. XXXYYYZZZ Modify vw_treatmentplancost, add walletamount,totaldiscount_amount, voucher_code
+
+13. XXXYYYZZZ Modify vw_treatmentplansummarybytreatment, add totalwalletamount,totaldiscount_amount
+
+13. XXXYYYZZZ Modify vw_treatmentplansummarybypatient, add totalwalletamount,totaldiscount_amount
+
+14. XXXYYYZZZ Modify provider table, add available flag
+ALTER TABLE `mydp_prod`.`provider` 
+ADD COLUMN `available` CHAR(1) NULL DEFAULT 'T' AFTER `IND_VC`;
+
+15. XXYYZZZ Modify APIs mdplocation module 
+
+16. XXXYYYZZZZ Modify URL Properties added vw_url, vw_stg_url, vw_prod_url
+ALTER TABLE `mydp_prod`.`urlproperties` 
+ADD COLUMN `vw_url` TEXT NULL DEFAULT NULL AFTER `php_url`,
+ADD COLUMN `vw_stg_url` TEXT NULL DEFAULT NULL AFTER `vw_url`,
+ADD COLUMN `vw_prod_url` TEXT NULL DEFAULT NULL AFTER `vw_stg_url`;
+
+17. XXXYYYZZZ reate new table redeem_voucher_walle
+CREATE TABLE `mydp_prod`.`redeem_voucher_wallet` (
+  `id` INT(11) NOT NULL,
+  `paymentid` INT(11) NULL,
+  `paymentdate` DATE NULL,
+  `treatmentid` INT(11) NULL,
+  `treatment` VARCHAR(45) NULL,
+  `treatmentdate` DATE NULL,
+  `discount_amount` DOUBLE NULL,
+  `voucher_code` VARCHAR(45) NULL,
+  `wallet_amount` DOUBLE NULL,
+  PRIMARY KEY (`id`));
+ALTER TABLE `mydp_prod`.`redeem_voucher_wallet` 
+CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT ;
+
+18. XXXYYZZZAdd wallet type
+ALTER TABLE `mydp_prod`.`treatment` 
+ADD COLUMN `wallet_type` VARCHAR(45) NULL AFTER `walletamount`;
+
+19. XXXYYZZZAdd wallet_type
+ALTER TABLE `mydp_prod`.`treatmentplan` 
+ADD COLUMN `wallet_type` VARCHAR(45) NULL AFTER `voucher_code`;
+
+20. XXXYYYZZZAdd wallet_type
+ALTER TABLE `mydp_prod`.`payment` 
+ADD COLUMN `wallet_type` VARCHAR(45) NULL AFTER `voucher_code`;
+
+21. XXXYYYZZZ Modify table payment
+    Set paymentcommit default to False in db.py
+
+22. XXXYYYZZZ Add kytc_category, kytc_procedure,kytc_tack_log
+CREATE TABLE `kytc_category` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(150) NOT NULL,
+  `parent_id` int(11) NOT NULL DEFAULT '0',
+  `child_id` tinyint(1) DEFAULT NULL COMMENT '0 = category not have any child',
+  `status` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=128 DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `kytc_procedure` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `tcat_id` int(11) NOT NULL,
+  `code` varchar(50) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `rg101_ucr` int(11) NOT NULL COMMENT 'region-101 ucr price',
+  `rg101_copay` int(11) NOT NULL COMMENT 'region-101 co-pay price',
+  `rg102_ucr` int(11) NOT NULL COMMENT 'region 102 ucr price',
+  `rg102_copay` int(11) NOT NULL COMMENT 'region-102 co-pay price',
+  `rg103_ucr` int(11) NOT NULL COMMENT 'rg-103 ucr price',
+  `rg103_copay` int(11) NOT NULL COMMENT 'rg-103 co-pay price',
+  `rg104_ucr` int(11) NOT NULL COMMENT 'rg-104 ucr price',
+  `rg104_copay` int(11) NOT NULL COMMENT 'rg-104 co-pay price',
+  `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1=active, 0=inactive',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=316 DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `kytc_track_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `city` varchar(100) DEFAULT NULL,
+  `mobile` varchar(12) DEFAULT NULL,
+  `log_data` text,
+  `created` datetime DEFAULT NULL,
+  `updated` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4;
+
+12/8/2021
+==========
+1. YYYYZZZAdd table 'price_rules'
+
+2. ZZZModified procedurepriceplan definition in db.py
+
+3. YYYZZZPopulated price_rules table with pricing rules for each procedure for a plan for a company
+
+4. YYYZZZZModify hmoplan with 4 fields voucher_code, discount_amount, wallet_amount, authorizationrequired
+ALTER TABLE `mydp_prod`.`hmoplan` 
+ADD COLUMN `voucher_code` VARCHAR(45) NULL DEFAULT NULL AFTER `welcomeletter`,
+ADD COLUMN `discount_amount` DOUBLE NULL DEFAULT 0 AFTER `voucher_code`,
+ADD COLUMN `walletamount` DOUBLE NULL DEFAULT 0 AFTER `discount_amount`,
+ADD COLUMN `authorizationrequired` CHAR(1) NULL DEFAULT 'F' AFTER `walletamount`;
+
+5. YYYZZZZModify ProcedurPricePlan added 'authorizationrequired'
+
+6. YYYZZZModified imporprocedurepriceplan
+
+7. YYYZZZ Modified importplan
+
+8. YYYZZZZ Modified hmoplan - added company code table
+ALTER TABLE `mydp_prod`.`hmoplan` 
+ADD COLUMN `company_code` VARCHAR(45) NULL DEFAULT NULL AFTER `authorizationrequired`;
+
+9. YYYZZZModify ImportPlan
+ALTER TABLE `mydp_prod`.`importplan` 
+ADD COLUMN `company_code` VARCHAR(45) NULL DEFAULT NULL AFTER `authorizationrequired`;
+
+10. ZZZModify pricing_rules table add 'rule_event'
+
+11. ZZZRename pricing_rules table to rules table
+    ALTER TABLE `mydp_prod`.`price_rules` 
+RENAME TO  `mydp_prod`.`rules` ;
+
+12. ZZZ Modify importcustomers table - added P_D & relation fields
 
 
 Script file to clear user for sign-up
