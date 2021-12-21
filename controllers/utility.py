@@ -1441,7 +1441,7 @@ def importprocedurepriceplan():
             
             strsql = "insert into procedurepriceplan (providerid, procedurepriceplancode, procedurecode, ucrfee, procedurefee,copay, companypays,inspays,remarks,is_free,authorizationrequired,"
             strsql = strsql + "relgrproc,relgrprocdesc,service_id,service_name,service_category,is_active, created_by,created_on, modified_by, modified_on)"
-            strsql = strsql + "select 0, priceplancode,procedurecode,ucr,0,copay,0,0,remarks,is_free,autorizationrequired,relgrproc,relgrprocdesc,service_id,service_name,service_category,'T',1,NOW(),1,NOW() FROM importprocedurepriceplan"    
+            strsql = strsql + "select 0, priceplancode,procedurecode,ucr,0,copay,0,0,remarks,is_free,authorizationrequired,relgrproc,relgrprocdesc,service_id,service_name,service_category,'T',1,NOW(),1,NOW() FROM importprocedurepriceplan"    
             db.executesql(strsql)    
             db.commit()
         except Exception as e:

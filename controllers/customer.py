@@ -1276,11 +1276,12 @@ def import_customers():
                         #add to customerdependants
                         i = 0
                         relation = row[27]
-                        dependant_ref = customer_ref + "_" + relation
+                        
 
-                        c = db(db.customer.customer_ref == customer_ref).select(db.customer.id)
+                        c = db(db.customer.customer_ref == customer_ref).select()
                         customer_id = c[0].id if(len(c) == 1) else 0
-                                         
+                        customer_ref = c[0].customer_ref if(len(c) == 1) else ""
+                        dependant_ref = customer_ref + "_" + relation
                         
                         strsql = "INSERT INTO `customerdependants`(\
                           `dependant`,`dependant_ref`,`customer_id`,`fname`,`lname`,`depdob`,\
@@ -1348,12 +1349,10 @@ def import_customers():
                         jsonreq["providernotes"]="Auto-Appointment created\nAppointment_ID: " + c[0].appointment_id + "\n" + c[0].notes, 
                         jsonreq["appPath"]=appPath
                         jsonreq["cell"]=c[0].cell                        
-            
-                        apptobj = json.loads(mdpappt.newappointment(jsonreq))
-                        #email Welcome Kit
-                        #ret = mail.emailWelcomeKit(db,request,patobj["primarypatientid"],providerid)
-                        #message += "Customer " + member + " has been successfully enrolled in MDP\n Welcome Kit has been sent to the registered email address\n"
                         
+                        apptobj = None
+                        if(appointment_id != ""):
+                            apptobj = json.loads(mdpappt.newappointment(jsonreq))
                     else:
                         message += "ERROR enrolling Customer " + member + " in MDP"
         except Exception as e:
