@@ -2146,6 +2146,8 @@ def enroll_webmember():
     premium = 0.00
     rows1 = db((db.patientmember.patientmember == memberid) & (db.patientmember.is_active == True) & (db.patientmember.hmopatientmember == True)).select()
     patientid = rows1[0].id    
+    planid = rows1[0].hmoplan
+    
     r = db(db.paymenttxlog.webmember == webmemberid).select()
     if(len(r) > 0):
         premium = round(Decimal(common.getvalue(r[0].total)),2)
@@ -2155,10 +2157,10 @@ def enroll_webmember():
     
     #map the benefits
     #get plancode RPIP599 ID
-    c = db(db.company.company == "RPIP599").select(db.company.company)
+    c = db(db.hmoplan.id == planid).select()
     reqobj = {}
     reqobj["memberid"] = patientid
-    reqobj["plan"] = c[0].company if len(c) > 0 else ""
+    reqobj["plan"] = c[0].hmoplancode if len(c) > 0 else ""
     bnft = mdpbenefits.Benefit(db)
     bnft.map_member_benefit(reqobj) 
 
