@@ -38,6 +38,256 @@ from applications.my_pms2.modules  import mdpbenefits
 
 from applications.my_pms2.modules import logger
 
+#This method converts HMO Plan ID from region based to plan based
+#for CGI, there are three plans - CGI_PREM, CDI_SC, CGI_NDPC, CGI_PREM
+#All region based plans like 
+def convertCGIPlans():
+    
+    cos = db((db.company.company == 'CGI') &  (db.company.is_active == True)).select()
+    cgi_id = cos[0].id if(len(cos) > 0) else 0
+    
+    pats = db((db.patientmember.company == cgi_id) &  (db.patientmember.is_active == True)).select()
+    
+    for pat in pats:
+	plan_id = int(common.getid(pat.hmoplan))
+	plans = db((db.hmoplan.id == plan_id) & (db.hmoplan.is_active == True)).select()
+	plancode = plans[0].hmoplancode if(len(plans) > 0) else ""
+	if(plancode.startswith("NDPC") == True):
+	    i = 0
+	    hmoplan = db((db.hmoplan.hmoplancode == "CISCO_NDPC") & (db.hmoplan.is_active == True)).select()
+	    hmoplanid = int(common.getid(hmoplan[0].id)) if(len(hmoplan) > 0) else 0
+	    db(db.patientmember.id == pat.id).update(hmoplan = hmoplanid)
+	
+	if(plancode.startswith("CSX") == True):
+	    i = 0
+	    hmoplan = db((db.hmoplan.hmoplancode == "CISCO_CSX") & (db.hmoplan.is_active == True)).select()
+	    hmoplanid = int(common.getid(hmoplan[0].id)) if(len(hmoplan) > 0) else 0
+	    db(db.patientmember.id == pat.id).update(hmoplan = hmoplanid)
+	    
+	
+	if(plancode.startswith("BLRPrem") == True):
+	    i = 0
+	    hmoplan = db((db.hmoplan.hmoplancode == "MEDI_PREM") & (db.hmoplan.is_active == True)).select()
+	    hmoplanid = int(common.getid(hmoplan[0].id)) if(len(hmoplan) > 0) else 0
+	    db(db.patientmember.id == pat.id).update(hmoplan = hmoplanid)
+		
+		
+    db((db.provider_region_plan.companycode == 'CISCO') & (db.provider_region_plan.is_active == True) &\
+       (db.provider_region_plan.plancode.like('CDX%'))).update(plancode = 'CISCO_CDX',policy='CISCO_CDX')
+    
+    db((db.provider_region_plan.companycode == 'CISCO') & (db.provider_region_plan.is_active == True) &\
+               (db.provider_region_plan.plancode.like('NDPC%'))).update(plancode = 'CISCO_NDPC',policy='CISCO_NDPC')
+
+    db((db.provider_region_plan.companycode == 'CISCO') & (db.provider_region_plan.is_active == True) &\
+       (db.provider_region_plan.plancode.like('BLRPrem%'))).update(plancode = 'CISCO_PREM',policy='CISCO_PREM')
+ 
+    return dict()
+
+#This method converts HMO Plan ID from region based to plan based
+#for CISCO, there are three plans - CISCO_PREM, CISCO_CSX, CISCO_NDPC
+#All region based plans like 
+def convertCISCOPlans():
+    
+    cos = db((db.company.company == 'CISCO') &  (db.company.is_active == True)).select()
+    cisco_id = cos[0].id if(len(cos) > 0) else 0
+    
+    pats = db((db.patientmember.company == cisco_id) &  (db.patientmember.is_active == True)).select()
+    
+    for pat in pats:
+	plan_id = int(common.getid(pat.hmoplan))
+	plans = db((db.hmoplan.id == plan_id) & (db.hmoplan.is_active == True)).select()
+	plancode = plans[0].hmoplancode if(len(plans) > 0) else ""
+	if(plancode.startswith("NDPC") == True):
+	    i = 0
+	    hmoplan = db((db.hmoplan.hmoplancode == "CISCO_NDPC") & (db.hmoplan.is_active == True)).select()
+	    hmoplanid = int(common.getid(hmoplan[0].id)) if(len(hmoplan) > 0) else 0
+	    db(db.patientmember.id == pat.id).update(hmoplan = hmoplanid)
+	
+	if(plancode.startswith("CSX") == True):
+	    i = 0
+	    hmoplan = db((db.hmoplan.hmoplancode == "CISCO_CSX") & (db.hmoplan.is_active == True)).select()
+	    hmoplanid = int(common.getid(hmoplan[0].id)) if(len(hmoplan) > 0) else 0
+	    db(db.patientmember.id == pat.id).update(hmoplan = hmoplanid)
+	    
+	
+	if(plancode.startswith("BLRPrem") == True):
+	    i = 0
+	    hmoplan = db((db.hmoplan.hmoplancode == "MEDI_PREM") & (db.hmoplan.is_active == True)).select()
+	    hmoplanid = int(common.getid(hmoplan[0].id)) if(len(hmoplan) > 0) else 0
+	    db(db.patientmember.id == pat.id).update(hmoplan = hmoplanid)
+		
+		
+    db((db.provider_region_plan.companycode == 'CISCO') & (db.provider_region_plan.is_active == True) &\
+       (db.provider_region_plan.plancode.like('CDX%'))).update(plancode = 'CISCO_CDX',policy='CISCO_CDX')
+    
+    db((db.provider_region_plan.companycode == 'CISCO') & (db.provider_region_plan.is_active == True) &\
+               (db.provider_region_plan.plancode.like('NDPC%'))).update(plancode = 'CISCO_NDPC',policy='CISCO_NDPC')
+
+    db((db.provider_region_plan.companycode == 'CISCO') & (db.provider_region_plan.is_active == True) &\
+       (db.provider_region_plan.plancode.like('BLRPrem%'))).update(plancode = 'CISCO_PREM',policy='CISCO_PREM')
+ 
+    return dict()
+
+#This method converts HMO Plan ID from region based to plan based
+#for MEDI, there are three plans - MEDI_NDPC, MEDI_SC, MED_SP
+#All region based plans like NDPC102,103,101,104 = MEDI_NDPC and likewise
+def convertMEDIPlans():
+    
+    cos = db((db.company.company == 'MEDI') &  (db.company.is_active == True)).select()
+    medi_id = cos[0].id if(len(cos) > 0) else 0
+    
+    pats = db((db.patientmember.company == medi_id) &  (db.patientmember.is_active == True)).select()
+    
+    for pat in pats:
+	plan_id = int(common.getid(pat.hmoplan))
+	plans = db((db.hmoplan.id == plan_id) & (db.hmoplan.is_active == True)).select()
+	plancode = plans[0].hmoplancode if(len(plans) > 0) else ""
+	if(plancode.startswith("NDPC") == True):
+	    i = 0
+	    hmoplan = db((db.hmoplan.hmoplancode == "MEDI_NDPC") & (db.hmoplan.is_active == True)).select()
+	    hmoplanid = int(common.getid(hmoplan[0].id)) if(len(hmoplan) > 0) else 0
+	    db(db.patientmember.id == pat.id).update(hmoplan = hmoplanid)
+	
+	if(plancode.startswith("SC") == True):
+	    i = 0
+	    hmoplan = db((db.hmoplan.hmoplancode == "MEDI_SC") & (db.hmoplan.is_active == True)).select()
+	    hmoplanid = int(common.getid(hmoplan[0].id)) if(len(hmoplan) > 0) else 0
+	    db(db.patientmember.id == pat.id).update(hmoplan = hmoplanid)
+	    
+	
+	if(plancode.startswith("SP") == True):
+	    i = 0
+	    hmoplan = db((db.hmoplan.hmoplancode == "MEDI_SP") & (db.hmoplan.is_active == True)).select()
+	    hmoplanid = int(common.getid(hmoplan[0].id)) if(len(hmoplan) > 0) else 0
+	    db(db.patientmember.id == pat.id).update(hmoplan = hmoplanid)
+		
+		
+    db((db.provider_region_plan.companycode == 'MEDI') & (db.provider_region_plan.is_active == True) &\
+       (db.provider_region_plan.plancode.like('SP%'))).update(plancode = 'MEDI_SP',policy='MEDI_SP')
+    
+    db((db.provider_region_plan.companycode == 'MEDI') & (db.provider_region_plan.is_active == True) &\
+               (db.provider_region_plan.plancode.like('NDPC%'))).update(plancode = 'MEDI_NDPC',policy='MEDI_NDPC')
+
+    db((db.provider_region_plan.companycode == 'MEDI') & (db.provider_region_plan.is_active == True) &\
+       (db.provider_region_plan.plancode.like('SC%'))).update(plancode = 'MEDI_SC',policy='MEDI_SC')
+ 
+    return dict()
+
+
+
+#This method converts HMO Plan ID from region based to plan based
+#for MEDI, there are three plans - MEDI_NDPC, MEDI_SC, MED_SP
+#All region based plans like NDPC102,103,101,104 = MEDI_NDPC and likewise
+def convertABHIPlans():
+    
+    cos = db((db.company.company == 'ABHI') &  (db.company.is_active == True)).select()
+    medi_id = cos[0].id if(len(cos) > 0) else 0
+    
+    pats = db((db.patientmember.company == medi_id) &  (db.patientmember.is_active == True)).select()
+    
+    for pat in pats:
+	plan_id = int(common.getid(pat.hmoplan))
+	plans = db((db.hmoplan.id == plan_id) & (db.hmoplan.is_active == True)).select()
+	plancode = plans[0].hmoplancode if(len(plans) > 0) else ""
+	if((plancode.startswith("ABHI") == True) & (plancode.endswith("103") == True)):
+	    i = 0
+	    hmoplan = db((db.hmoplan.hmoplancode == "ABHI_ABHI") & (db.hmoplan.is_active == True)).select()
+	    hmoplanid = int(common.getid(hmoplan[0].id)) if(len(hmoplan) > 0) else 0
+	    db(db.patientmember.id == pat.id).update(hmoplan = hmoplanid)
+	
+	if(plancode.startswith("i") == True):
+	    hmoplan = db((db.hmoplan.hmoplancode == "ABHI_I") & (db.hmoplan.is_active == True)).select()
+	    hmoplanid = int(common.getid(hmoplan[0].id)) if(len(hmoplan) > 0) else 0
+	    db(db.patientmember.id == pat.id).update(hmoplan = hmoplanid)
+	    
+	
+	if(plancode.startswith("Z") == True):
+	    hmoplan = db((db.hmoplan.hmoplancode == "ABHI_Z") & (db.hmoplan.is_active == True)).select()
+	    hmoplanid = int(common.getid(hmoplan[0].id)) if(len(hmoplan) > 0) else 0
+	    db(db.patientmember.id == pat.id).update(hmoplan = hmoplanid)
+		
+	if((plancode.startswith("ABHI") == True)& (plancode.endswith("103") == False)):
+	    i = 0
+	    hmoplan = db((db.hmoplan.hmoplancode == "ABHI_CSX") & (db.hmoplan.is_active == True)).select()
+	    hmoplanid = int(common.getid(hmoplan[0].id)) if(len(hmoplan) > 0) else 0
+	    db(db.patientmember.id == pat.id).update(hmoplan = hmoplanid)
+		
+    db((db.provider_region_plan.companycode == 'ABHI') & (db.provider_region_plan.is_active == True) &\
+       (db.provider_region_plan.plancode.like('ABHI%'))).update(plancode = 'ABHI_ABHI',policy='ABHI_ABHI')
+    
+    db((db.provider_region_plan.companycode == 'ABHI') & (db.provider_region_plan.is_active == True) &\
+               (db.provider_region_plan.plancode.like('i%'))).update(plancode = 'ABHI_I',policy='ABHI_I')
+
+    db((db.provider_region_plan.companycode == 'ABHI') & (db.provider_region_plan.is_active == True) &\
+       (db.provider_region_plan.plancode.like('Z%'))).update(plancode = 'ABHI_Z',policy='ABHI_Z')
+
+    db((db.provider_region_plan.companycode == 'ABHI') & (db.provider_region_plan.is_active == True) &\
+       ((db.provider_region_plan.plancode.like('ABHIBLR')) | (db.provider_region_plan.plancode.like('ABHIHYD')) |\
+                                                            (db.provider_region_plan.plancode.like('ABHIDEL')))
+       ).update(plancode = 'ABHI_CSX',policy='ABHI_CSX')
+   
+   
+    cos = db((db.company.company == 'ABHIC') &  (db.company.is_active == True)).select()
+    abhic_id = cos[0].id if(len(cos) > 0) else 0
+    
+    pats = db((db.patientmember.company == abhic_id) &  (db.patientmember.is_active == True)).select()
+    
+    for pat in pats:
+	plan_id = int(common.getid(pat.hmoplan))
+	plans = db((db.hmoplan.id == plan_id) & (db.hmoplan.is_active == True)).select()
+	plancode = plans[0].hmoplancode if(len(plans) > 0) else ""
+	
+	if(plancode.startswith("ABHIC") == True):
+	   
+	    hmoplan = db((db.hmoplan.hmoplancode == "ABHIC_NDPC") & (db.hmoplan.is_active == True)).select()
+	    hmoplanid = int(common.getid(hmoplan[0].id)) if(len(hmoplan) > 0) else 0
+	    db(db.patientmember.id == pat.id).update(hmoplan = hmoplanid)
+	
+	
+	if(plancode.startswith("Z") == True):
+	    hmoplan = db((db.hmoplan.hmoplancode == "ABHIC_Z") & (db.hmoplan.is_active == True)).select()
+	    hmoplanid = int(common.getid(hmoplan[0].id)) if(len(hmoplan) > 0) else 0
+	    db(db.patientmember.id == pat.id).update(hmoplan = hmoplanid)
+		
+	
+		
+    db((db.provider_region_plan.companycode == 'ABHIC') & (db.provider_region_plan.is_active == True) &\
+       (db.provider_region_plan.plancode.like('NDPC%'))).update(plancode = 'ABHIC_NDPC',policy='ABHIC_NDPC')
+    
+ 
+
+    db((db.provider_region_plan.companycode == 'ABHIC') & (db.provider_region_plan.is_active == True) &\
+       (db.provider_region_plan.plancode.like('Z%'))).update(plancode = 'ABHIC_Z',policy='ABHIC_Z')
+
+
+    cos = db((db.company.company == 'ABWPL') &  (db.company.is_active == True)).select()
+    abwpl_id = cos[0].id if(len(cos) > 0) else 0
+    
+    pats = db((db.patientmember.company == abwpl_id) &  (db.patientmember.is_active == True)).select()
+    
+    for pat in pats:
+	plan_id = int(common.getid(pat.hmoplan))
+	plans = db((db.hmoplan.id == plan_id) & (db.hmoplan.is_active == True)).select()
+	plancode = plans[0].hmoplancode if(len(plans) > 0) else ""
+	
+	if(plancode.startswith("i") == True):
+	   
+	    hmoplan = db((db.hmoplan.hmoplancode == "ABWPL_I") & (db.hmoplan.is_active == True)).select()
+	    hmoplanid = int(common.getid(hmoplan[0].id)) if(len(hmoplan) > 0) else 0
+	    db(db.patientmember.id == pat.id).update(hmoplan = hmoplanid)
+	
+	
+	
+	
+		
+    db((db.provider_region_plan.companycode == 'ABWPL') & (db.provider_region_plan.is_active == True) &\
+       (db.provider_region_plan.plancode.like('ABWPL%'))).update(plancode = 'ABHIC_I',policy='ABHIC_I')
+    
+
+   
+    
+    return dict()
+
 
 #this function assigns provider clinics to agents
 #for each provider, create a clinic if no clinic has been 

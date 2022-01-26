@@ -9098,42 +9098,58 @@ CREATE TABLE `kytc_track_log` (
 
 12/8/2021
 ==========
-1. YYYYZZZAdd table 'price_rules'
+1. XXYYYYZZZAdd table 'price_rules'
 
-2. ZZZModified procedurepriceplan definition in db.py
+2. YYYZZZModified procedurepriceplan definition in db.py
 
 3. YYYZZZPopulated price_rules table with pricing rules for each procedure for a plan for a company
 
-4. YYYZZZZModify hmoplan with 4 fields voucher_code, discount_amount, wallet_amount, authorizationrequired
+4. XXYYYZZZZModify hmoplan with 4 fields voucher_code, discount_amount, wallet_amount, authorizationrequired
 ALTER TABLE `mydp_prod`.`hmoplan` 
 ADD COLUMN `voucher_code` VARCHAR(45) NULL DEFAULT NULL AFTER `welcomeletter`,
 ADD COLUMN `discount_amount` DOUBLE NULL DEFAULT 0 AFTER `voucher_code`,
 ADD COLUMN `walletamount` DOUBLE NULL DEFAULT 0 AFTER `discount_amount`,
 ADD COLUMN `authorizationrequired` CHAR(1) NULL DEFAULT 'F' AFTER `walletamount`;
 
-5. YYYZZZZModify ProcedurPricePlan added 'authorizationrequired'
+5. XXYYYZZZZModify ProcedurPricePlan added 'authorizationrequired'
 
-6. YYYZZZModified imporprocedurepriceplan
+6. XXYYYZZZModified imporprocedurepriceplan
 
-7. YYYZZZ Modified importplan
+7. XXYYYZZZ Modified importplan
 
-8. YYYZZZZ Modified hmoplan - added company code table
+8. XXXYYYZZZZ Modified hmoplan - added company code table
 ALTER TABLE `mydp_prod`.`hmoplan` 
 ADD COLUMN `company_code` VARCHAR(45) NULL DEFAULT NULL AFTER `authorizationrequired`;
 
-9. YYYZZZModify ImportPlan
+9. XXYYYZZZModify ImportPlan
 ALTER TABLE `mydp_prod`.`importplan` 
 ADD COLUMN `company_code` VARCHAR(45) NULL DEFAULT NULL AFTER `authorizationrequired`;
 
-10. ZZZModify pricing_rules table add 'rule_event'
+10. XXYYYZZZModify pricing_rules table add 'rule_event'
 
-11. ZZZRename pricing_rules table to rules table
+11. XXXYYYYZZZRename pricing_rules table to rules table
     ALTER TABLE `mydp_prod`.`price_rules` 
 RENAME TO  `mydp_prod`.`rules` ;
 
-12. ZZZ Modify importcustomers table - added P_D & relation fields
+12. XXXYYYZZZ Modify importcustomers table - added P_D & relation fields
 
+13. XXXYYYZZZ Modify treatmentplan voucher_code is varchar
 
+14. XXXYYYZZZZPopulate Rules table 
+
+15. XXXYYYZZZZPopulate CompanyCode in HMOPLAN table
+
+16. ZZZprocedurefee=ucrfee in procedurepriceplan table
+
+17. XXXYYYZZZZRules table modified for MDP/PCP002/PCP001
+
+18. XXXYYYZZZZHMOPlan table modified for PCP002,PCP001
+
+19. XXYYYYZZZ Rules and PPP tables modified for MYDP company instead of MDP
+
+20. XXXYYYZZZ Modify treatment, treatmentplan to add new fields - promo_code, promo_amount
+
+21. ZZZ Alter vw_treatmentplansummary, vw_treatmentplansummarybypatient, vw_treatmentplansummarybytreatment
 Script file to clear user for sign-up
 =====================================
 

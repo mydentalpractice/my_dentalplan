@@ -1194,24 +1194,31 @@ def import_customers():
                    
                     
                     
+                    r = db(db.provider.provider == 'P0001').select(db.provider.id)
+                    defid = r[0].id if(len(r) > 0) else 0
                     strsql = "SELECT id FROM provider WHERE provider = '" + row[19] + "'"
                     ds = db.executesql(strsql)
-                    providerid = int(ds[0][0])
+                    providerid = int(ds[0][0]) if (len(ds) > 0) else defid
                 
                     #get company id and company code 
+                    r = db(db.company.company == 'MYDP').select(db.company.id)
+                    defid = r[0].id if(len(r) > 0) else 0
                     strsql = "SELECT id FROM company WHERE company = '" + row[20] + "'"
                     ds = db.executesql(strsql)
-                    companyid = int(ds[0][0])
+                    companyid = int(ds[0][0]) if (len(ds) > 0) else defid
                     
                     #get regionid id 
+                    r = db(db.groupregion.groupregion == 'ALL').select(db.groupregion.id)
+                    defid = r[0].id if(len(r) > 0) else 0
                     strsql = "SELECT id FROM groupregion WHERE groupregion = '" + row[21] + "'"
                     ds = db.executesql(strsql)
-                    regionid = int(ds[0][0])
+                    regionid = int(ds[0][0]) if (len(ds) > 0) else defid
                     
-                
-                    strsql = "SELECT id FROM hmoplan WHERE hmoplancode = '" + row[22] + "'"
+                    r = db(db.hmoplan.hmoplancode == 'PREMWALKIN').select(db.hmoplan.id)
+                    defid = r[0].id if(len(r) > 0) else 0
+                    strsql = "SELECT id FROM hmoplan WHERE hmoplancode = '" + row[22] + "' and company_code = '" + row[20] + "'"
                     ds = db.executesql(strsql)
-                    planid = int(ds[0][0])   
+                    planid = int(ds[0][0]) if (len(ds) > 0) else defid
                     
                     #update providerid, companyid, regionid, planid
                     strsql = "UPDATE importcustomers SET providerid = " + str(providerid) + ", companyid = " + str(companyid) + ", planid=" + str(planid) + ", regionid = " + str(regionid)  
