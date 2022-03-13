@@ -1,12 +1,12 @@
 
    
                <select class="form_details" id="provclinics" onchange="changeClinics()">
-                    <option value='1'>--Select--</option>
+                    <option value='0'>--ySelect--</option>
     
                     {{for clinic in clinics:}}
                    
                         {{if (clinic.id == provclinicid):}}
-                        
+                        alert("Clinic = " + clinic.id)
                           <option selected="selected" value={{=clinic.id}}>{{=clinic.name}}</option>
                         {{else:}}
                         <option value={{=clinic.id}}>{{=clinic.name}}</option>

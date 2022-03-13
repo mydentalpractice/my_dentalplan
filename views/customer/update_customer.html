@@ -72,10 +72,10 @@
         <td class="form_details " >
             <div id='clinicsdiv'>
                <select class="form_details" id="provclinics" onchange="changeClinics()">
-                    <option value='1'>--Select--</option>
-    
+                    <option value='0'>--xSelect--</option>
+                    alert("Clinics ")
                     {{for clinic in clinics:}}
-                    alert("Clinic = " + clinic.id)
+                         alert("Clinic = " + clinic.id)
                         {{if (clinic.id == provclinicid):}}
                         
                           <option selected="selected" value={{=clinic.id}}>{{=clinic.name}}</option>

@@ -744,8 +744,8 @@ def update_customer():
         Field('customer', 'string',label='Customer ID', default=customer),
         Field('customer_ref', 'string',label='Customer Ref', default=customer_ref),
         Field('providerid', default=providerid,requires=IS_IN_DB(db(db.provider.is_active==True), 'provider.id', '%(id)s %(provider)s : (%(providername)s)')),
-        #Field('clinicid', 'integer',default=clinicid),       
-        Field('clinicid', default=clinicid,requires=IS_IN_DB(db(db.vw_clinic.id==clinicid), 'vw_clinic.id', '%(id)s %(name)s')),
+        Field('clinicid', 'integer',default=clinicid),       
+        #Field('clinicid', default=clinicid,requires=IS_IN_DB(db(db.vw_clinic.id==clinicid), 'vw_clinic.id', '%(id)s %(name)s')),
         Field('companyid', default=companyid, requires=IS_IN_DB(db(db.company.is_active==True), 'company.id', '%(name)s (%(company)s)')),
         Field('planid', default=planid, requires=IS_IN_DB(db(db.hmoplan.is_active==True), 'hmoplan.id', '%(name)s (%(hmoplancode)s) (%(groupregion)s)')),
         Field('regionid', default=regionid, requires=IS_IN_DB(db(db.groupregion.is_active == True), 'groupregion.id', '%(region)s (%(groupregion)s)')),
@@ -879,7 +879,11 @@ def update_customer():
     
     providers = db(db.provider.is_active==True).select(db.provider.id,db.provider.provider,db.provider.providername,orderby=db.provider.provider)
 
-    clinics= db(db.clinic.id == 0).select()
+    
+    clinics = db((db.clinic_ref.ref_code == 'PRV') & (db.clinic_ref.ref_id == providerid) & (db.clinic.is_active == True)).select(db.clinic.id, db.clinic.name,\
+                                                                                                  left=db.clinic.on((db.clinic_ref.clinic_id == db.clinic.id)&\
+                                                                                                                    (db.clinic_ref.ref_code=='PRV')))
+                                                                                                  
     
     returnurl = URL('customer','list_customers',vars=dict(page=page))
     enrollcustomer = URL('customer','enroll_customer',vars=dict(page=page,customerid=customerid))
