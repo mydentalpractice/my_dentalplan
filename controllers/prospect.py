@@ -15,6 +15,7 @@ from applications.my_pms2.modules  import mdpuser
 from applications.my_pms2.modules  import mdpprospect
 from applications.my_pms2.modules  import mdpprovider
 from applications.my_pms2.modules  import mdpbank
+from applications.my_pms2.modules  import mdpmedia
 from applications.my_pms2.modules  import logger
 
 
@@ -202,6 +203,7 @@ def list_prospect():
     exportlist = dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)
     links = [lambda row: A('Update',_href=URL("prospect","update_prospect",vars=dict(page=common.getgridpage(request.vars)),args=[row.id])),
              lambda row: A('Clincs',_href=URL("clinic","list_clinic",vars=dict(page=common.getgridpage(request.vars),prev_ref_code=ref_code, prev_ref_id =ref_id,ref_code="PST",ref_id=row.id))),
+             lambda row: A('Logo',_href=URL("prospect","new_logo",vars=dict(page=common.getgridpage(request.vars), prev_ref_id =ref_id,ref_code="PST",ref_id=row.id))),
              lambda row: A('Bank Details',_href=URL("prospect","bank_prospect",vars=dict(page=page,prev_ref_code=ref_code, prev_ref_id =ref_id,ref_code="PST",ref_id=row.id,prospectid=row.id))),
              lambda row: A('EmailPA',_href=URL("prospect","emailpa",vars=dict(prospectid=row.id))),
              lambda row: A('ApprovePA',_href=URL("prospect","viewprovideragreement",vars=dict(prospectid=row.id))),
@@ -314,9 +316,10 @@ def update_prospect():
         prospectid = int(request.args[0])
         session.prospectid = prospectid
     elif (len(request.vars)>0): # called on grid next page, get the prospectid from session.
-        prospectid = session.prospectid
+        prospectid = int(request.vars.prospectid)
+        #prospectid = session.prospectid
 
-
+     
 
     text = ''
     bankid = 0
@@ -434,7 +437,7 @@ def update_prospect():
 
         Field('assignedpatientmembers','integer',default=rows[0].assignedpatientmembers),
         Field('bankid','integer',default=rows[0].bankid),
-        Field('groupregion', 'ineger',default=rows[0].groupregion, requires=IS_IN_DB(db(db.groupregion.is_active == True), 'groupregion.id', '%(region)s (%(groupregion)s)')),
+        Field('groupregion', 'ineger',default=rows[0].groupregion, requires=IS_IN_DB(db(db.groupregion.is_active == True), 'groupregion.id', '%(region)s')),
 
         Field('speciality', 'integer',default=rows[0].speciality, requires=IS_IN_DB(db((db.speciality_default.id>0)),db.speciality_default.id, '%(speciality)s')),
         
@@ -445,10 +448,13 @@ def update_prospect():
         Field('is_active','boolean',default=is_active),
         Field('groupemail','boolean',default=rows[0].groupemail),
         Field('groupsms','boolean',default=rows[0].groupsms),
-        Field('newcity','string',default=rows[0].newcity)
+        Field('newcity','string',default=rows[0].newcity),
+        Field('isMDP','boolean',default=rows[0].isMDP),
     
     )
     
+    mediaid = int(common.getid(rows[0].logo_id if(len(rows) > 0) else 0))
+    mediaurl = URL('my_dentalplan','media','media_download',args=[mediaid])      
     
     if formA.process(keepvalues=True).accepted:
         logger.loggerpms2.info("Form A Accesspted")
@@ -460,6 +466,7 @@ def update_prospect():
         formA.vars.pa_practiceaddress = formA.vars.address1 + " " + formA.vars.address2 +" " + formA.vars.address3 + " " + formA.vars.city + " " + formA.vars.st + " " + formA.vars.pin
         formA.vars.pa_practicepin = formA.vars.pin
         formA.vars.pa_location = formA.vars.city
+        
         db(db.prospect.id == prospectid).update(**db.prospect._filter_fields(formA.vars))
         
         
@@ -490,7 +497,7 @@ def update_prospect():
     ## redirect on Items, with PO ID and return URL
     page=common.getgridpage(request.vars)
     returnurl = URL('prospect','list_prospect',vars=dict(page=page))
-    return dict(username=username,returnurl=returnurl,formA=formA, formBank=formBank,formheader=formheader,prospectid=prospectid,authuser=authuser,page=page)
+    return dict(username=username,returnurl=returnurl,formA=formA, formBank=formBank,formheader=formheader,prospectid=prospectid,authuser=authuser,page=page,mediaurl=mediaurl)
 
 
 @auth.requires_membership('webadmin')
@@ -1141,3 +1148,86 @@ def enroll_prospect():
     
     return dict(username=username,returnurl=returnurl,providername=providername, practicename=practicename,retval=retval,error_message=error_message)
 
+@auth.requires_membership('webadmin')
+@auth.requires_login()
+def new_logo():
+    page=common.getgridpage(request.vars)
+    prospectid = int(common.getkeyvalue(request.vars,"ref_id",0))
+    providerid = int(common.getkeyvalue(request.vars,"providerid",0))
+
+    ref_code = common.getkeyvalue(request.vars,"ref_code","PST")
+    ref_id = common.getkeyvalue(request.vars,"ref_id",0)
+
+    r = db(db.prospect.id == ref_id).select()
+    prospect_code = r[0].provider if(len(r)>=0) else ""
+    
+    form = SQLFORM.factory(
+        Field('prospect','string',label='Prospectcode', default=prospect_code ),
+     
+        Field('title','string',label='Title'),
+        Field('imagedate','date',default=datetime.date.today(), label='Image Date'),
+       
+        Field('imagedata','text', length=50e+6, label='Image Data')
+    )    
+
+    submit = form.element('input',_type='submit')
+    submit['_value'] = 'Upload Image'    
+
+     
+
+    
+    error = ""
+    count = 0
+    mediaurl = ""
+    mediafile = ""
+    mediatype = "image"
+    mediaformat = "jpg"
+    
+    if form.accepts(request,session,keepvalues=True):
+
+        try:
+
+            #upload image
+            if(len(request.vars.imagedata)>0):
+                file_content = None
+                file_content = request.vars.imagedata
+                
+                o = mdpmedia.Media(db, providerid, mediatype, mediaformat)
+                j = {
+                    "mediadata":file_content,
+                   
+                    "title":request.vars.title,
+                    
+                    "mediadate":common.getstringfromdate(datetime.datetime.today(),"%d/%m/%Y"),
+                    "appath":request.folder,
+                    "mediatype":mediatype,
+                    "mediaformat":mediaformat,
+                    
+                    "ref_code":ref_code,
+                    "ref_id":ref_id
+                }
+
+                x= json.loads(o.upload_media(j)) 
+
+                mediaid = common.getkeyvalue(x,'mediaid',0)
+                
+                mediaurl = URL('my_dentalplan','media','media_download',\
+                               args=[mediaid])  
+                
+                db(db.prospect.id == prospectid).update(logo_id = mediaid, logo_file = common.getkeyvalue(x,"mediafilename",""))
+
+           
+        except Exception as e:
+            error = "Upload Audio Exception Error - " + str(e)             
+    elif form.errors:
+        x = str(form.errors)
+    else:
+        i = 0    
+    
+    
+
+           
+    
+    returnurl = URL('prospect','update_prospect',vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,prospectid=ref_id))
+    return dict(form=form, pae=page,mediaurl=mediaurl,mediafile=mediafile,count=count,error=error,
+                ref_code=ref_code,ref_id=ref_id,returnurl=returnurl) 

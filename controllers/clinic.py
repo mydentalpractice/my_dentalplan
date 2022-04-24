@@ -29,7 +29,211 @@ def clinic_selector():
     
 
     return dict(clinics=clinics,provclinicid=provclinicid)
+
+
+def new_media():
     
+    logger.loggerpms2.info("Enter Clinic New Media")
+
+    mediatype = request.vars.mediatype
+    mediaformat = request.vars.mediaformat
+    
+    source = common.getstring(request.vars.source)
+    page     = common.getpage1(request.vars.page)
+
+    providerid  = int(common.getid(request.vars.providerid))
+    patientid   = int(common.getid(request.vars.patientid))
+    memberid    = int(common.getid(request.vars.memberid))    
+
+    logger.loggerpms2.info("Get all Members " + str(memberid))
+
+    members = db(db.patientmember.id == memberid).select()
+    memberref = common.getstring(members[0].patientmember)
+
+    providerdict = common.getproviderfromid(db, providerid)
+    providername = providerdict["providername"]
+
+    treatmentid = int(common.getid(request.vars.treatmentid))
+
+    tplanid = 0
+    tplan = "Treatment Plan"
+
+
+    #logger.loggerpms2.info("Get all Members1 " + str(memberid))
+
+    rows = db((db.patientmember.id == memberid)&(db.patientmember.is_active == True)).select()
+    membername = rows[0].fname + ' ' + rows[0].mname + ' ' + rows[0].lname    
+
+    if(memberid == patientid):
+        patienttype = 'P'
+        patientname = membername
+    else:
+        patienttype = 'D'
+        rows = db((db.patientmemberdependants.id == patientid)&(db.patientmemberdependants.is_active == True)).select()    
+        if(len(rows) > 0):
+            patientname = rows[0].fname + ' ' + rows[0].mname + ' ' + rows[0].lname    
+    #logger.loggerpms2.info("Log a") 
+
+    db.dentalimage.treatmentplan.default = tplanid
+    db.dentalimage.treatmentplan.writable = False
+    db.dentalimage.treatment.default = treatmentid
+    db.dentalimage.treatment.writable = False    
+    db.dentalimage.patientmember.default = memberid
+    db.dentalimage.patientmember.writable = False
+    db.dentalimage.patient.default = patientid
+    db.dentalimage.patient.writable = False
+    db.dentalimage.patienttype.default = patienttype
+    db.dentalimage.patienttype.writable = False
+    db.dentalimage.patientname.default = patientname
+    db.dentalimage.patientname.writable = False
+
+    db.dentalimage.provider.default = providerid
+    db.dentalimage.provider.writable = False
+
+
+
+    db.dentalimage.title.widget = lambda field, value:SQLFORM.widgets.string.widget(field, value,_class='w3-input w3-border w3-small')
+    db.dentalimage.tooth.widget = lambda field, value:SQLFORM.widgets.string.widget(field, value,_class='w3-input w3-border w3-small')
+    db.dentalimage.quadrant.widget = lambda field, value:SQLFORM.widgets.string.widget(field, value,_class='w3-input w3-border w3-small')
+    db.dentalimage.imagedate.widget = lambda field, value:SQLFORM.widgets.string.widget(field, value,_class='w3-input w3-border w3-small date')
+    db.dentalimage.patient.widget = lambda field, value:SQLFORM.widgets.options.widget(field, value,_style="width:100%;height:35px",_class='w3-input w3-border w3-small')
+
+    #logger.loggerpms2.info("Provider id " + str(providerid)) 
+
+    rows = db((db.provider.id == providerid)).select()
+    provider = rows[0].provider
+
+    strSQL = "select 0, '' AS patienttype, '-Select-' as fname, '' as lname"    
+    strSQL = strSQL + " UNION "
+    strSQL = strSQL + " select id , 'P' AS patienttype,fname,lname from patientmember where id = " + str(memberid)
+    strSQL = strSQL + " UNION "
+    strSQL = strSQL + " select id,'D' AS patienttype, patientmemberdependants.fname,patientmemberdependants.lname from patientmemberdependants where  patientmemberdependants.patientmember = " + str(memberid)
+    dspatients = db.executesql(strSQL)    
+
+    #logger.loggerpms2.info("dspatients " + len(dspatients)) 
+
+    if(source == "treatment"):
+        returnurl = URL('treatment', 'update_treatment', vars=dict(page=page,imagepage=0,providerid=providerid,treatmentid=treatmentid))
+    else:
+        returnurl = URL('media', 'list_media', vars=dict(providerid = providerid,memberid=memberid,patientid=patientid,page=page,memberref=memberref,mediatype=mediatype))
+
+
+    formA = SQLFORM.factory(
+        Field('title','string'),
+        Field('media','string'),
+        Field('uploadfolder','string'),
+        Field('tooth','string'),
+        Field('quadrant','string'),
+        Field('description','text'),
+        Field('patienttype','string'),
+        Field('patientname','string'),
+        Field('mediafile','string'),
+        Field('mediatype','string'),
+        Field('mediaformat','string'),
+
+
+        Field('mediadate','date', default=request.now,requires = IS_DATE(format=T('%d/%m/%Y'))),
+
+        Field('treatmentplan','integer'),
+        Field('treatment','integer'),
+        Field('patientmember','integer'),
+        Field('patient','integer'),  
+        Field('provider','integer'),
+
+        Field('mediasize','double'),
+
+        Field('imagedata','text', length=50e+6, label='Image Data')
+
+
+    )
+
+
+
+
+    formA.element('textarea[name=description]')['_style'] = 'height:50px;line-height:1.0;'
+    formA.element('textarea[name=description]')['_rows'] = 5   
+    formA.element('textarea[name=description]')['_cols'] = 50
+    formA.element('textarea[name=description]')['_class'] = 'form-control'
+
+
+    xtitle = formA.element('#no_table_title')
+    xtitle['_class'] = 'form-control'
+    xtitle['_placeholder'] = 'Title'
+    xtitle['_autocomplete'] = 'off'   
+
+    xtooth = formA.element('#no_table_tooth')
+    xtooth['_class'] = 'form-control'
+    xtooth['_placeholder'] = 'Tooth'
+    xtooth['_autocomplete'] = 'off'   
+
+    xquad = formA.element('#no_table_quadrant')
+    xquad['_class'] = 'form-control'
+    xquad['_placeholder'] = 'Quadrant'
+    xquad['_autocomplete'] = 'off'   
+
+    xdate = formA.element('#no_table_mediadate')
+    xdate['_class'] = 'input-group form-control form-control-inline date-picker'
+    xdate['_placeholder'] = 'Date'
+    xdate['_autocomplete'] = 'off'   
+
+    submit = formA.element('input',_type='submit')
+    submit['_value'] = 'Save' 
+    submit["_class"] = "btn green"
+    
+    error = ""
+    count = 0
+    mediaurl = ""
+    mediafile = ""
+    mediaid = 0
+
+    if formA.accepts(request,session,keepvalues=True):
+
+        try:
+
+            #upload image
+            if(len(request.vars.imagedata)>0):
+                file_content = None
+                file_content = request.vars.imagedata
+                
+                o = mdpmedia.Media(db, providerid, mediatype, mediaformat)
+                j = {
+                    "mediadata":file_content,
+                    "memberid":str(memberid),
+                    "patientid":str(patientid),
+                    "treatmentid":str(treatmentid),
+                    "title":request.vars.title,
+                    "tooth":request.vars.tooth,
+                    "quadrant":request.vars.quadrant,
+                    "mediadate":common.getstringfromdate(datetime.datetime.today(),"%d/%m/%Y"),
+                    "description":request.vars.description,
+                    "appath":request.folder,
+                    "mediatype":mediatype,
+                    "mediaformat":mediaformat
+                }
+
+                x= json.loads(o.upload_media(j)) 
+
+                mediaid = common.getkeyvalue(x,'mediaid',0)
+                mediaurl = URL('my_dentalplan','media','media_download',\
+                               args=[mediaid])  
+
+           
+        except Exception as e:
+            error = "Upload Audio Exception Error - " + str(e)             
+    elif formA.errors:
+        x = str(formA.errors)
+    else:
+        i = 0
+
+    return dict(formA=formA, returnurl=returnurl, providername=providername,memberid=memberid, memberref=memberref,\
+                providerid=providerid,membername=membername,patientname=patientname,dspatients=dspatients,\
+                treatmentid=treatmentid, tplanid=tplanid, tplan=tplan,page=page,patientid=patientid,\
+                source=source,error=error,count=count,\
+                mediatype=mediatype, mediaformat=mediaformat, mediafile=mediafile,mediaurl=mediaurl)   
+
+
+
+
 @auth.requires_membership('webadmin')
 @auth.requires_login()
 def new_image():
@@ -41,6 +245,7 @@ def new_image():
     f = lambda name: name if ((name != "") & (name != None)) else ""
     authuser = f(auth.user.first_name)  + " " + f(auth.user.last_name)
 
+    providerid = int(common.getkeyvalue(request.vars,'providerid',0))
     prev_ref_code = request.vars.prev_ref_code
     prev_ref_id = request.vars.prev_ref_id
     
@@ -50,71 +255,254 @@ def new_image():
     
     form = SQLFORM.factory(
         Field('clinicname','string',label='Clinic Name', default="" if(len(clinics) != 1) else clinics[0].name ),
-        Field('browsefile','string',label='File Name',requires= IS_NOT_EMPTY()),
+        #Field('browsefile','string',label='File Name'),
      
-        Field('csvfile','string',label='CSV File', requires= IS_NOT_EMPTY()),
+        #Field('csvfile','string',label='CSV File'),
         Field('title','string',label='Title'),
         Field('imagedate','date',default=datetime.date.today(), label='Image Date'),
-        Field('description','text',label='Description')
+        Field('description','text',label='Description'),
+        Field('imagedata','text', length=50e+6, label='Image Data')
     )    
 
     submit = form.element('input',_type='submit')
     submit['_value'] = 'Upload Image'    
 
-    xcsvfile = form.element('input',_id='no_table_csvfile')
-    xcsvfile['_class'] =  'w3-input w3-border w3-small'    
+    #xcsvfile = form.element('input',_id='no_table_csvfile')
+    #xcsvfile['_class'] =  'w3-input w3-border w3-small'    
     
-    xbrwfile = form.element('input',_id='no_table_browsefile')
-    xbrwfile['_type'] =  'file'        
-    xbrwfile['_class'] =  'w3-input w3-border w3-small'        
+    #xbrwfile = form.element('input',_id='no_table_browsefile')
+    #xbrwfile['_type'] =  'file'        
+    #xbrwfile['_class'] =  'w3-input w3-border w3-small'        
 
     
     error = ""
     count = 0
     mediaurl = ""
     mediafile = ""
+    mediatype = "image"
+    mediaformat = "jpg"
     
     if form.accepts(request,session,keepvalues=True):
+
         try:
-            filename = request.vars.csvfile
-            browse = form.vars.browsefile.filename
-            filePath = os.path.join("\\","media_files")
-            filePath = os.path.join(filePath,browse)
+
+            #upload image
+            if(len(request.vars.imagedata)>0):
+                file_content = None
+                file_content = request.vars.imagedata
+                
+                o = mdpmedia.Media(db, providerid, mediatype, mediaformat)
+                j = {
+                    "mediadata":file_content,
+                   
+                    "title":request.vars.title,
+                    
+                    "mediadate":common.getstringfromdate(datetime.datetime.today(),"%d/%m/%Y"),
+                    "description":request.vars.description,
+                    "appath":request.folder,
+                    "mediatype":mediatype,
+                    "mediaformat":mediaformat,
+                    
+                    "ref_code":ref_code,
+                    "ref_id":ref_id
+                }
+
+                x= json.loads(o.upload_media(j)) 
+
+                mediaid = common.getkeyvalue(x,'mediaid',0)
+                mediaurl = URL('my_dentalplan','media','media_download',\
+                               args=[mediaid])  
+
+           
+        except Exception as e:
+            error = "Upload Audio Exception Error - " + str(e)             
+    elif form.errors:
+        x = str(form.errors)
+    else:
+        i = 0    
+    
+    
+    
+    #if form.accepts(request,session,keepvalues=True):
+        #try:
+            #filename = request.vars.csvfile
+            #browse = form.vars.browsefile.filename
+            
+            #x = os.path.abspath(browse)
+            #filePath = os.path.join("\\","media_files")
+            #filePath = os.path.join(filePath,browse)
      
             
            
-            o = mdpmedia.Media(db, 0, 'image', 'jpg')
+            #o = mdpmedia.Media(db, 0, 'image', 'jpg')
 
-            j = {
-                "filename":filePath,
-                "title":"test",
-                "tooth":"1",
-                "quadrant":"1",
-                "mediadate":common.getstringfromdate(datetime.datetime.today(),"%d/%m/%Y"),
-                "description":form.vars.description,
-                "appath":request.folder
-            }
+            #j = {
+                #"filename":filePath,
+                #"title":"test",
+                #"tooth":"1",
+                #"quadrant":"1",
+                #"mediadate":common.getstringfromdate(datetime.datetime.today(),"%d/%m/%Y"),
+                #"description":form.vars.description,
+                #"appath":request.folder
+            #}
 
 
-            x= json.loads(o.upload_mediafile(j))            
+            #x= json.loads(o.upload_mediafile(j))            
 
-            mediaid = common.getkeyvalue(x,'mediaid',0)
+            #mediaid = common.getkeyvalue(x,'mediaid',0)
 
-            db.dentalimage_ref.insert(
+            #db.dentalimage_ref.insert(
                 
-                ref_code = ref_code,
-                ref_id = ref_id,
-                media_id = mediaid
+                #ref_code = ref_code,
+                #ref_id = ref_id,
+                #media_id = mediaid
             
-            )
+            #)
             
-            mediaurl = URL('my_dentalplan','media','media_download',\
-                           args=[mediaid])
+            #mediaurl = URL('my_dentalplan','media','media_download',\
+                           #args=[mediaid])
 
 
 
+        #except Exception as e:
+            #error = "Upload Image Media File Exception Error - " + str(e)        
+    
+    returnurl = URL('clinic','list_clinic_images',vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,prev_ref_code=prev_ref_code,prev_ref_id=prev_ref_id))
+    return dict(form=form, formheader=formheader,mediaurl=mediaurl,mediafile=mediafile,count=count,error=error,
+                ref_code=ref_code,ref_id=ref_id,prev_ref_code=prev_ref_code,prev_ref_id=prev_ref_id,returnurl=returnurl) 
+
+@auth.requires_membership('webadmin')
+@auth.requires_login()
+def new_image():
+    username = auth.user.first_name + ' ' + auth.user.last_name
+    page=common.getgridpage(request.vars)
+    formheader="New Clinic Image"
+    
+    authuser = ""
+    f = lambda name: name if ((name != "") & (name != None)) else ""
+    authuser = f(auth.user.first_name)  + " " + f(auth.user.last_name)
+
+    providerid = int(common.getkeyvalue(request.vars,'providerid',0))
+    prev_ref_code = request.vars.prev_ref_code
+    prev_ref_id = request.vars.prev_ref_id
+    
+    ref_code = request.vars.ref_code
+    ref_id = request.vars.ref_id
+    clinics = db(db.clinic.id == ref_id).select()
+    
+    form = SQLFORM.factory(
+        Field('clinicname','string',label='Clinic Name', default="" if(len(clinics) != 1) else clinics[0].name ),
+        #Field('browsefile','string',label='File Name'),
+     
+        #Field('csvfile','string',label='CSV File'),
+        Field('title','string',label='Title'),
+        Field('imagedate','date',default=datetime.date.today(), label='Image Date'),
+        Field('description','text',label='Description'),
+        Field('imagedata','text', length=50e+6, label='Image Data')
+    )    
+
+    submit = form.element('input',_type='submit')
+    submit['_value'] = 'Upload Image'    
+
+    #xcsvfile = form.element('input',_id='no_table_csvfile')
+    #xcsvfile['_class'] =  'w3-input w3-border w3-small'    
+    
+    #xbrwfile = form.element('input',_id='no_table_browsefile')
+    #xbrwfile['_type'] =  'file'        
+    #xbrwfile['_class'] =  'w3-input w3-border w3-small'        
+
+    
+    error = ""
+    count = 0
+    mediaurl = ""
+    mediafile = ""
+    mediatype = "image"
+    mediaformat = "jpg"
+    
+    if form.accepts(request,session,keepvalues=True):
+
+        try:
+
+            #upload image
+            if(len(request.vars.imagedata)>0):
+                file_content = None
+                file_content = request.vars.imagedata
+                
+                o = mdpmedia.Media(db, providerid, mediatype, mediaformat)
+                j = {
+                    "mediadata":file_content,
+                   
+                    "title":request.vars.title,
+                    
+                    "mediadate":common.getstringfromdate(datetime.datetime.today(),"%d/%m/%Y"),
+                    "description":request.vars.description,
+                    "appath":request.folder,
+                    "mediatype":mediatype,
+                    "mediaformat":mediaformat,
+                    
+                    "ref_code":ref_code,
+                    "ref_id":ref_id
+                }
+
+                x= json.loads(o.upload_media(j)) 
+
+                mediaid = common.getkeyvalue(x,'mediaid',0)
+                mediaurl = URL('my_dentalplan','media','media_download',\
+                               args=[mediaid])  
+
+           
         except Exception as e:
-            error = "Upload Image Media File Exception Error - " + str(e)        
+            error = "Upload Audio Exception Error - " + str(e)             
+    elif form.errors:
+        x = str(form.errors)
+    else:
+        i = 0    
+    
+    
+    
+    #if form.accepts(request,session,keepvalues=True):
+        #try:
+            #filename = request.vars.csvfile
+            #browse = form.vars.browsefile.filename
+            
+            #x = os.path.abspath(browse)
+            #filePath = os.path.join("\\","media_files")
+            #filePath = os.path.join(filePath,browse)
+     
+            
+           
+            #o = mdpmedia.Media(db, 0, 'image', 'jpg')
+
+            #j = {
+                #"filename":filePath,
+                #"title":"test",
+                #"tooth":"1",
+                #"quadrant":"1",
+                #"mediadate":common.getstringfromdate(datetime.datetime.today(),"%d/%m/%Y"),
+                #"description":form.vars.description,
+                #"appath":request.folder
+            #}
+
+
+            #x= json.loads(o.upload_mediafile(j))            
+
+            #mediaid = common.getkeyvalue(x,'mediaid',0)
+
+            #db.dentalimage_ref.insert(
+                
+                #ref_code = ref_code,
+                #ref_id = ref_id,
+                #media_id = mediaid
+            
+            #)
+            
+            #mediaurl = URL('my_dentalplan','media','media_download',\
+                           #args=[mediaid])
+
+
+
+        #except Exception as e:
+            #error = "Upload Image Media File Exception Error - " + str(e)        
     
     returnurl = URL('clinic','list_clinic_images',vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,prev_ref_code=prev_ref_code,prev_ref_id=prev_ref_id))
     return dict(form=form, formheader=formheader,mediaurl=mediaurl,mediafile=mediafile,count=count,error=error,
@@ -158,6 +546,89 @@ def view_image():
     return dict(username=username,mediaurl=mediaurl,returnurl=returnurl,formA=formA, formheader=formheader,imageid=imageid,authuser=authuser,page=page)        
     
 
+@auth.requires_membership('webadmin')
+@auth.requires_login()
+def new_logo():
+    page=common.getgridpage(request.vars)
+    clinicid = int(common.getkeyvalue(request.vars,"ref_id",0))
+    
+
+    ref_code = common.getkeyvalue(request.vars,"ref_code","CLN")
+    ref_id = common.getkeyvalue(request.vars,"ref_id",0)
+
+    r = db(db.clinic.id == ref_id).select()
+    clinic_ref = r[0].clinic_ref if(len(r)>=0) else ""
+    
+    form = SQLFORM.factory(
+        Field('clinic','string',label='Clinic Code', default=clinic_ref ),
+     
+        Field('title','string',label='Title'),
+        Field('imagedate','date',default=datetime.date.today(), label='Image Date'),
+       
+        Field('imagedata','text', length=50e+6, label='Image Data')
+    )    
+
+    submit = form.element('input',_type='submit')
+    submit['_value'] = 'Upload Image'    
+
+     
+
+    
+    error = ""
+    count = 0
+    mediaurl = ""
+    mediafile = ""
+    mediatype = "image"
+    mediaformat = "jpg"
+    
+    if form.accepts(request,session,keepvalues=True):
+
+        try:
+
+            #upload image
+            if(len(request.vars.imagedata)>0):
+                file_content = None
+                file_content = request.vars.imagedata
+                
+                o = mdpmedia.Media(db, 0, mediatype, mediaformat)
+                j = {
+                    "mediadata":file_content,
+                   
+                    "title":request.vars.title,
+                    
+                    "mediadate":common.getstringfromdate(datetime.datetime.today(),"%d/%m/%Y"),
+                    "appath":request.folder,
+                    "mediatype":mediatype,
+                    "mediaformat":mediaformat,
+                    
+                    "ref_code":ref_code,
+                    "ref_id":ref_id
+                }
+
+                x= json.loads(o.upload_media(j)) 
+
+                mediaid = common.getkeyvalue(x,'mediaid',0)
+                
+                mediaurl = URL('my_dentalplan','media','media_download',\
+                               args=[mediaid])  
+                
+                db(db.clinic.id == clinicid).update(logo_id = mediaid, logo_file = common.getkeyvalue(x,"mediafilename",""))
+
+           
+        except Exception as e:
+            error = "Upload Audio Exception Error - " + str(e)             
+    elif form.errors:
+        x = str(form.errors)
+    else:
+        i = 0    
+    
+    
+
+           
+    
+    returnurl = URL('clinic','update_clinic',vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,clinicid=ref_id))
+    return dict(form=form, pae=page,mediaurl=mediaurl,mediafile=mediafile,count=count,error=error,
+                ref_code=ref_code,ref_id=ref_id,returnurl=returnurl) 
 
 @auth.requires_membership('webadmin')
 @auth.requires_login()
@@ -354,6 +825,7 @@ def list_clinic():
              lambda row: A('Update',_href=URL("clinic","update_clinic",vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,clinicid=row.clinic.id))),
              lambda row: A('Bank Details',_href=URL("clinic","bank_clinic",vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,clinicid=row.clinic.id))),
              lambda row: A('Clinic Images',_href=URL("clinic","list_clinic_images",vars=dict(page=page,ref_code="CLN",ref_id=row.clinic.id,prev_ref_code=ref_code,prev_ref_id=ref_id))),
+             lambda row: A('Clinic Logo',_href=URL("clinic","new_logo",vars=dict(page=page,ref_code="CLN",ref_id=row.clinic.id,prev_ref_code=ref_code,prev_ref_id=ref_id))),
              lambda row: A('Delete',_href=URL("clinic","delete_clinic",vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,clinicid=row.clinic.id)))
             ]
 
@@ -431,6 +903,7 @@ def list_provider_clinics():
              lambda row: A('Update',_href=URL("clinic","update_clinic",vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,clinicid=row.clinic.id))),
              lambda row: A('Bank Details',_href=URL("clinic","bank_clinic",vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,clinicid=row.clinic.id))),
              lambda row: A('Clinic Images',_href=URL("clinic","list_clinic_images",vars=dict(page=page,ref_code="CLN",ref_id=row.clinic.id,prev_ref_code=ref_code,prev_ref_id=ref_id))),
+             lambda row: A('Clinic Logo',_href=URL("clinic","new_logo",vars=dict(page=page,ref_code="CLN",ref_id=row.clinic.id,prev_ref_code=ref_code,prev_ref_id=ref_id))),
              lambda row: A('Delete',_href=URL("clinic","delete_clinic",vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,clinicid=row.clinic.id)))
             ]
 
@@ -508,6 +981,7 @@ def list_prospect_clinics():
              lambda row: A('Update',_href=URL("clinic","update_clinic",vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,clinicid=row.clinic.id))),
              lambda row: A('Bank Details',_href=URL("clinic","bank_clinic",vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,clinicid=row.clinic.id))),
              lambda row: A('Clinic Images',_href=URL("clinic","list_clinic_images",vars=dict(page=page,ref_code="CLN",ref_id=row.clinic.id,prev_ref_code=ref_code,prev_ref_id=ref_id))),
+             lambda row: A('Clinic Logo',_href=URL("clinic","new_logo",vars=dict(page=page,ref_code="CLN",ref_id=row.clinic.id,prev_ref_code=ref_code,prev_ref_id=ref_id))),
              lambda row: A('Delete',_href=URL("clinic","delete_clinic",vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,clinicid=row.clinic.id)))
             ]
 
@@ -651,6 +1125,9 @@ def update_clinic():
     twitter = "" if(len(clinics) == 0) else common.getstring(clinics[0].twitter)
 
     primary_clinic = False if(len(clinics) == 0) else common.getboolean(clinics[0].primary_clinic)
+    
+    isMDP = True if(len(clinics) == 0) else common.getboolean(clinics[0].isMDP)
+    
     formA = SQLFORM.factory(
         Field('clinic_ref','string',default=clinic_ref),
             
@@ -717,14 +1194,17 @@ def update_clinic():
         Field('registration_certificate','string',default=registration_certificate),
         
         Field('notes','text',default=notes),
-        Field('bank_id','integer',default=bank_id)
+        Field('bank_id','integer',default=bank_id),
+        Field('isMDP','boolean', default=isMDP)
     )  
     
     
-    
+    mediaid = int(common.getid(clinics[0].logo_id if(len(clinics) > 0) else 0))
+    mediaurl = URL('my_dentalplan','media','media_download',args=[mediaid])        
     
     
     if formA.accepts(request,session,keepvalues=True):
+      
         
         db.clinic.update_or_insert(((db.clinic.id == clinicid) & (db.clinic.is_active == True)),
                         
@@ -772,7 +1252,7 @@ def update_clinic():
                         RVG_OPG=common.gettruefalse(formA.vars.RVG_OPG) if(formA.vars.RVG_OPG != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].RVG_OPG)),
                         
                         radiation_protection=common.gettruefalse(formA.vars.radiation_protection) if(formA.vars.radiation_protection != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].radiation_protection)),
-                        computers=int(formA.vars.computers) if(formA.vars.computers != "") else ("" if(len(clinics) == 0) else int(common.getid(clinics[0].computers))),
+                        computers=formA.vars.computers if(formA.vars.computers != "") else ("" if(len(clinics) == 0) else clinics[0].computers),
                         
                         network=common.gettruefalse(formA.vars.network) if(formA.vars.network != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].network)),
                         internet=common.gettruefalse(formA.vars.internet) if(formA.vars.internet != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].internet)),
@@ -804,7 +1284,7 @@ def update_clinic():
                         
                         notes=formA.vars.notes if(formA.vars.notes != "") else ("" if(len(clinics) == 0) else common.getstring(clinics[0].notes)),   
 
-
+                        isMDP = common.getboolean(formA.vars.isMDP) if(formA.vars.isMDP != "") else (True if(len(clinics) == 0) else common.getboolean(clinics[0].isMDP)), 
 
                         is_active = True,\
                         modified_on = datetime.date.today(),\
@@ -820,7 +1300,7 @@ def update_clinic():
         
         
     returnurl = URL('clinic','list_clinic',vars=dict(page=page,ref_code=ref_code,ref_id=ref_id))
-    return dict(username=username,returnurl=returnurl,formA=formA, formheader=formheader,clinicid=clinicid,authuser=authuser,page=page)    
+    return dict(username=username,returnurl=returnurl,formA=formA, formheader=formheader,clinicid=clinicid,authuser=authuser,page=page,mediaid=mediaid,mediaurl=mediaurl)    
 
 def acceptOnCreate(form):
     
@@ -975,3 +1455,5 @@ def bank_clinic():
 
     return dict(username=username,formA=formA,formheader=formheader,page=page,returnurl=returnurl,\
                 providerid=0,provider="",providername="",authuser=authuser)
+
+

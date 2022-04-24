@@ -119,9 +119,25 @@ Longitude
 <td class="form_details">
  {{=formA.custom.widget.longitude}}
 </td>
+<td>
+<p style="color:red">MDP Clinic</p>
+</td>
+<td>
+{{=formA.custom.widget.isMDP}}
+</td>
+</tr>
+<tr>
+<td>
+<p style="color:red">MDP Logo</p>
+</td>
+<td>
+<div class="col-sm-6">
+<a data-toggle="modal" data-target="#myModal"><img id="logo"  src="{{=mediaurl}}" ></a>
+</div>
+
+</td>
 
 </tr>
-
 
 </table>
 <br/>
@@ -355,6 +371,8 @@ Twitter
 
 <div style="display:none">
 {{=formA.custom.widget.bank_id}}
+{=formA.custom.widget.logo_id}}
+{{=formA.custom.widget.logo_file}}
 </div>
 
 {{=formA.custom.end}}

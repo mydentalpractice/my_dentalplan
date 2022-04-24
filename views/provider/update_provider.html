@@ -73,6 +73,27 @@ Speciality Description
 <td class="form_details">
 {{=formA.custom.widget.specialization}}
 </td>
+
+<td class="form_details">
+<p style="color:red">MDP Provider</p>
+</td>
+<td class="form_details">
+{{=formA.custom.widget.isMDP}}
+</td>
+</tr>
+
+
+<tr>
+<td>
+<p style="color:red">MDP Logo</p>
+</td>
+<td>
+<div class="col-sm-6">
+<a data-toggle="modal" data-target="#myModal"><img id="logo"  src="{{=mediaurl}}" ></a>
+</div>
+
+</td>
+
 </tr>
 
 </table>
@@ -308,6 +329,9 @@ IFS Code
 {{=formA.custom.widget.pa_day}}
 {{=formA.custom.widget.pa_month}}
 {{=formA.custom.widget.pa_location}}
+
+{{=formA.custom.widget.logo_id}}
+{{=formA.custom.widget.logo_file}}
 
 
 

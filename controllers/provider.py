@@ -19,6 +19,7 @@ from applications.my_pms2.modules  import common
 from applications.my_pms2.modules  import mail
 from applications.my_pms2.modules  import states
 from applications.my_pms2.modules  import mdpbank
+from applications.my_pms2.modules  import mdpmedia
 from applications.my_pms2.modules  import logger
 
 
@@ -654,10 +655,11 @@ def list_provider():
  
     
 	
-    orderby = (db.provider.provider)
+    orderby = (~db.provider.id)
     exportlist = dict( csv=False,csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)
     links = [lambda row: A('Update',_href=URL("provider","update_provider",vars=dict(page=common.getgridpage(request.vars)),args=[row.id])),\
              lambda row: A('Clincs',_href=URL("clinic","list_clinic",vars=dict(page=common.getgridpage(request.vars),prev_ref_code="PRV", prev_ref_id =row.id,ref_code="PRV",ref_id=row.id))),
+             lambda row: A('Logo',_href=URL("provider","new_logo",vars=dict(page=common.getgridpage(request.vars),prev_ref_code="PRV", prev_ref_id =row.id,ref_code="PRV",ref_id=row.id))),
              lambda row: A('Assigned',_href=URL("report","assignedmembersreportparam",vars=dict(providerid=row.id))),\
              #lambda row: A('Captiation Report',_href=URL("report","providercapitationreportparam",vars=dict(providerid=row.id))),\
              lambda row: A('Register',_href=URL("provider","emailregister",vars=dict(providerid=row.id))),\
@@ -822,8 +824,9 @@ def acceptOnUpdate(form):
     
     pan = form.vars.taxid
     regno = form.vars.registration
+    isMDP = form.vars.isMDP
     
-    db(db.provider.provider==form.vars.provider).update(pa_pan = pan, pa_regno = regno)
+    db(db.provider.provider==form.vars.provider).update(pa_pan = pan, pa_regno = regno,isMDP=isMDP)
     
     return
 
@@ -850,7 +853,8 @@ def update_provider():
         providerid = int(request.args[0])
         session.providerid = providerid
     elif (len(request.vars)>0): # called on grid next page, get the providerid from session.
-        providerid = session.providerid
+	providerid = int(request.vars.providerid)
+        #providerid = session.providerid
 
 
 
@@ -889,7 +893,8 @@ def update_provider():
     db.provider.taxid.writable = True
     db.provider.speciality.requires = IS_IN_DB(db((db.speciality_default.id>0)),db.speciality_default.id, '%(speciality)s')
 
-   
+    mediaid = int(common.getid(rows[0].logo_id if(len(rows) > 0) else 0))
+    mediaurl = URL('my_dentalplan','media','media_download',args=[mediaid])         
 
 
 
@@ -945,7 +950,7 @@ def update_provider():
     ## redirect on Items, with PO ID and return URL
     page=common.getgridpage(request.vars)
     returnurl = URL('provider','list_provider',vars=dict(page=page))
-    return dict(username=username,returnurl=returnurl,formA=formA, formBank=formBank,formheader=formheader,providerid=providerid,authuser=authuser,page=page)
+    return dict(username=username,returnurl=returnurl,formA=formA, formBank=formBank,formheader=formheader,providerid=providerid,authuser=authuser,page=page,mediaurl=mediaurl)
 
 
 @auth.requires_login()
@@ -1275,3 +1280,87 @@ def xproviderbankdetails():
         
     return dict(username=username,formA=formA,formheader=formheader,page=page,returnurl=returnurl,\
                 providerid=providerid,provider=provider,providername=providername,authuser=authuser)
+
+@auth.requires_membership('webadmin')
+@auth.requires_login()
+def new_logo():
+    page=common.getgridpage(request.vars)
+    providerid = int(common.getkeyvalue(request.vars,"ref_id",0))
+    
+
+    ref_code = common.getkeyvalue(request.vars,"ref_code","PST")
+    ref_id = common.getkeyvalue(request.vars,"ref_id",0)
+
+    r = db(db.provider.id == ref_id).select()
+    provider_code = r[0].provider if(len(r)>=0) else ""
+
+    form = SQLFORM.factory(
+        Field('provider','string',label='Provider Code', default=provider_code ),
+
+        Field('title','string',label='Title'),
+        Field('imagedate','date',default=datetime.date.today(), label='Image Date'),
+
+        Field('imagedata','text', length=50e+6, label='Image Data')
+    )    
+
+    submit = form.element('input',_type='submit')
+    submit['_value'] = 'Upload Image'    
+
+
+
+
+    error = ""
+    count = 0
+    mediaurl = ""
+    mediafile = ""
+    mediatype = "image"
+    mediaformat = "jpg"
+
+    if form.accepts(request,session,keepvalues=True):
+
+	try:
+
+	    #upload image
+	    if(len(request.vars.imagedata)>0):
+		file_content = None
+		file_content = request.vars.imagedata
+
+		o = mdpmedia.Media(db, providerid, mediatype, mediaformat)
+		j = {
+		    "mediadata":file_content,
+
+		    "title":request.vars.title,
+
+		    "mediadate":common.getstringfromdate(datetime.datetime.today(),"%d/%m/%Y"),
+		    "appath":request.folder,
+		    "mediatype":mediatype,
+		    "mediaformat":mediaformat,
+
+		    "ref_code":ref_code,
+		    "ref_id":ref_id
+		}
+
+		x= json.loads(o.upload_media(j)) 
+
+		mediaid = common.getkeyvalue(x,'mediaid',0)
+
+		mediaurl = URL('my_dentalplan','media','media_download',\
+		               args=[mediaid])  
+
+		db(db.provider.id == providerid).update(logo_id = mediaid, logo_file = common.getkeyvalue(x,"mediafilename",""))
+
+
+	except Exception as e:
+	    error = "Upload Audio Exception Error - " + str(e)             
+    elif form.errors:
+	x = str(form.errors)
+    else:
+	i = 0    
+
+
+
+
+
+    returnurl = URL('provider','update_provider',vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,providerid=ref_id))
+    return dict(form=form, pae=page,mediaurl=mediaurl,mediafile=mediafile,count=count,error=error,
+                ref_code=ref_code,ref_id=ref_id,returnurl=returnurl) 

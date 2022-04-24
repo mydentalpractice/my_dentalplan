@@ -480,6 +480,10 @@ db.define_table('clinic',
                 
                 Field('state_dental_registration','string'),
                 Field('registration_certificate','string'),
+                Field('isMDP', 'boolean',default=True),
+                Field('logo_id', 'integer'),
+                Field('logo_file', 'string'),
+                
                 
                 Field('notes','text'),
                 auth.signature                
@@ -1117,6 +1121,10 @@ db.define_table('provider',
                 Field('imageid','integer'),                
                 Field('IND_VC','boolean',default=False),
                 Field('available','boolean',default=True),
+                Field('isMDP', 'boolean',default=True),
+                Field('logo_id', 'integer'),
+                Field('logo_file', 'string'),
+                
                 
                 auth.signature,
                 format='%(providername)s (%(provider)s')
@@ -1212,6 +1220,9 @@ db.define_table('prospect',
                 
                 Field('bankid','reference providerbank'),                
                 Field('newcity', 'string'),
+                Field('isMDP', 'boolean',default=True),
+                Field('logo_id', 'integer'),
+                Field('logo_file', 'string'),
                 
                 auth.signature,
                 format='%(providername)s (%(provider)s')
@@ -1540,12 +1551,15 @@ db.define_table('treatment',
                 Field('voucher_code','string'),
                 Field('promo_code','string'),
                 Field('wallet_type', 'string' ),                
+                Field('WPBA_response', 'text' ),                
                 Field('authorized', 'boolean'),
                 Field('treatmentplan','reference treatmentplan',label='Member/Patient'),
                 Field('provider','reference provider',label='Member/Patient'),
                 Field('doctor', 'integer',represent=lambda v, r: 0 if v is None else v, label=T('Dentist'), default=''),
                 Field('clinicid', 'integer',represent=lambda v, r: 0 if v is None else v, label=T('Clinic'), default=''),
                 Field('dentalprocedure','reference procedurepriceplan',label='Member/Patient'),
+                Field('benefit_applied', 'boolean'),
+                
                 auth.signature,
                 format = '%(treatment)s'
                 )
@@ -3774,6 +3788,7 @@ db.define_table('vw_payments_fast',
     Field('memberid', 'integer',represent=lambda v, r: 0 if v is None else v),
     Field('patientid', 'integer',represent=lambda v, r: 0 if v is None else v),
     Field('providerid','integer',represent=lambda v, r: 0 if v is None else v),
+   
     Field('voucher_code', 'string',represent=lambda v, r: '' if v is None else v),
     #Field('lastpayment', 'double',represent=lambda v, r: 0 if v is None else v),
     Field('lastpaymentdate', 'date',represent=lambda v, r: '' if v is None else v,requires=IS_DATE(format=T('%d/%m/%Y'))),
@@ -4901,6 +4916,19 @@ db.define_table('rules',
                 )
 db.rules._singular = "rules"
 db.rules._plural   = "rules"
+
+
+db.define_table('mdp_nonmdp',
+                Field('prospect_id','integer'),
+                Field('provider_id','integer'),
+                Field('clinic_id','integer'),
+                Field('image_id','integer')
+                
+                
+                )
+db.mdp_nonmdp._singular = "mdp_nonmdp"
+db.mdp_nonmdp._plural   = "mdp_nonmdp"  
+
 
 def geocode2(form):
     from gluon.tools import geocode
