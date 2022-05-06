@@ -3917,7 +3917,7 @@ def abhiclreport():
     submit = form.element('input',_type='submit')
     submit['_style'] = 'display:none;'
     
-    returnurl=URL('default','index')
+    returnurl=URL('default','main')
     
     if form.accepts(request,session,keepvalues=True):
         providerid = 0 if(form.vars.provider == None) else int(common.getid(form.vars.provider))
@@ -3950,4 +3950,117 @@ def abhiclreport():
     return dict(username=username,returnurl=returnurl,form=form,formheader=formheader)
 
 
+#@auth.requires_login()
+def appointmentreportparams():
 
+    username = auth.user.first_name + ' ' + auth.user.last_name
+    formheader = "Appointment Report"
+        
+    form = SQLFORM.factory(
+        Field('fromdate',
+        'date',widget = lambda field, value:SQLFORM.widgets.date.widget(field, value, _style='height:30px'), label='From Date',default=request.now,length=20,requires = IS_DATE(format=T('%d/%m/%Y'),error_message='must be d/m/Y!')),        
+        Field('todate',
+        'date',widget = lambda field, value:SQLFORM.widgets.date.widget(field, value, _style='height:30px'), label='To Date',default=request.now,length=20,requires = IS_DATE(format=T('%d/%m/%Y'),error_message='must be d/m/Y!'))       
+    )
+   
+    
+    submit = form.element('input',_type='submit')
+    submit['_style'] = 'display:none;'
+    
+    returnurl=URL('default','index')
+    
+    if form.accepts(request,session,keepvalues=True):
+        providerid = 0 
+        fromdate = (form.vars.fromdate).strftime("%d/%m/%Y")
+        todate = (form.vars.todate).strftime("%d/%m/%Y")
+        
+        redirect(URL('report','appointmentreportcsv',\
+                     vars=dict(fromdate=fromdate, todate=todate)))
+        
+    elif form.errors:
+        response.flash = "Error - Appointment Report! " + str(form.errors)
+        redirect(returnurl)
+        
+    
+    return dict(username=username,returnurl=returnurl,form=form,formheader=formheader)
+
+
+
+def appointmentreportcsv():
+    logger.loggerpms2.info("Enter Appointment Report CSV")
+    
+    db = current.globalenv['db']
+    
+    username = auth.user.first_name + ' ' + auth.user.last_name
+    formheader = "Appointment Report"
+    returnurl=URL('default','main')
+   
+    fromdate = datetime.datetime.strptime(request.vars.fromdate,"%d/%m/%Y")
+    todate = datetime.datetime.strptime(request.vars.todate,"%d/%m/%Y")
+    
+    day = timedelta(days=1)
+    todate = todate + day
+        
+    query=((db.vw_appointments.is_active==True) & \
+            (db.vw_appointments.f_start_time >= fromdate) & (db.vw_appointments.f_start_time <= todate))
+    
+    fields = [
+        db.vw_appointments.f_uniqueid,
+        db.vw_appointments.f_start_time,
+        db.vw_appointments.f_status,
+        db.vw_appointments.hmopatientmember,
+        db.vw_appointments.membercode,
+        db.vw_appointments.f_patientname,
+        db.vw_appointments.cell,
+        db.vw_appointments.provname,
+        db.vw_appointments.provcell
+        
+    ]
+    
+    headers={
+        
+        'vw_appointments.f_uniqueid':'Appt ID',
+        'vw_appointments.f_start_time':'Start',
+        'vw_appointments.f_status':'Status',
+        'vw_appointments.hmopatientmember':'Member(checked)/WalkIn',
+        'vw_appointments.membercode':'Member ID',
+        'vw_appointments.f_patientname':'Patient',
+        'vw_appointments.cell':'Pat Cell',
+        'vw_appointments.provname':'Provider',
+        'vw_appointments.provcell':'Prov Cell'
+    
+    }
+            
+    
+    exportlist = dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False, xml=False)    
+
+
+    export_classes = dict(csv=(CSVExporter, 'CSV'), json=False, html=False,
+                          tsv=False, xml=False, csv_with_hidden_cols=False,
+                          tsv_with_hidden_cols=False)    
+    
+    
+
+    
+
+    formA = SQLFORM.grid(query=query,
+                        headers=headers,
+                        fields=fields,
+                        paginate=10,
+                        maxtextlength = 20,
+                        csv=True,
+                        exportclasses=export_classes,
+                        
+                        links_in_grid=False,
+                        searchable=False,
+                        create=False,
+                        deletable=False,
+                        editable=False,
+                        details=False,
+                        user_signature=True
+                        )           
+    
+    
+    
+    
+    return dict(formA=formA,username=username,formheader=formheader, returnurl=returnurl)
