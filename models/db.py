@@ -308,6 +308,7 @@ db.benefit_master_x_plan._plural   = "benefit_master_x_plan"
 
 db.define_table('benefit_master_x_member',
                 Field('member_id','integer'),
+                Field('patient_id','integer'),
                 Field('benefit_master_id','integer'),
                 Field('plan_id','integer'),
                 Field('plan_code','string')
@@ -1810,6 +1811,9 @@ db.define_table('urlproperties',
                 Field('vw_url','text'),
                 Field('vw_stg_url','text'),
                 Field('vw_prod_url','text'),
+                
+                Field('mdp_contact_cell','string',default='18001027526'),
+                Field('mdp_contact_email','string',default='appointments@mydentalplan.in'),
 
                 auth.signature
                 )
@@ -4929,6 +4933,32 @@ db.define_table('mdp_nonmdp',
 db.mdp_nonmdp._singular = "mdp_nonmdp"
 db.mdp_nonmdp._plural   = "mdp_nonmdp"  
 
+
+ 
+
+
+db.define_table('vw_agent_prospect_clinic',
+                Field('id','integer'),
+                Field('agent_id','integer'),
+                Field('prospect_id','string'),
+                Field('clinic_id','integer'),
+                Field('agent_add_date','date'),
+                Field('prospect_add_date','date'),
+                Field('clinic_add_date','date'),
+                Field('agent','string'),
+                Field('agent_name','string'),
+                Field('providername','string'),
+                Field('clinic_ref','string'),
+                Field('clinic_name','string'),
+                Field('clinic_city','string'),
+                Field('clinic_pin','string')
+                
+                
+                
+                )
+
+db.vw_agent_prospect_clinic._singular = "vw_agent_prospect_clinic"
+db.vw_agent_prospect_clinic._plural   = "vw_agent_prospect_clinic"    
 
 def geocode2(form):
     from gluon.tools import geocode
