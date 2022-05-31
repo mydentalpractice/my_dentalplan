@@ -29,6 +29,118 @@ import time
 months = ['January','February','March','April','May','June','July','August','September','October','November','December']
 
 
+@auth.requires_login()
+def agentprospectclinicreportparams():
+    
+    username = auth.user.first_name + ' ' + auth.user.last_name
+    formheader = "Agent Prospect Clinic  Report"
+        
+    form = SQLFORM.factory(
+        Field('agent', default="SPAT_001",requires=IS_EMPTY_OR(IS_IN_DB(db(db.agent.is_active == True), db.agent.agent, '%(agent)s : %(name)s')))
+    )
+   
+    
+    submit = form.element('input',_type='submit')
+    submit['_style'] = 'display:none;'
+    
+    returnurl=URL('default','index')
+    
+    if form.accepts(request,session,keepvalues=True):
+        
+        agent = form.vars.agent
+
+        redirect(URL('report','agentprospectclinicreportcsv',\
+             vars=dict(agent=agent)))     
+                
+    elif form.errors:
+        response.flash = "Error - AGENT PROSPECT CLINIC Report! " + str(form.errors)
+        redirect(returnurl)
+        
+    
+    return dict(username=username,returnurl=returnurl,form=form,formheader=formheader)
+
+def agentprospectclinicreportcsv():
+    
+  
+    logger.loggerpms2.info("Enter AGENT PROSPECT CLINIC CSV")
+    username = auth.user.first_name + ' ' + auth.user.last_name
+    formheader = "AGNPRSPCLN Report"
+    returnurl=URL('default','index')
+    
+   
+    agent=request.vars.agent
+    qry = ""
+    
+    if(agent==""):
+        qry = (db.vw_agent_prospect_clinic.id > 0)
+    else:
+        qry = ((db.vw_agent_prospect_clinic.id > 0) & (db.vw_agent_prospect_clinic.agent == agent))
+    
+    
+       
+        
+    fields = (
+              db.vw_agent_prospect_clinic.agent,
+              db.vw_agent_prospect_clinic.agent_name,
+              db.vw_agent_prospect_clinic.agent_add_date,
+              db.vw_agent_prospect_clinic.providername,
+              db.vw_agent_prospect_clinic.prospect_add_date,
+              
+              db.vw_agent_prospect_clinic.clinic_ref,
+              db.vw_agent_prospect_clinic.clinic_name,
+              db.vw_agent_prospect_clinic.clinic_city,
+              db.vw_agent_prospect_clinic.clinic_pin,
+              db.vw_agent_prospect_clinic.clinic_add_date
+    )
+    
+    
+    headers = {
+            'vw_agent_prospect_clinic.agent':'Agent',
+            'vw_agent_prospect_clinic.agent_name':'Agent Name',
+            'vw_agent_prospect_clinic.agent_add_date':'Agent Add Date',
+            'vw_agent_prospect_clinic.providername':'Prospect',
+            'vw_agent_prospect_clinic.prospect_add_date':'Prospect Add Date',
+    
+            'vw_agent_prospect_clinic.clinic_ref':'Clinic Ref',
+            'vw_agent_prospect_clinic.clinic_name':'Clinic Name',
+            'vw_agent_prospect_clinic.clinic_city':'Clinic  City',
+            'vw_agent_prospect_clinic.clinic_pin':'Clinic Pin',
+            'vw_agent_prospect_clinic.clinic_add_date':'Clinic Add Date'
+
+        
+        }
+    
+   
+
+    
+    orderby = None 
+    exportlist = dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False, xml=False)    
+    
+    
+    export_classes = dict(csv=(CSVExporter, 'CSV'), json=False, html=False,
+                          tsv=False, xml=False, csv_with_hidden_cols=False,
+                          tsv_with_hidden_cols=False)    
+
+    
+    formAgents = SQLFORM.grid(query=qry,
+
+                                headers=headers,
+                                fields=fields,
+                                paginate=10,
+                                maxtextlength = 20,
+                                csv=True,
+                                exportclasses=export_classes,
+                                links_in_grid=False,
+                                searchable=False,
+                                create=False,
+                                deletable=False,
+                                editable=False,
+                                details=False,
+                                user_signature=True
+                               )           
+    
+    return dict(formAgents=formAgents,username=username,formheader=formheader, returnurl=returnurl)
+
 
 class CSVExporter(object):
     """This class is used when grid's table contains reference key id.
