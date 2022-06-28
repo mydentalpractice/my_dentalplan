@@ -158,7 +158,12 @@ def list_prospect():
 
 
     
-    fields=(db.prospect.provider,
+    fields=(
+            
+           
+            db.agent.agent,
+            db.agent.name,
+            db.prospect.provider,
             db.prospect.providername,
             db.prospect.practicename,
       
@@ -167,11 +172,17 @@ def list_prospect():
             db.prospect.cell,
             db.prospect.email,
             db.prospect.newcity,
+            db.prospect.pa_date,
+            db.prospect.pa_approvedon,
             db.prospect.pa_accepted,
             db.prospect.pa_approved,
             db.prospect.status)
     
     headers={
+       
+   
+        'agent.agent':'Agent',
+        'agent.name':'Agent Name',
         'prospect.provider':'Prospect',
         'prospect.providername':'Name',
         'prospect.practicename' : 'Practice',
@@ -182,6 +193,8 @@ def list_prospect():
         'prospect.email' : 'Email',
         'prospect.newcity' : 'New City',
         'prospect.status' : 'Status',
+        'prospect.pa_date' : 'Accept Date',
+        'prospect.pa_approvedon' : 'Approval Date',
         'prospect.pa_accepted':'Acpt',
         'prospect.pa_approved': 'Apr'
         }    
@@ -201,18 +214,18 @@ def list_prospect():
     
     orderby = (~db.prospect.id)
     exportlist = dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)
-    links = [lambda row: A('Update',_href=URL("prospect","update_prospect",vars=dict(page=common.getgridpage(request.vars)),args=[row.id])),
-             lambda row: A('Clincs',_href=URL("clinic","list_clinic",vars=dict(page=common.getgridpage(request.vars),prev_ref_code=ref_code, prev_ref_id =ref_id,ref_code="PST",ref_id=row.id))),
-             lambda row: A('Logo',_href=URL("prospect","new_logo",vars=dict(page=common.getgridpage(request.vars), prev_ref_id =ref_id,ref_code="PST",ref_id=row.id))),
-             lambda row: A('Bank Details',_href=URL("prospect","bank_prospect",vars=dict(page=page,prev_ref_code=ref_code, prev_ref_id =ref_id,ref_code="PST",ref_id=row.id,prospectid=row.id))),
-             lambda row: A('EmailPA',_href=URL("prospect","emailpa",vars=dict(prospectid=row.id))),
-             lambda row: A('ApprovePA',_href=URL("prospect","viewprovideragreement",vars=dict(prospectid=row.id))),
-             lambda row: A('EnrollPA',_href=URL("prospect","enroll_prospect",vars=dict(prospectid=row.id))),
-             lambda row: A('Delete',_href=URL("prospect","delete_prospect",vars=dict(prospectid=row.id)))
+    links = [lambda row: A('Update',_href=URL("prospect","update_prospect",vars=dict(page=common.getgridpage(request.vars)),args=[row.prospect.id])),
+             lambda row: A('Clincs',_href=URL("clinic","list_clinic",vars=dict(page=common.getgridpage(request.vars),prev_ref_code=ref_code, prev_ref_id =ref_id,ref_code="PST",ref_id=row.prospect.id))),
+             lambda row: A('Logo',_href=URL("prospect","new_logo",vars=dict(page=common.getgridpage(request.vars), prev_ref_id =ref_id,ref_code="PST",ref_id=row.prospect.id))),
+             lambda row: A('Bank Details',_href=URL("prospect","bank_prospect",vars=dict(page=page,prev_ref_code=ref_code, prev_ref_id =ref_id,ref_code="PST",ref_id=row.prospect.id,prospectid=row.prospect.id))),
+             lambda row: A('EmailPA',_href=URL("prospect","emailpa",vars=dict(prospectid=row.prospect.id))),
+             lambda row: A('ApprovePA',_href=URL("prospect","viewprovideragreement",vars=dict(prospectid=row.prospect.id))),
+             lambda row: A('EnrollPA',_href=URL("prospect","enroll_prospect",vars=dict(prospectid=row.prospect.id))),
+             lambda row: A('Delete',_href=URL("prospect","delete_prospect",vars=dict(prospectid=row.prospect.id)))
             ]
 
 
-    left = [db.prospect.on(db.prospect.id==db.prospect_ref.prospect_id)]
+    left = [db.prospect.on((db.prospect.id==db.prospect_ref.prospect_id) & (db.prospect_ref.ref_code == ref_code)),db.agent.on(db.agent.id == db.prospect_ref.ref_id)]
     form = SQLFORM.grid(query=query,
                  headers=headers,
                  fields=fields,
