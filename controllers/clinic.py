@@ -552,6 +552,9 @@ def new_logo():
     page=common.getgridpage(request.vars)
     clinicid = int(common.getkeyvalue(request.vars,"ref_id",0))
     
+    isMDP = common.getboolean(common.getkeyvalue(request.vars,'isMDP','True'))
+    prev_ref_code = "PST" if (common.getstring(request.vars.prev_ref_code) == "") else request.vars.prev_ref_code
+    prev_ref_id = 0 if (common.getstring(request.vars.prev_ref_id) == "") else int(request.vars.prev_ref_id)
 
     ref_code = common.getkeyvalue(request.vars,"ref_code","CLN")
     ref_id = common.getkeyvalue(request.vars,"ref_id",0)
@@ -626,7 +629,7 @@ def new_logo():
 
            
     
-    returnurl = URL('clinic','update_clinic',vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,clinicid=ref_id))
+    returnurl = URL('clinic','update_clinic',vars=dict(isMPD=isMDP, page=page,ref_code=prev_ref_code,ref_id=prev_ref_id,clinicid=ref_id))
     return dict(form=form, pae=page,mediaurl=mediaurl,mediafile=mediafile,count=count,error=error,
                 ref_code=ref_code,ref_id=ref_id,returnurl=returnurl) 
 
@@ -780,6 +783,7 @@ def list_clinic():
     username = auth.user.first_name + ' ' + auth.user.last_name
     formheader = "Clinic List"
     page = common.getpage1(request.vars.page)
+    isMDP = common.getboolean(common.getkeyvalue(request.vars,'isMDP','True'))
 
     prev_ref_code = "PRV" if (common.getstring(request.vars.prev_ref_code) == "") else request.vars.prev_ref_code
     prev_ref_id = 0 if (common.getstring(request.vars.prev_ref_id) == "") else int(request.vars.prev_ref_id)
@@ -822,11 +826,11 @@ def list_clinic():
     orderby = (db.clinic.clinic_ref)
     exportlist = dict( csv=False,csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)
     links = [
-             lambda row: A('Update',_href=URL("clinic","update_clinic",vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,clinicid=row.clinic.id))),
-             lambda row: A('Bank Details',_href=URL("clinic","bank_clinic",vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,clinicid=row.clinic.id))),
-             lambda row: A('Clinic Images',_href=URL("clinic","list_clinic_images",vars=dict(page=page,ref_code="CLN",ref_id=row.clinic.id,prev_ref_code=ref_code,prev_ref_id=ref_id))),
-             lambda row: A('Clinic Logo',_href=URL("clinic","new_logo",vars=dict(page=page,ref_code="CLN",ref_id=row.clinic.id,prev_ref_code=ref_code,prev_ref_id=ref_id))),
-             lambda row: A('Delete',_href=URL("clinic","delete_clinic",vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,clinicid=row.clinic.id)))
+             lambda row: A('Update',_href=URL("clinic","update_clinic",vars=dict(isMDP=isMDP,page=page,ref_code=ref_code,ref_id=ref_id,prev_ref_code=prev_ref_code,prev_ref_id=prev_ref_id,clinicid=row.clinic.id))),
+             lambda row: A('Bank Details',_href=URL("clinic","bank_clinic",vars=dict(isMDP=isMDP,page=page,ref_code=ref_code,ref_id=ref_id,prev_ref_code=ref_code,prev_ref_id=ref_id,clinicid=row.clinic.id))),
+             lambda row: A('Clinic Images',_href=URL("clinic","list_clinic_images",vars=dict(isMDP=isMDP,page=page,ref_code="CLN",ref_id=row.clinic.id,prev_ref_code=ref_code,prev_ref_id=ref_id))),
+             lambda row: A('Clinic Logo',_href=URL("clinic","new_logo",vars=dict(isMDP=isMDP,page=page,ref_code="CLN",ref_id=row.clinic.id,prev_ref_code=ref_code,prev_ref_id=ref_id))),
+             lambda row: A('Delete',_href=URL("clinic","delete_clinic",vars=dict(isMDP=isMDP,page=page,ref_code=ref_code,ref_id=ref_id,clinicid=row.clinic.id)))
             ]
 
     
@@ -847,7 +851,12 @@ def list_clinic():
                  user_signature=False
                 )            
 
-    returnurl = URL('prospect','list_prospect',vars=dict(page=page,ref_code=prev_ref_code,ref_id=prev_ref_id))
+    returnurl = ""
+    if(ref_code == "PST"):
+        returnurl = URL('prospect','list_prospect',vars=dict(isMDP=isMDP,page=page,ref_code="AGN",ref_id=0))
+    else:
+        returnurl = URL('provider','list_provider',vars=dict(isMDP=isMDP,page=page,ref_code="PRV",ref_id=0)) 
+       
     return dict(username=username,returnurl=returnurl,form=form, formheader=formheader,page=common.getgridpage(request.vars),ref_code=ref_code,ref_id=ref_id,\
                 prev_ref_code=prev_ref_code,prev_ref_id=prev_ref_id)    
 
@@ -1017,11 +1026,13 @@ def update_clinic():
     authuser = ""
     f = lambda name: name if ((name != "") & (name != None)) else ""
     authuser = f(auth.user.first_name)  + " " + f(auth.user.last_name)
-
+    isMDP = common.getboolean(common.getkeyvalue(request.vars,'isMDP','True'))
 
     ref_code = request.vars.ref_code
     ref_id = request.vars.ref_id
  
+    prev_ref_code = common.getkeyvalue(request.vars,"prev_ref_code",ref_code)
+    prev_ref_id = int(common.getid(common.getkeyvalue(request.vars,"prev_ref_id","0")))
     
     clinicid = 0 if((common.getstring(request.vars.clinicid) == "")) else request.vars.clinicid
     
@@ -1126,7 +1137,7 @@ def update_clinic():
 
     primary_clinic = False if(len(clinics) == 0) else common.getboolean(clinics[0].primary_clinic)
     
-    isMDP = True if(len(clinics) == 0) else common.getboolean(clinics[0].isMDP)
+    #isMDP = True if(len(clinics) == 0) else common.getboolean(clinics[0].isMDP)
     
     formA = SQLFORM.factory(
         Field('clinic_ref','string',default=clinic_ref),
@@ -1299,7 +1310,7 @@ def update_clinic():
         response.flash = 'Clinic formA has errors ' + str(formA.errors)
         
         
-    returnurl = URL('clinic','list_clinic',vars=dict(page=page,ref_code=ref_code,ref_id=ref_id))
+    returnurl = URL('clinic','list_clinic',vars=dict(isMDP=isMDP,page=page,ref_code=ref_code,ref_id=ref_id,prev_ref_code=prev_ref_code,prev_ref_id=prev_ref_id))
     return dict(username=username,returnurl=returnurl,formA=formA, formheader=formheader,clinicid=clinicid,authuser=authuser,page=page,mediaid=mediaid,mediaurl=mediaurl)    
 
 def acceptOnCreate(form):

@@ -92,14 +92,29 @@
   <li><a href="{{= URL('company', 'list_company')}}" ><b style="font-size:18px">Company</b></a></li>
   <li><a href="{{=URL('plan', 'list_plan')}}" ></i><b style="font-size:18px">Plan</b></a></li>
   <li><a href="{{=URL('plan', 'list_procedurepriceplan')}}" ></i><b style="font-size:18px">Procedure Price Plan</b></a></li>
-  <li><a href="{{=URL('provider', 'list_provider')}}" ></i><b style="font-size:18px">Provider</b></a></li>
+ 
   <li><a href="{{=URL('agent', 'list_agent')}}" ></i><b style="font-size:18px">Agent</b></a></li>
   <li><a href="{{=URL('procedure', 'list_procedure')}}" ></i><b style="font-size:18px">Procedure</b></a></li>
   <li><a href="{{=URL('company', 'list_groupregion')}}" ></i><b style="font-size:18px">Region</b></a></li>
   <li><a href="{{=URL('company', 'list_cities')}}" ></i><b style="font-size:18px">City</b></a></li>
   <li><a href="{{=URL('doctor', 'list_roles')}}" ></i><b style="font-size:18px">Roles</b></a></li>
   <li><a href="{{=URL('doctor', 'list_specialities')}}" ></i><b style="font-size:18px">Specialities</b></a></li>
-  <li><a href="{{=URL('prospect', 'list_prospect')}}" ></i><b style="font-size:18px">Prospects</b></a></li>
+  <li class="w3-dropdown-hover">
+    <a href="#"><b style="font-size:18px">Providers</b><i class="fa fa-caret-down"></i></a>
+    <div class="w3-dropdown-content w3-white w3-card-4">
+      <a href="{{=URL('provider', 'list_provider',vars=dict(isMDP = True))}}" ></i><b style="font-size:18px">MDP Providers</b></a>
+      <a href="{{=URL('provider', 'list_provider',vars=dict(isMDP =False))}}" ></i><b style="font-size:18px">Non-MDP Providers</b></a>
+    </div>
+  </li>
+  
+  <li class="w3-dropdown-hover">
+    <a href="#"><b style="font-size:18px">Prospects</b><i class="fa fa-caret-down"></i></a>
+    <div class="w3-dropdown-content w3-white w3-card-4">
+      <a href="{{=URL('prospect', 'list_prospect',vars=dict(isMDP = True))}}" ></i><b style="font-size:18px">MDP Prospects</b></a>
+      <a href="{{=URL('prospect', 'list_prospect',vars=dict(isMDP =False))}}" ></i><b style="font-size:18px">Non-MDP Prospects</b></a>
+    </div>
+  </li>
+  
   <li><a href="{{=URL('homeassessment', 'ha_dashboard')}}" ></i><b style="font-size:18px">Home Assessment</b></a></li>
   <li class="w3-dropdown-hover">
     <a href="#"><b style="font-size:18px">Clinic List</b><i class="fa fa-caret-down"></i></a>

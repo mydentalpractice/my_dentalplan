@@ -8,6 +8,7 @@
 ## if SSL/HTTPS is properly configured and you want all HTTP requests to
 ## be redirected to HTTPS, uncomment the line below:
 # request.requires_https()
+#
 
 if not request.env.web2py_runtime_gae:
     
@@ -686,7 +687,8 @@ db.define_table('hmoplan',
                 Field('walletamount','double',default=0),
                 Field('authorizationrequired','boolean',default=False),
                 Field('company_code','string',default=None),
-                
+                Field('plan_details','text',default=None),
+                Field('mdp_family','boolean',default=False),
                 auth.signature,
                 format = '%(name)s (%(hmoplancode)s)'
                )
@@ -2777,7 +2779,22 @@ db.define_table('vw_memberpatientlist_fast',
                 Field('cell','string'), 
                 Field('email','string'), 
                 Field('hmopatientmember','boolean'),
-                Field('pattern','string')
+                Field('fname','string'),
+                Field('mname','string'),
+                Field('lname','string'),
+                Field('premstartdt','date'),
+                Field('premenddt','date'),
+                Field('patienttype','string'),
+                Field('relation','string'),
+                Field('memberorder','integer'),
+                Field('pattern','text'),
+                Field('plan_details','text'),
+                Field('plan_id','integer'),
+                Field('plan_code','string'),
+                Field('plan_name','string'),
+                Field('company_code','string')
+                
+                
                 )
 db.vw_memberpatientlist_fast._singular = "vw_memberpatientlist_fast"
 db.vw_memberpatientlist_fast_plural   = "vw_memberpatientlist+fast"
@@ -3300,6 +3317,7 @@ db.define_table('vw_treatmentprocedure',
                 Field('procedurefee','double',default=0),
                 Field('copay','double',default=0),
                 Field('inspays','double',default=0),
+                Field('netcopay','double',default=0),
                 Field('companypays','double',default=0),
                 Field('quadrant','string'),
                 Field('tooth','string'),
@@ -4934,7 +4952,6 @@ db.mdp_nonmdp._singular = "mdp_nonmdp"
 db.mdp_nonmdp._plural   = "mdp_nonmdp"  
 
 
- 
 
 
 db.define_table('vw_agent_prospect_clinic',
@@ -4952,13 +4969,14 @@ db.define_table('vw_agent_prospect_clinic',
                 Field('clinic_name','string'),
                 Field('clinic_city','string'),
                 Field('clinic_pin','string')
-                
-                
-                
+
+
+
                 )
 
+
 db.vw_agent_prospect_clinic._singular = "vw_agent_prospect_clinic"
-db.vw_agent_prospect_clinic._plural   = "vw_agent_prospect_clinic"    
+db.vw_agent_prospect_clinic._plural   = "vw_agent_prospect_clinic"  
 
 def geocode2(form):
     from gluon.tools import geocode

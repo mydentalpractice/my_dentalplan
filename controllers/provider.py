@@ -218,7 +218,7 @@ def xviewprovideragreement():
     return dict(username=username,returnurl=returnurl,form=form,page=1)
 
 def viewprovideragreement():
-    
+    isMDP = common.getboolean(common.getkeyvalue(request.vars,'isMDP','True'))
     username = ""
     providerid = int(common.getstring(request.vars.providerid))
     
@@ -387,7 +387,7 @@ def viewprovideragreement():
         
       
         if(common.getboolean(form.vars.pa_approved == True))     :
-            redirect(URL('provider','emailregister',vars=dict(providerid=providerid)))
+            redirect(URL('provider','emailregister',vars=dict(isMDP=isMDP,providerid=providerid)))
         else:
             session.flash = 'Agreement not approved!'
             i = 0
@@ -405,7 +405,7 @@ def provideragreement():
     
     username = ""
     providerid = int(common.getstring(request.vars.providerid))
-    
+    isMDP = common.getboolean(common.getkeyvalue(request.vars,'isMDP','True'))
     prv = db(db.provider.id == providerid).select()
     
     #if pa name is not null, then use it else providername
@@ -614,8 +614,17 @@ def list_provider():
     formheader = "Provider List"
     selectable = None
     page = common.getpage1(request.vars.page)
+    isMDP = common.getboolean(common.getkeyvalue(request.vars,'isMDP','True'))
     
-    query = (db.provider.is_active==True)
+    
+    ref_code = "PRV" if (common.getstring(request.vars.ref_code) == "") else request.vars.ref_code
+    ref_id = 0 if (common.getstring(request.vars.ref_id) == "") else int(request.vars.ref_id)
+    
+    
+    query = ((db.provider.is_active == True) & (db.provider.isMDP == isMDP))
+   
+	    
+    
     fields=(db.provider.provider,
             db.provider.providername,
             db.provider.practicename,
@@ -657,17 +666,17 @@ def list_provider():
 	
     orderby = (~db.provider.id)
     exportlist = dict( csv=False,csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)
-    links = [lambda row: A('Update',_href=URL("provider","update_provider",vars=dict(page=common.getgridpage(request.vars)),args=[row.id])),\
-             lambda row: A('Clincs',_href=URL("clinic","list_clinic",vars=dict(page=common.getgridpage(request.vars),prev_ref_code="PRV", prev_ref_id =row.id,ref_code="PRV",ref_id=row.id))),
-             lambda row: A('Logo',_href=URL("provider","new_logo",vars=dict(page=common.getgridpage(request.vars),prev_ref_code="PRV", prev_ref_id =row.id,ref_code="PRV",ref_id=row.id))),
-             lambda row: A('Assigned',_href=URL("report","assignedmembersreportparam",vars=dict(providerid=row.id))),\
+    links = [lambda row: A('Update',_href=URL("provider","update_provider",vars=dict(isMDP=isMDP,page=common.getgridpage(request.vars)),args=[row.id])),\
+             lambda row: A('Clincs',_href=URL("clinic","list_clinic",vars=dict(isMDP=isMDP,page=common.getgridpage(request.vars),prev_ref_code="PRV", prev_ref_id =row.id,ref_code="PRV",ref_id=row.id))),
+             lambda row: A('Logo',_href=URL("provider","new_logo",vars=dict(isMDP=isMDP,page=common.getgridpage(request.vars),prev_ref_code="PRV", prev_ref_id =row.id,ref_code="PRV",ref_id=row.id))),
+             lambda row: A('Assigned',_href=URL("report","assignedmembersreportparam",vars=dict(isMDP=isMDP,providerid=row.id))),\
              #lambda row: A('Captiation Report',_href=URL("report","providercapitationreportparam",vars=dict(providerid=row.id))),\
-             lambda row: A('Register',_href=URL("provider","emailregister",vars=dict(providerid=row.id))),\
-             lambda row: A('EmailPA',_href=URL("provider","emailpa",vars=dict(providerid=row.id))),\
-             lambda row: A('ApprovePA',_href=URL("provider","viewprovideragreement",vars=dict(providerid=row.id))),\
-             lambda row: A('Login Details',_href=URL("provider","emailcredentials",vars=dict(providerid=row.id,page=page))),\
-             lambda row: A('Bank',_href=URL("provider","providerbankdetails",vars=dict(page=common.getgridpage(request.vars)),args=[row.id])),
-             lambda row: A('Delete',_href=URL("provider","delete_provider",vars=dict(providerid=row.id))),\
+             lambda row: A('Register',_href=URL("provider","emailregister",vars=dict(isMDP=isMDP,providerid=row.id))),\
+             lambda row: A('EmailPA',_href=URL("provider","emailpa",vars=dict(isMDP=isMDP,providerid=row.id))),\
+             lambda row: A('ApprovePA',_href=URL("provider","viewprovideragreement",vars=dict(isMDP=isMDP,providerid=row.id))),\
+             lambda row: A('Login Details',_href=URL("provider","emailcredentials",vars=dict(isMDP=isMDP,providerid=row.id,page=page))),\
+             lambda row: A('Bank',_href=URL("provider","providerbankdetails",vars=dict(isMDP=isMDP,page=common.getgridpage(request.vars)),args=[row.id])),
+             lambda row: A('Delete',_href=URL("provider","delete_provider",vars=dict(isMDP=isMDP,providerid=row.id))),\
             ]
 
 
@@ -800,6 +809,7 @@ def create_provider():
     crud.settings.create_next = URL('provider','list_provider',vars=dict(page=common.getgridpage(request.vars)),args='')
     formA = crud.create(db.provider)  ## company Details entry form
     
+
    
 
     ## redirect on Cancel
@@ -811,8 +821,9 @@ def create_provider():
 
     ## redirect on Items, with company ID and return URL
     provider = formA.vars.id
+    isMDP = formA.vars.isMDP
     page=common.getgridpage(request.vars)
-    returnurl = URL('provider','list_provider',vars=dict(page=1))
+    returnurl = URL('provider','list_provider',vars=dict(isMDP=isMDP,page=1))
         
     return dict(username=username, returnurl=returnurl,formA=formA, formheader=formheader,page=page)
 
@@ -847,7 +858,7 @@ def update_provider():
     authuser = ""
     f = lambda name: name if ((name != "") & (name != None)) else ""
     authuser = f(auth.user.first_name)  + " " + f(auth.user.last_name)
-
+    isMDP = common.getboolean(common.getkeyvalue(request.vars,'isMDP','True'))
 
     if(len(request.args)>0):   # called with providerid as URL params
         providerid = int(request.args[0])
@@ -949,7 +960,7 @@ def update_provider():
 
     ## redirect on Items, with PO ID and return URL
     page=common.getgridpage(request.vars)
-    returnurl = URL('provider','list_provider',vars=dict(page=page))
+    returnurl = URL('provider','list_provider',vars=dict(isMDP=isMDP,page=page))
     return dict(username=username,returnurl=returnurl,formA=formA, formBank=formBank,formheader=formheader,providerid=providerid,authuser=authuser,page=page,mediaurl=mediaurl)
 
 
@@ -1042,6 +1053,7 @@ def view_provider():
 def delete_provider():
  
     name = None
+    isMDP = common.getboolean(common.getkeyvalue(request.vars,'isMDP','True'))
     try:
         providerid = int(common.getid(request.vars.providerid))
         rows = db(db.provider.id == providerid).select()
@@ -1051,12 +1063,12 @@ def delete_provider():
     except Exception, e:
         raise HTTP(400,e.message)
 
-    form = FORM.confirm('Yes?',{'No':URL('provider','list_provider')})
+    form = FORM.confirm('Yes?',{'No':URL('provider','list_provider',vars=dict(isMDP=isMDP))})
 
 
     if form.accepted:
         db(db.provider.id == providerid).update(is_active=False)
-        redirect(URL('provider','list_provider'))
+        redirect(URL('provider','list_provider',vars=dict(isMDP=isMDP)))
 
     return dict(form=form,name=name)
 
@@ -1087,7 +1099,7 @@ def providerbankdetails():
     authuser = ""
     f = lambda name: name if ((name != "") & (name != None)) else ""
     authuser = f(auth.user.first_name)  + " " + f(auth.user.last_name)
-
+    isMDP = common.getboolean(common.getkeyvalue(request.vars,'isMDP','True'))
 
     page=common.getgridpage(request.vars)
     
@@ -1103,7 +1115,7 @@ def providerbankdetails():
     providername = provdict["providername"]
     provider = provdict["provider"]
     
-    returnurl = URL('provider','list_provider',vars=dict(page=page))
+    returnurl = URL('provider','list_provider',vars=dict(isMDP=isMDP,page=page))
     ds = db((db.provider.id == providerid) & (db.provider.is_active == True)).select(db.provider.bankid)
     bankid = 0 if(len(ds)!=1) else common.getid(ds[0].bankid)
     obj = mdpbank.Bank(db)
@@ -1286,7 +1298,7 @@ def xproviderbankdetails():
 def new_logo():
     page=common.getgridpage(request.vars)
     providerid = int(common.getkeyvalue(request.vars,"ref_id",0))
-    
+    isMDP = common.getboolean(common.getkeyvalue(request.vars,'isMDP','True'))
 
     ref_code = common.getkeyvalue(request.vars,"ref_code","PST")
     ref_id = common.getkeyvalue(request.vars,"ref_id",0)
@@ -1361,6 +1373,6 @@ def new_logo():
 
 
 
-    returnurl = URL('provider','update_provider',vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,providerid=ref_id))
+    returnurl = URL('provider','update_provider',vars=dict(isMDP=isMDP,page=page,ref_code=ref_code,ref_id=ref_id,providerid=ref_id))
     return dict(form=form, pae=page,mediaurl=mediaurl,mediafile=mediafile,count=count,error=error,
                 ref_code=ref_code,ref_id=ref_id,returnurl=returnurl) 

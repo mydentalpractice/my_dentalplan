@@ -45,7 +45,7 @@ def bank_prospect():
     f = lambda name: name if ((name != "") & (name != None)) else ""
     authuser = f(auth.user.first_name)  + " " + f(auth.user.last_name)
 
-
+    isMDP = common.getboolean(common.getkeyvalue(request.vars,'isMDP','True'))
     page=common.getgridpage(request.vars)
 
     if(len(request.args)>0):   # called with prospectid as URL params
@@ -58,7 +58,7 @@ def bank_prospect():
 
    
 
-    returnurl = URL('prospect','list_prospect',vars=dict(page=page))
+    returnurl = URL('prospect','list_prospect',vars=dict(isMDP=isMDP,page=page))
     ds = db((db.prospect.id == prospectid) & (db.prospect.is_active == True)).select(db.prospect.bankid)
     bankid = 0 if(len(ds)!=1) else common.getid(ds[0].bankid)
     obj = mdpbank.Bank(db)
@@ -148,10 +148,13 @@ def list_prospect():
     formheader = "Prospect List"
     page = common.getpage1(request.vars.page)
     
+    isMDP = common.getboolean(common.getkeyvalue(request.vars,'isMDP','True'))
+    
+    
     ref_code = "AGN" if (common.getstring(request.vars.ref_code) == "") else request.vars.ref_code
     ref_id = 0 if (common.getstring(request.vars.ref_id) == "") else int(request.vars.ref_id)
     
-    query = ((db.prospect.is_active == True) & (db.prospect_ref.ref_code == ref_code))
+    query = ((db.prospect.is_active == True) & (db.prospect.isMDP == isMDP) & (db.prospect_ref.ref_code == ref_code))
     if(ref_id > 0):
         query = (query & (db.prospect_ref.ref_id == ref_id))
     
@@ -214,14 +217,14 @@ def list_prospect():
     
     orderby = (~db.prospect.id)
     exportlist = dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False,xml=False)
-    links = [lambda row: A('Update',_href=URL("prospect","update_prospect",vars=dict(page=common.getgridpage(request.vars)),args=[row.prospect.id])),
-             lambda row: A('Clincs',_href=URL("clinic","list_clinic",vars=dict(page=common.getgridpage(request.vars),prev_ref_code=ref_code, prev_ref_id =ref_id,ref_code="PST",ref_id=row.prospect.id))),
-             lambda row: A('Logo',_href=URL("prospect","new_logo",vars=dict(page=common.getgridpage(request.vars), prev_ref_id =ref_id,ref_code="PST",ref_id=row.prospect.id))),
-             lambda row: A('Bank Details',_href=URL("prospect","bank_prospect",vars=dict(page=page,prev_ref_code=ref_code, prev_ref_id =ref_id,ref_code="PST",ref_id=row.prospect.id,prospectid=row.prospect.id))),
-             lambda row: A('EmailPA',_href=URL("prospect","emailpa",vars=dict(prospectid=row.prospect.id))),
-             lambda row: A('ApprovePA',_href=URL("prospect","viewprovideragreement",vars=dict(prospectid=row.prospect.id))),
-             lambda row: A('EnrollPA',_href=URL("prospect","enroll_prospect",vars=dict(prospectid=row.prospect.id))),
-             lambda row: A('Delete',_href=URL("prospect","delete_prospect",vars=dict(prospectid=row.prospect.id)))
+    links = [lambda row: A('Update',_href=URL("prospect","update_prospect",vars=dict(page=common.getgridpage(request.vars),isMDP=isMDP),args=[row.prospect.id])),
+             lambda row: A('Clincs',_href=URL("clinic","list_clinic",vars=dict(isMDP=isMDP,page=common.getgridpage(request.vars),prev_ref_code=ref_code, prev_ref_id =ref_id,ref_code="PST",ref_id=row.prospect.id))),
+             lambda row: A('Logo',_href=URL("prospect","new_logo",vars=dict(isMDP=isMDP,page=common.getgridpage(request.vars), prev_ref_id =ref_id,ref_code="PST",ref_id=row.prospect.id))),
+             lambda row: A('Bank Details',_href=URL("prospect","bank_prospect",vars=dict(isMDP=isMDP,page=page,prev_ref_code=ref_code, prev_ref_id =ref_id,ref_code="PST",ref_id=row.prospect.id,prospectid=row.prospect.id))),
+             lambda row: A('EmailPA',_href=URL("prospect","emailpa",vars=dict(isMDP=isMDP,prospectid=row.prospect.id))),
+             lambda row: A('ApprovePA',_href=URL("prospect","viewprovideragreement",vars=dict(isMDP=isMDP,prospectid=row.prospect.id))),
+             lambda row: A('EnrollPA',_href=URL("prospect","enroll_prospect",vars=dict(isMDP=isMDP,prospectid=row.prospect.id))),
+             lambda row: A('Delete',_href=URL("prospect","delete_prospect",vars=dict(isMDP=isMDP,prospectid=row.prospect.id)))
             ]
 
 
@@ -324,6 +327,7 @@ def update_prospect():
     f = lambda name: name if ((name != "") & (name != None)) else ""
     authuser = f(auth.user.first_name)  + " " + f(auth.user.last_name)
 
+    isMDP = common.getboolean(common.getkeyvalue(request.vars,'isMDP','True'))
 
     if(len(request.args)>0):   # called with prospectid as URL params
         prospectid = int(request.args[0])
@@ -509,7 +513,7 @@ def update_prospect():
 
     ## redirect on Items, with PO ID and return URL
     page=common.getgridpage(request.vars)
-    returnurl = URL('prospect','list_prospect',vars=dict(page=page))
+    returnurl = URL('prospect','list_prospect',vars=dict(isMDP=isMDP,page=page))
     return dict(username=username,returnurl=returnurl,formA=formA, formBank=formBank,formheader=formheader,prospectid=prospectid,authuser=authuser,page=page,mediaurl=mediaurl)
 
 
@@ -602,6 +606,7 @@ def xupdate_prospect():
 def delete_prospect():
 
     name = None
+    isMDP = common.getboolean(common.getkeyvalue(request.vars,'isMDP','True'))
     try:
         prospectid = int(common.getid(request.vars.prospectid))
         rows = db(db.prospect.id == prospectid).select()
@@ -616,7 +621,7 @@ def delete_prospect():
 
     if form.accepted:
         db(db.prospect.id == prospectid).update(is_active=False)
-        redirect(URL('prospect','list_prospect'))
+        redirect(URL('prospect','list_prospect',vars=dict(isMDP=isMDP)))
 
     return dict(form=form,name=name)
 
@@ -625,17 +630,17 @@ def emailpa():
     prospectid = int(common.getid(request.vars.prospectid))
     
     r = db(db.prospect.id == prospectid).select()
-    
+    isMDP = common.getboolean(common.getkeyvalue(request.vars,'isMDP','True'))
     
     retval = mail.emailProspectAgreementink(db, request, r[0].sitekey, prospectid, r[0].email)
-    returnurl = URL('prospect', 'list_prospect')
+    returnurl = URL('prospect', 'list_prospect',vars=dict(isMDP=isMDP))
     return dict(username=username, returnurl=returnurl, retval=retval, prospectname=r[0].providername)
 
 def prospectagreement():
     
     username = ""
     prospectid = int(common.getstring(request.vars.prospectid))
-    
+    isMDP = common.getboolean(common.getkeyvalue(request.vars,'isMDP','True'))
     prv = db(db.prospect.id == prospectid).select()
     
     #if pa name is not null, then use it else providername
@@ -863,7 +868,7 @@ def viewprovideragreement():
     f = lambda name: name if ((name != "") & (name != None)) else ""
     authuser = f(auth.user.first_name)  + " " + f(auth.user.last_name)
 
-    
+    isMDP = common.getboolean(common.getkeyvalue(request.vars,'isMDP','True'))
     prospectid = int(common.getstring(request.vars.prospectid))
     
     prv = db((db.prospect.id == prospectid)&(db.prospect.is_active == True)).select()
@@ -1007,7 +1012,7 @@ def viewprovideragreement():
     pa_practicepin['_placeholder'] = 'Enter Practice PIN.'
     pa_practicepin['_autocomplete'] = 'off'    
 
-    returnurl = URL('prospect', 'list_prospect')
+    returnurl = URL('prospect', 'list_prospect',vars=dict(isMDP=isMDP))
     
     if form.accepts(request,session,keepvalues=True):
         
@@ -1053,13 +1058,15 @@ def viewprovideragreement():
         session.flash = 'Error in Agreement approval!'
         i = 0
         
-    returnurl = URL('prospect', 'list_prospect')
+    returnurl = URL('prospect', 'list_prospect',vars=dict(isMDP=isMDP))
     
     return dict(username=username,returnurl=returnurl,form=form,page=1,todaydate=todaydate,xpa_providername=pa_providername)
 
 def enroll_prospect():
     logger.loggerpms2.info("Enter Enroll Prospect - Controller")
     username = auth.user.first_name + ' ' + auth.user.last_name
+    isMDP = common.getboolean(common.getkeyvalue(request.vars,'isMDP','True'))
+    
     prospectid = int(common.getstring(request.vars.prospectid))
     s = db(db.prospect.id == prospectid).select(db.prospect.providername, db.prospect.practicename)
     providername = "" if(len(s)!=1) else s[0].providername
@@ -1080,7 +1087,7 @@ def enroll_prospect():
     logger.loggerpms2.info("After Get_provider - " + json.dumps(rspobj) )
     
     retval = True
-    returnurl = URL('prospect', 'list_prospect')
+    returnurl = URL('prospect', 'list_prospect',vars=dict(isMDP=isMDP))
     error_message = ""
     
     if(rspobj["result"] == "fail"):
@@ -1167,7 +1174,7 @@ def new_logo():
     page=common.getgridpage(request.vars)
     prospectid = int(common.getkeyvalue(request.vars,"ref_id",0))
     providerid = int(common.getkeyvalue(request.vars,"providerid",0))
-
+    isMDP = common.getboolean(common.getkeyvalue(request.vars,'isMDP','True'))
     ref_code = common.getkeyvalue(request.vars,"ref_code","PST")
     ref_id = common.getkeyvalue(request.vars,"ref_id",0)
 
@@ -1241,6 +1248,6 @@ def new_logo():
 
            
     
-    returnurl = URL('prospect','update_prospect',vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,prospectid=ref_id))
+    returnurl = URL('prospect','update_prospect',vars=dict(isMDP=isMDP,page=page,ref_code=ref_code,ref_id=ref_id,prospectid=ref_id))
     return dict(form=form, pae=page,mediaurl=mediaurl,mediafile=mediafile,count=count,error=error,
                 ref_code=ref_code,ref_id=ref_id,returnurl=returnurl) 

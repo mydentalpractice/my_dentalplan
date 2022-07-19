@@ -9268,7 +9268,7 @@ ALTER TABLE `mydp_prod`.`urlproperties`
 ADD COLUMN `mdp_contact_cell` VARCHAR(45) NULL DEFAULT '18001027526' AFTER `vw_prod_url`,
 ADD COLUMN `mdp_contact_email` VARCHAR(45) NULL DEFAULT 'appointments@mydentalplan.in' AFTER `mdp_contact_cell`;
 
-6.Create viw vw_agent_prospect_clinic
+6.   YYYZZZCreate viw vw_agent_prospect_clinic
 USE `mydp_prod`;
 CREATE  OR REPLACE VIEW `vw_agent_prospect_clinic` AS
 select agent.id as agent_id, agent.agent,agent.name as agent_name,
@@ -9282,6 +9282,24 @@ left join clinic on clinic.id = clinic_ref.clinic_id
 where prospect_ref.ref_code = 'AGN' and clinic_ref.ref_code = 'PST' and agent.is_active = 'T' and prospect.is_active = 'T' and clinic.is_active = 'T' 
 order by agent.name
 ;
+
+7. YYYZZZUpdate benefit_master_x_member add col patient_id
+ALTER TABLE `mydp_prod`.`benefit_master_x_member` 
+ADD COLUMN `patient_id` INT(11) NULL AFTER `member_id`;
+
+8. XXXX  ZZZZ Changes
+ALTER TABLE `hmoplan` ADD `plan_details` TEXT NULL DEFAULT NULL AFTER `company_code`;
+ALTER TABLE `mydp_prod`.`hmoplan` 
+ADD COLUMN `mdp_family` CHAR(1) NULL DEFAULT 'F' AFTER `plan_details`;
+
+
+
+9. YYYZZZ vw_memberpatientlist_fast
+Modified 
+
+10. ZZZ vw_treatmentprocedure
+Added netcopay field
+
 
 
 
