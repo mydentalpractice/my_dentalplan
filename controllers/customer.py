@@ -501,7 +501,7 @@ def new_customer():
         Field('pin2','string',default='302001',label='Pin Choice 2'),
         Field('pin3','string',default='302001',label='Pin Choice 3'),
         Field('appointment_id','string',default='',label='Appointment ID'),
-        Field('appointment_datetime', 'datetime',label='DOB', default=request.now,  requires=IS_DATETIME(format=('%d/%m/%Y %H:%M:%S')),length=20),
+        Field('appointment_datetime', 'datetime',label='DOB',length=20),
         Field('notes','text',default='',label='Notes')
     )
 
@@ -767,7 +767,7 @@ def update_customer():
         Field('pin2','string',default=pin2,label='Pin Choice 2'),
         Field('pin3','string',default=pin3,label='Pin Choice 3'),
         Field('appointment_id','string',default=appointment_id,label='Appointment ID'),
-        Field('appointment_datetime', 'datetime',label='DOB', default=appointment_datetime,  requires=IS_DATETIME(format=('%d/%m/%Y %H:%M:%S')),length=20),
+        Field('appointment_datetime', 'datetime',default=appointment_datetime, label='Appt Date'),
        
         Field('notes','text',default=notes,label='Notes')
         
@@ -1038,6 +1038,7 @@ def enroll_customer():
         member = common.getkeyvalue(patobj, "fullname", "")
         
         ret = None
+       
         if(patobj["result"] == "success"):
             logger.loggerpms2.info("Customer Controller PatOBJ Succes ")
             
@@ -1062,22 +1063,19 @@ def enroll_customer():
             jsonreq["patientid"]=patobj["patientid"]
             jsonreq["doctorid"]=str(doctorid)
             jsonreq["clinicid"]=str(clinicid)
-            jsonreq["startdt"]=common.getstringfromdate(appointment_datetime,"%d/%m/%Y %H:%M")
+            jsonreq["startdt"]=""
             jsonreq["duration"]=str(30)
-            jsonreq["providernotes"]="Auto-Appointment created\nAppointment_ID: " + appointment_id + "\n" + customer[0].notes, 
+            jsonreq["providernotes"]="", 
             jsonreq["appPath"]=appPath
             jsonreq["cell"]=customer[0].cell
-            apptobj = json.loads(mdpappt.newappointment(jsonreq))
             
-            #apptobj = json.loads(mdpappt.newappointment(patobj["primarypatientid"], patobj["patientid"], doctorid, 
-                                            #"", 
-                                            #appointment_datetime.strftime("%d/%m/%Y %H:%M"),
-                                            #30, 
-                                            #"Auto-Appointment created\nAppointment_ID: " + appointment_id + "\n" + customer[0].notes, 
-                                            #customer[0].cell, 
-                                            #appPath
-                                            #)
-                                 #)
+            apptobj = None
+            if((appointment_datetime !=None) & (appointment_datetime != "")):
+                apptobj = json.loads(mdpappt.newappointment(jsonreq))
+                jsonreq["startdt"]=common.getstringfromdate(appointment_datetime,"%d/%m/%Y %H:%M")
+                jsonreq["providernotes"]="Auto-Appointment created\nAppointment_ID: " + appointment_id + "\n" + customer[0].notes, 
+            
+            
             #email Welcome Kit
             ret = mail.emailWelcomeKit(db,request,patobj["primarypatientid"],providerid)
             message = "Customer " + member + " has been successfully enrolled in MDP\n Welcome Kit has been sent to the registered email address"
