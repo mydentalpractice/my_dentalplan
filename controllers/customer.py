@@ -501,7 +501,7 @@ def new_customer():
         Field('pin2','string',default='302001',label='Pin Choice 2'),
         Field('pin3','string',default='302001',label='Pin Choice 3'),
         Field('appointment_id','string',default='',label='Appointment ID'),
-        Field('appointment_datetime', 'datetime',label='DOB',length=20),
+        Field('appointment_datetime', 'datetime',label='Appt Dt', requires=IS_DATETIME(format=('%d/%m/%Y %H:%M:%S')),length=20),
         Field('notes','text',default='',label='Notes')
     )
 
@@ -767,7 +767,7 @@ def update_customer():
         Field('pin2','string',default=pin2,label='Pin Choice 2'),
         Field('pin3','string',default=pin3,label='Pin Choice 3'),
         Field('appointment_id','string',default=appointment_id,label='Appointment ID'),
-        Field('appointment_datetime', 'datetime',default=appointment_datetime, label='Appt Date'),
+        Field('appointment_datetime', 'datetime',default=appointment_datetime, requires=IS_DATETIME(format=('%d/%m/%Y %H:%M:%S')), label='Appt Date'),
        
         Field('notes','text',default=notes,label='Notes')
         
@@ -777,6 +777,8 @@ def update_customer():
 
     
     if formA.process().accepted:
+        
+        
         db(db.customer.id == customerid).update(
             
             customer = formA.vars.customer,
