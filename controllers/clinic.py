@@ -8,7 +8,11 @@ import string
 import random
 import json
 import datetime
+import time
 import os
+
+
+from datetime import date, timedelta
 
 from applications.my_pms2.modules  import common
 from applications.my_pms2.modules  import mail
@@ -17,6 +21,7 @@ from applications.my_pms2.modules  import mdpprospect
 from applications.my_pms2.modules  import mdpprovider
 from applications.my_pms2.modules  import mdpbank
 from applications.my_pms2.modules  import mdpmedia
+from applications.my_pms2.modules  import mdptimings
 from applications.my_pms2.modules  import logger
 
 
@@ -751,6 +756,7 @@ def list_all_clinics():
              lambda row: A('Update',_href=URL("clinic","update_clinic",vars=dict(page=page,clinicid=row.id))),
              lambda row: A('Bank Details',_href=URL("clinic","bank_clinic",vars=dict(page=page,clinicid=row.id))),
              lambda row: A('Clinic Images',_href=URL("clinic","list_clinic_images",vars=dict(page=page,ref_code="CLN",ref_id=row.id))),
+             lambda row: A('Clinic Timings',_href=URL("clinic","list_clinic_timings",vars=dict(page=page,ref_code="CLN",ref_id=row.id))),
              lambda row: A('Delete',_href=URL("clinic","delete_clinic",vars=dict(page=page,clinicid=row.id)))
             ]
 
@@ -913,6 +919,7 @@ def list_provider_clinics():
              lambda row: A('Bank Details',_href=URL("clinic","bank_clinic",vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,clinicid=row.clinic.id))),
              lambda row: A('Clinic Images',_href=URL("clinic","list_clinic_images",vars=dict(page=page,ref_code="CLN",ref_id=row.clinic.id,prev_ref_code=ref_code,prev_ref_id=ref_id))),
              lambda row: A('Clinic Logo',_href=URL("clinic","new_logo",vars=dict(page=page,ref_code="CLN",ref_id=row.clinic.id,prev_ref_code=ref_code,prev_ref_id=ref_id))),
+             lambda row: A('Clinic Timings',_href=URL("clinic","clinic_prov_timings",vars=dict(page=page,ref_code="CLN",ref_id=row.clinic.id,prev_ref_code=ref_code,prev_ref_id=ref_id))),
              lambda row: A('Delete',_href=URL("clinic","delete_clinic",vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,clinicid=row.clinic.id)))
             ]
 
@@ -937,6 +944,968 @@ def list_provider_clinics():
     returnurl = URL('prospect','list_prospect',vars=dict(page=page,ref_code=prev_ref_code,ref_id=prev_ref_id))
     return dict(username=username,returnurl=returnurl,form=form, formheader=formheader,page=common.getgridpage(request.vars),ref_code=ref_code,ref_id=ref_id,\
                 prev_ref_code=prev_ref_code,prev_ref_id=prev_ref_id)    
+
+
+
+@auth.requires_membership('webadmin')
+@auth.requires_login()
+def clinic_prov_timings():
+    
+    username = auth.user.first_name + ' ' + auth.user.last_name
+    formheader = "Clinic List"
+    page = common.getpage1(request.vars.page)
+    source = common.getkeyvalue(request.vars,"source","")
+    
+    ref_code = request.vars.ref_code
+    ref_id = int(common.getid(request.vars.ref_id))  #clinic id
+    logger.loggerpms2.info("Enter clinic prov timings " + ref_code + " " + str(ref_id))
+    
+    providerdict = common.getprovider(auth, db)
+    providerid = providerdict["providerid"]
+    providername = providerdict["providername"]
+
+    doctorname = ""
+    
+    if(source=="home"):
+        returnurl = URL('my_pms2','admin', 'providerhome',vars=dict(providerid=providerid,clinicid=ref_id,clinicname=session.clinicname))
+    else:    
+        returnurl = URL('clinic', 'list_provider_clinics')
+
+    page = 1
+
+    mon_day_chk = False
+    mon_lunch_chk = False
+    mon_del_chk = False
+    mon_starttime_1 = ""
+    mon_endtime_1 = ""
+    mon_starttime_2 = ""
+    mon_endtime_2 = ""
+    mon_visitinghours = ""
+
+    tue_day_chk = False
+    tue_lunch_chk = False
+    tue_del_chk = False
+    tue_starttime_1 = ""
+    tue_endtime_1 = ""
+    tue_starttime_2 = ""
+    tue_endtime_2 = ""
+    tue_visitinghours = ""
+
+    wed_day_chk = False
+    wed_lunch_chk = False
+    wed_del_chk = False
+    wed_starttime_1 = ""
+    wed_endtime_1 = ""
+    wed_starttime_2 = ""
+    wed_endtime_2 = ""
+    wed_visitinghours = ""
+
+    thu_day_chk = False
+    thu_lunch_chk = False
+    thu_del_chk = False
+    thu_starttime_1 = ""
+    thu_endtime_1 = ""
+    thu_starttime_2 = ""
+    thu_endtime_2 = ""
+    thu_visitinghours = ""
+
+    fri_day_chk = False
+    fri_lunch_chk = False
+    fri_del_chk = False
+    fri_starttime_1 = ""
+    fri_endtime_1 = ""
+    fri_starttime_2 = ""
+    fri_endtime_2 = ""
+    fri_visitinghours = ""
+
+    sat_day_chk = False
+    sat_lunch_chk = False
+    sat_del_chk = False
+    sat_starttime_1 = ""
+    sat_endtime_1 = ""
+    sat_starttime_2 = ""
+    sat_endtime_2 = ""
+    sat_visitinghours = ""
+
+    sun_day_chk = False
+    sun_lunch_chk = False
+    sun_del_chk = False
+    sun_starttime_1 = ""
+    sun_endtime_1 = ""
+    sun_starttime_2 = ""
+    sun_endtime_2 = ""
+    sun_visitinghours = ""
+    
+    mon_id_1 = 0
+    mon_id_2 = 0
+    
+    tue_id_1 = 0
+    tue_id_2 = 0
+
+    wed_id_1 = 0
+    wed_id_2 = 0
+
+    thu_id_1 = 0
+    thu_id_2 = 0
+
+    fri_id_1 = 0
+    fri_id_2 = 0
+
+    sat_id_1 = 0
+    sat_id_2 = 0
+    
+
+    visitinghours = 'Not Set'
+    lunchbreak = 'Not Set'
+
+    #todays date
+    today_date = datetime.date.today()   #yyyy-mm-dd
+
+    #weeks start date
+    week_start = today_date - timedelta(days=today_date.weekday())
+
+    #weeks end date
+    week_end = week_start + timedelta(days=6)
+    
+    if(ref_id > 0):
+        # need to get information from database and set the defauls
+        
+        
+        
+        #clinic details
+        cln = db((db.clinic.id == ref_id) & (db.clinic.is_active == True)).select()
+        clinicname = cln[0].name if(len(cln) > 0) else ""
+        
+        cts = db((db.ops_timing_ref.ref_code == 'CLN') & (db.ops_timing_ref.ref_id == ref_id) &\
+                 (db.ops_timing.calendar_date >= week_start) &\
+                 (db.ops_timing.calendar_date <= week_end) &\
+                 (db.ops_timing.day_of_week != 'Sun') & (db.ops_timing.is_active == True)).\
+            select(db.ops_timing.ALL, orderby=[db.ops_timing.day_of_week, db.ops_timing.open_time], left=db.ops_timing.on(db.ops_timing_ref.ops_timing_id == db.ops_timing.id))
+        
+        
+        for ct in cts:
+            if(ct.day_of_week == 'Mon'):
+                mon_day_chk = not common.getboolean(ct.is_holiday)
+                mon_lunch_chk = common.getboolean(ct.is_lunch)
+                mon_del_chk = False
+
+              
+                
+                
+                if((ct.open_time >= datetime.time(0,0,0)) & (ct.open_time <= datetime.time(14,0,0))):
+
+                    mon_starttime_1 = common.getstringfromtime(ct.open_time ,"%I:%M %p") 
+                    mon_endtime_1 = common.getstringfromtime(ct.close_time ,"%I:%M %p")
+                    mon_id_1 = ct.id
+                else:   
+                    mon_starttime_2 = common.getstringfromtime(ct.open_time ,"%I:%M %p") 
+                    mon_endtime_2 = common.getstringfromtime(ct.close_time ,"%I:%M %p")
+                    mon_id_2 = ct.id
+                    
+                mon_visitinghours = ""
+        
+            if(ct.day_of_week == 'Tue'):
+                tue_day_chk =not common.getboolean(ct.is_holiday)
+                tue_lunch_chk = common.getboolean(ct.is_lunch)
+                tue_del_chk = False
+
+              
+                
+                if((ct.open_time >= datetime.time(0,0,0)) & (ct.open_time <= datetime.time(14,0,0))):
+                    tue_starttime_1 = common.getstringfromtime(ct.open_time ,"%I:%M %p") 
+                    tue_endtime_1 = common.getstringfromtime(ct.close_time ,"%I:%M %p")
+                    tue_id_1 = ct.id
+                    
+                else:   
+                    tue_starttime_2 = common.getstringfromtime(ct.open_time ,"%I:%M %p") 
+                    tue_endtime_2 = common.getstringfromtime(ct.close_time ,"%I:%M %p")
+                    tue_id_2 = ct.id
+                    
+                tue_visitinghours = ""
+
+            if(ct.day_of_week == 'Wed'):
+                wed_day_chk = not common.getboolean(ct.is_holiday)
+                wed_lunch_chk = common.getboolean(ct.is_lunch)
+                wed_del_chk = False
+
+         
+                
+                if((ct.open_time >= datetime.time(0,0,0)) & (ct.open_time <= datetime.time(14,0,0))):
+                    wed_starttime_1 = common.getstringfromtime(ct.open_time ,"%I:%M %p") 
+                    wed_endtime_1 = common.getstringfromtime(ct.close_time ,"%I:%M %p")
+                    wed_id_1 = ct.id
+                else:   
+                    wed_starttime_2 = common.getstringfromtime(ct.open_time ,"%I:%M %p") 
+                    wed_endtime_2 = common.getstringfromtime(ct.close_time ,"%I:%M %p")
+                    wed_id_2 = ct.id
+                    
+                wed_visitinghours = ""
+
+            if(ct.day_of_week == 'Thu'):
+                thu_day_chk = not common.getboolean(ct.is_holiday)
+                thu_lunch_chk = common.getboolean(ct.is_lunch)
+                thu_del_chk = False
+
+            
+                if((ct.open_time >= datetime.time(0,0,0)) & (ct.open_time <= datetime.time(14,0,0))):
+                    thu_starttime_1 = common.getstringfromtime(ct.open_time ,"%I:%M %p") 
+                    thu_endtime_1 = common.getstringfromtime(ct.close_time ,"%I:%M %p")
+                    thu_id_1 = ct.id
+                    
+                else:   
+                    thu_starttime_2 = common.getstringfromtime(ct.open_time ,"%I:%M %p")
+                    thu_endtime_2 = common.getstringfromtime(ct.close_time ,"%I:%M %p")
+                    thu_id_2 = ct.id
+                    
+                thu_visitinghours = ""
+
+            if(ct.day_of_week == 'Fri'):
+                fri_day_chk = not common.getboolean(ct.is_holiday)
+                fri_lunch_chk = common.getboolean(ct.is_lunch)
+                fri_del_chk = False
+
+             
+                
+                if((ct.open_time >= datetime.time(0,0,0)) & (ct.open_time <= datetime.time(14,0,0))):
+                    fri_starttime_1 = common.getstringfromtime(ct.open_time ,"%I:%M %p")
+                    fri_endtime_1 = common.getstringfromtime(ct.close_time ,"%I:%M %p")
+                    fri_id_1 = ct.id
+                else:   
+                    fri_starttime_2 = common.getstringfromtime(ct.open_time ,"%I:%M %p") 
+                    fri_endtime_2 = common.getstringfromtime(ct.close_time ,"%I:%M %p")
+                    fri_id_2 = ct.id
+                    
+                fri_visitinghours = ""
+
+            if(ct.day_of_week == 'Sat'):
+                sat_day_chk = not common.getboolean(ct.is_holiday)
+                sat_lunch_chk = common.getboolean(ct.is_lunch)
+                sat_del_chk = False
+
+                
+                if((ct.open_time >= datetime.time(0,0,0)) & (ct.open_time <= datetime.time(14,0,0))):
+                    sat_starttime_1 = common.getstringfromtime(ct.open_time ,"%I:%M %p")
+                    sat_endtime_1 = common.getstringfromtime(ct.close_time ,"%I:%M %p")
+                    sat_id_1 = ct.id
+                else:   
+                    sat_starttime_2 = common.getstringfromtime(ct.open_time ,"%I:%M %p") 
+                    sat_endtime_2 = common.getstringfromtime(ct.close_time ,"%I:%M %p")
+                    sat_id_2 = ct.id
+                    
+                sat_visitinghours = ""
+
+
+
+
+    formA = SQLFORM.factory(
+        Field('mon_day_chk', 'boolean', default=mon_day_chk),        
+        Field('mon_lunch_chk', 'boolean', default=mon_lunch_chk),        
+        Field('mon_del_chk', 'boolean', default=mon_del_chk),        
+        Field('mon_starttime_1', 'string', default=mon_starttime_1,requires=IS_IN_SET(AMS)),
+        Field('mon_endtime_1', 'string', default=mon_endtime_1,requires=IS_IN_SET(AMS)),
+        Field('mon_starttime_2', 'string', default=mon_starttime_2,requires=IS_IN_SET(AMS)),
+        Field('mon_endtime_2', 'string', default=mon_endtime_2,requires=IS_IN_SET(AMS)),
+        Field('mon_visitinghours', 'string', default=mon_visitinghours),
+        Field('mon_id_1', 'integer', default=mon_id_1),
+        Field('mon_id_2', 'integer', default=mon_id_2),
+        
+
+        Field('tue_day_chk', 'boolean', default=tue_day_chk),        
+        Field('tue_lunch_chk', 'boolean', default=tue_lunch_chk),        
+        Field('tue_del_chk', 'boolean', default=tue_del_chk),        
+        Field('tue_starttime_1', 'string', default=tue_starttime_1,requires=IS_IN_SET(AMS)),
+        Field('tue_endtime_1', 'string', default=tue_endtime_1,requires=IS_IN_SET(AMS)),
+        Field('tue_starttime_2', 'string', default=tue_starttime_2,requires=IS_IN_SET(AMS)),
+        Field('tue_endtime_2', 'string', default=tue_endtime_2,requires=IS_IN_SET(AMS)),
+        Field('tue_visitinghours', 'string', default=tue_visitinghours),
+        Field('tue_id_1', 'integer', default=tue_id_1),
+        Field('tue_id_2', 'integer', default=tue_id_2),
+
+        Field('wed_day_chk', 'boolean', default=wed_day_chk),        
+        Field('wed_lunch_chk', 'boolean', default=wed_lunch_chk),        
+        Field('wed_del_chk', 'boolean', default=wed_del_chk),        
+        Field('wed_starttime_1', 'string', default=wed_starttime_1,requires=IS_IN_SET(AMS)),
+        Field('wed_endtime_1', 'string', default=wed_endtime_1,requires=IS_IN_SET(AMS)),
+        Field('wed_starttime_2', 'string', default=wed_starttime_2,requires=IS_IN_SET(AMS)),
+        Field('wed_endtime_2', 'string', default=wed_endtime_2,requires=IS_IN_SET(AMS)),
+        Field('wed_visitinghours', 'string', default=wed_visitinghours),
+        Field('wed_id_1', 'integer', default=wed_id_1),
+        Field('wed_id_2', 'integer', default=wed_id_2),
+
+        Field('thu_day_chk', 'boolean', default=thu_day_chk),        
+        Field('thu_lunch_chk', 'boolean', default=thu_lunch_chk),        
+        Field('thu_del_chk', 'boolean', default=thu_del_chk),        
+        Field('thu_starttime_1', 'string', default=thu_starttime_1,requires=IS_IN_SET(AMS)),
+        Field('thu_endtime_1', 'string', default=thu_endtime_1,requires=IS_IN_SET(AMS)),
+        Field('thu_starttime_2', 'string', default=thu_starttime_2,requires=IS_IN_SET(AMS)),
+        Field('thu_endtime_2', 'string', default=thu_endtime_2,requires=IS_IN_SET(AMS)),
+        Field('thu_visitinghours', 'string', default=thu_visitinghours),
+        Field('thu_id_1', 'integer', default=thu_id_1),
+        Field('thu_id_2', 'integer', default=thu_id_2),
+
+        Field('fri_day_chk', 'boolean', default=fri_day_chk),        
+        Field('fri_lunch_chk', 'boolean', default=fri_lunch_chk),        
+        Field('fri_del_chk', 'boolean', default=fri_del_chk),        
+        Field('fri_starttime_1', 'string', default=fri_starttime_1,requires=IS_IN_SET(AMS)),
+        Field('fri_endtime_1', 'string', default=fri_endtime_1,requires=IS_IN_SET(AMS)),
+        Field('fri_starttime_2', 'string', default=fri_starttime_2,requires=IS_IN_SET(AMS)),
+        Field('fri_endtime_2', 'string', default=fri_endtime_2,requires=IS_IN_SET(AMS)),
+        Field('fri_visitinghours', 'string', default=fri_visitinghours),
+        Field('fri_id_1', 'integer', default=fri_id_1),
+        Field('fri_id_2', 'integer', default=fri_id_2),
+
+        Field('sat_day_chk', 'boolean', default=sat_day_chk),        
+        Field('sat_lunch_chk', 'boolean', default=sat_lunch_chk),        
+        Field('sat_del_chk', 'boolean', default=sat_del_chk),        
+        Field('sat_starttime_1', 'string', default=sat_starttime_1,requires=IS_IN_SET(AMS)),
+        Field('sat_endtime_1', 'string', default=sat_endtime_1,requires=IS_IN_SET(AMS)),
+        Field('sat_starttime_2', 'string', default=sat_starttime_2,requires=IS_IN_SET(AMS)),
+        Field('sat_endtime_2', 'string', default=sat_endtime_2,requires=IS_IN_SET(AMS)),
+        Field('sat_visitinghours', 'string', default=sat_visitinghours),
+        Field('sat_id_1', 'integer', default=sat_id_1),
+        Field('sat_id_2', 'integer', default=sat_id_2),
+
+        #Field('sun_day_chk', 'boolean', default=sun_day_chk),        
+        #Field('sun_lunch_chk', 'boolean', default=sun_lunch_chk),        
+        #Field('sun_del_chk', 'boolean', default=sun_del_chk),        
+        #Field('sun_starttime_1', 'string', default=sun_starttime_1,requires=IS_IN_SET(AMS)),
+        #Field('sun_endtime_1', 'string', default=sun_endtime_1,requires=IS_IN_SET(AMS)),
+        #Field('sun_starttime_2', 'string', default=sun_starttime_2,requires=IS_IN_SET(AMS)),
+        #Field('sun_endtime_2', 'string', default=sun_endtime_2,requires=IS_IN_SET(AMS)),
+        #Field('sun_visitinghours', 'string', default=sun_visitinghours),
+
+        #Field('visitinghours', 'string', default=visitinghours),
+        #Field('lunchbreak', 'string', default=lunchbreak)
+
+
+    )
+
+    if formA.accepts(request,session,keepvalues=True):
+
+        visitinghours = ""
+        lunchbreaks = ""
+
+        ##Monday
+        t1 = common.gettimefromstring(formA.vars.mon_starttime_1,"%I:%M %p")
+        t2 = common.gettimefromstring(formA.vars.mon_endtime_1,"%I:%M %p")
+        dt1 = datetime.time(t1.tm_hour, t1.tm_min, t1.tm_sec)
+        dt2 = datetime.time(t2.tm_hour, t2.tm_min, t2.tm_sec)
+        
+        if(common.getboolean(formA.vars.mon_day_chk) == True):
+            db(db.ops_timing.id == mon_id_1).update(open_time =dt1, close_time = dt2, is_holiday = not common.getboolean(formA.vars.mon_day_chk))
+        else:
+            db(db.ops_timing.id == mon_id_1).update(is_holiday = not common.getboolean(formA.vars.mon_day_chk))
+
+        t1 = common.gettimefromstring(formA.vars.mon_starttime_2,"%I:%M %p")
+        t2 = common.gettimefromstring(formA.vars.mon_endtime_2,"%I:%M %p")
+        dt1 = datetime.time(t1.tm_hour, t1.tm_min, t1.tm_sec)
+        dt2 = datetime.time(t2.tm_hour, t2.tm_min, t2.tm_sec)
+
+        if(common.getboolean(formA.vars.mon_day_chk) == True):
+            db(db.ops_timing.id == mon_id_2).update(open_time =dt1, close_time = dt2, is_holiday = not common.getboolean(formA.vars.mon_day_chk))
+        else:
+            db(db.ops_timing.id == mon_id_2).update(is_holiday = not common.getboolean(formA.vars.mon_day_chk))
+
+
+        ##Tue
+        t1 = common.gettimefromstring(formA.vars.tue_starttime_1,"%I:%M %p")
+        t2 = common.gettimefromstring(formA.vars.tue_endtime_1,"%I:%M %p")
+        dt1 = datetime.time(t1.tm_hour, t1.tm_min, t1.tm_sec)
+        dt2 = datetime.time(t2.tm_hour, t2.tm_min, t2.tm_sec)
+        
+        if(common.getboolean(formA.vars.tue_day_chk) == True):
+            db(db.ops_timing.id == tue_id_1).update(open_time =dt1, close_time = dt2, is_holiday = not common.getboolean(formA.vars.tue_day_chk))
+        else:
+            db(db.ops_timing.id == tue_id_1).update(is_holiday = not common.getboolean(formA.vars.tue_day_chk))
+
+        t1 = common.gettimefromstring(formA.vars.tue_starttime_2,"%I:%M %p")
+        t2 = common.gettimefromstring(formA.vars.tue_endtime_2,"%I:%M %p")
+        dt1 = datetime.time(t1.tm_hour, t1.tm_min, t1.tm_sec)
+        dt2 = datetime.time(t2.tm_hour, t2.tm_min, t2.tm_sec)
+
+        if(common.getboolean(formA.vars.tue_day_chk) == True):
+            db(db.ops_timing.id == tue_id_2).update(open_time =dt1, close_time = dt2, is_holiday = not common.getboolean(formA.vars.tue_day_chk))
+        else:
+            db(db.ops_timing.id == tue_id_2).update(is_holiday = not common.getboolean(formA.vars.tue_day_chk))
+
+        ##Wed
+        t1 = common.gettimefromstring(formA.vars.wed_starttime_1,"%I:%M %p")
+        t2 = common.gettimefromstring(formA.vars.wed_endtime_1,"%I:%M %p")
+        dt1 = datetime.time(t1.tm_hour, t1.tm_min, t1.tm_sec)
+        dt2 = datetime.time(t2.tm_hour, t2.tm_min, t2.tm_sec)
+        
+        if(common.getboolean(formA.vars.wed_day_chk) == True):
+            db(db.ops_timing.id == wed_id_1).update(open_time =dt1, close_time = dt2, is_holiday = not common.getboolean(formA.vars.wed_day_chk))
+        else:
+            db(db.ops_timing.id == wed_id_1).update(is_holiday = not common.getboolean(formA.vars.wed_day_chk))
+
+        t1 = common.gettimefromstring(formA.vars.wed_starttime_2,"%I:%M %p")
+        t2 = common.gettimefromstring(formA.vars.wed_endtime_2,"%I:%M %p")
+        dt1 = datetime.time(t1.tm_hour, t1.tm_min, t1.tm_sec)
+        dt2 = datetime.time(t2.tm_hour, t2.tm_min, t2.tm_sec)
+
+        if(common.getboolean(formA.vars.wed_day_chk) == True):
+            db(db.ops_timing.id == wed_id_2).update(open_time =dt1, close_time = dt2, is_holiday = not common.getboolean(formA.vars.wed_day_chk))
+        else:
+            db(db.ops_timing.id == wed_id_2).update(is_holiday = not common.getboolean(formA.vars.wed_day_chk))
+
+
+        ##Thu
+        t1 = common.gettimefromstring(formA.vars.thu_starttime_1,"%I:%M %p")
+        t2 = common.gettimefromstring(formA.vars.thu_endtime_1,"%I:%M %p")
+        dt1 = datetime.time(t1.tm_hour, t1.tm_min, t1.tm_sec)
+        dt2 = datetime.time(t2.tm_hour, t2.tm_min, t2.tm_sec)
+        
+        if(common.getboolean(formA.vars.thu_day_chk) == True):
+            db(db.ops_timing.id == thu_id_1).update(open_time =dt1, close_time = dt2, is_holiday = not common.getboolean(formA.vars.thu_day_chk))
+        else:
+            db(db.ops_timing.id == thu_id_1).update(is_holiday = not common.getboolean(formA.vars.thu_day_chk))
+
+        t1 = common.gettimefromstring(formA.vars.thu_starttime_2,"%I:%M %p")
+        t2 = common.gettimefromstring(formA.vars.thu_endtime_2,"%I:%M %p")
+        dt1 = datetime.time(t1.tm_hour, t1.tm_min, t1.tm_sec)
+        dt2 = datetime.time(t2.tm_hour, t2.tm_min, t2.tm_sec)
+
+        if(common.getboolean(formA.vars.thu_day_chk) == True):
+            db(db.ops_timing.id == thu_id_2).update(open_time =dt1, close_time = dt2, is_holiday = not common.getboolean(formA.vars.thu_day_chk))
+        else:
+            db(db.ops_timing.id == thu_id_2).update(is_holiday = not common.getboolean(formA.vars.thu_day_chk))
+        
+        ##Fri
+        t1 = common.gettimefromstring(formA.vars.fri_starttime_1,"%I:%M %p")
+        t2 = common.gettimefromstring(formA.vars.fri_endtime_1,"%I:%M %p")
+        dt1 = datetime.time(t1.tm_hour, t1.tm_min, t1.tm_sec)
+        dt2 = datetime.time(t2.tm_hour, t2.tm_min, t2.tm_sec)
+        
+        if(common.getboolean(formA.vars.fri_day_chk) == True):
+            db(db.ops_timing.id == fri_id_1).update(open_time =dt1, close_time = dt2, is_holiday = not common.getboolean(formA.vars.fri_day_chk))
+        else:
+            db(db.ops_timing.id == fri_id_1).update(is_holiday = not common.getboolean(formA.vars.fri_day_chk))
+
+        t1 = common.gettimefromstring(formA.vars.fri_starttime_2,"%I:%M %p")
+        t2 = common.gettimefromstring(formA.vars.fri_endtime_2,"%I:%M %p")
+        dt1 = datetime.time(t1.tm_hour, t1.tm_min, t1.tm_sec)
+        dt2 = datetime.time(t2.tm_hour, t2.tm_min, t2.tm_sec)
+
+        if(common.getboolean(formA.vars.fri_day_chk) == True):
+            db(db.ops_timing.id == fri_id_2).update(open_time =dt1, close_time = dt2, is_holiday = not common.getboolean(formA.vars.fri_day_chk))
+        else:
+            db(db.ops_timing.id == fri_id_2).update(is_holiday = not common.getboolean(formA.vars.fri_day_chk))
+
+        ##Sat
+        t1 = common.gettimefromstring(formA.vars.sat_starttime_1,"%I:%M %p")
+        t2 = common.gettimefromstring(formA.vars.sat_endtime_1,"%I:%M %p")
+        dt1 = datetime.time(t1.tm_hour, t1.tm_min, t1.tm_sec) if(t1 != None) else datetime.time(0, 0, 0)
+        dt2 = datetime.time(t2.tm_hour, t2.tm_min, t2.tm_sec) if(t2 != None) else datetime.time(0, 0, 0)
+        
+        if(common.getboolean(formA.vars.sat_day_chk) == True):
+            db(db.ops_timing.id == sat_id_1).update(open_time =dt1, close_time = dt2, is_holiday = not common.getboolean(formA.vars.sat_day_chk))
+        else:
+            db(db.ops_timing.id == sat_id_1).update(is_holiday = not common.getboolean(formA.vars.sat_day_chk))
+
+        t1 = common.gettimefromstring(formA.vars.sat_starttime_2,"%I:%M %p")
+        t2 = common.gettimefromstring(formA.vars.sat_endtime_2,"%I:%M %p")
+        dt1 = datetime.time(t1.tm_hour, t1.tm_min, t1.tm_sec) if(t1 != None) else datetime.time(0, 0, 0)
+        dt2 = datetime.time(t2.tm_hour, t2.tm_min, t2.tm_sec) if(t2 != None) else datetime.time(0, 0, 0)
+
+        if(common.getboolean(formA.vars.sat_day_chk) == True):
+            db(db.ops_timing.id == sat_id_2).update(open_time =dt1, close_time = dt2, is_holiday = not common.getboolean(formA.vars.sat_day_chk))
+        else:
+            db(db.ops_timing.id == sat_id_2).update(is_holiday = not common.getboolean(formA.vars.sat_day_chk))
+
+
+        db.commit()
+        session.flash = 'Clinic timings added!'
+        redirect(returnurl)                                  
+
+    elif formA.errors:
+
+        session.flash = 'Error in updating Doctor timings! ' + str(formA.errors)
+
+
+    return dict(username=username,formheader=formheader,formA=formA, mon_day_chk=mon_day_chk,tue_day_chk=tue_day_chk,wed_day_chk=wed_day_chk,thu_day_chk=thu_day_chk,fri_day_chk=fri_day_chk,sat_day_chk=sat_day_chk,
+                returnurl=returnurl, page=page, providerid=providerid, providername=providername,clinicname=clinicname,doctorname=doctorname,
+                today_date = today_date, week_start=week_start, week_end=week_end 
+                
+                )
+
+@auth.requires_membership('webadmin')
+@auth.requires_login()
+def clinic_pst_timings():
+    
+    username = auth.user.first_name + ' ' + auth.user.last_name
+    formheader = "Clinic List"
+    page = common.getpage1(request.vars.page)
+
+    
+    ref_code = request.vars.ref_code
+    ref_id = int(common.getid(request.vars.ref_id))  #clinic id
+    logger.loggerpms2.info("Enter clinic prospect timings " + ref_code + " " + str(ref_id))
+    
+    providerdict = common.getprovider(auth, db)
+    providerid = providerdict["providerid"]
+    providername = providerdict["providername"]
+
+    doctorname = ""
+    
+    returnurl = URL('clinic', 'list_prospect_clinics')
+
+    page = 1
+
+    mon_day_chk = False
+    mon_lunch_chk = False
+    mon_del_chk = False
+    mon_starttime_1 = ""
+    mon_endtime_1 = ""
+    mon_starttime_2 = ""
+    mon_endtime_2 = ""
+    mon_visitinghours = ""
+
+    tue_day_chk = False
+    tue_lunch_chk = False
+    tue_del_chk = False
+    tue_starttime_1 = ""
+    tue_endtime_1 = ""
+    tue_starttime_2 = ""
+    tue_endtime_2 = ""
+    tue_visitinghours = ""
+
+    wed_day_chk = False
+    wed_lunch_chk = False
+    wed_del_chk = False
+    wed_starttime_1 = ""
+    wed_endtime_1 = ""
+    wed_starttime_2 = ""
+    wed_endtime_2 = ""
+    wed_visitinghours = ""
+
+    thu_day_chk = False
+    thu_lunch_chk = False
+    thu_del_chk = False
+    thu_starttime_1 = ""
+    thu_endtime_1 = ""
+    thu_starttime_2 = ""
+    thu_endtime_2 = ""
+    thu_visitinghours = ""
+
+    fri_day_chk = False
+    fri_lunch_chk = False
+    fri_del_chk = False
+    fri_starttime_1 = ""
+    fri_endtime_1 = ""
+    fri_starttime_2 = ""
+    fri_endtime_2 = ""
+    fri_visitinghours = ""
+
+    sat_day_chk = False
+    sat_lunch_chk = False
+    sat_del_chk = False
+    sat_starttime_1 = ""
+    sat_endtime_1 = ""
+    sat_starttime_2 = ""
+    sat_endtime_2 = ""
+    sat_visitinghours = ""
+
+    sun_day_chk = False
+    sun_lunch_chk = False
+    sun_del_chk = False
+    sun_starttime_1 = ""
+    sun_endtime_1 = ""
+    sun_starttime_2 = ""
+    sun_endtime_2 = ""
+    sun_visitinghours = ""
+    
+    mon_id_1 = 0
+    mon_id_2 = 0
+    
+    tue_id_1 = 0
+    tue_id_2 = 0
+
+    wed_id_1 = 0
+    wed_id_2 = 0
+
+    thu_id_1 = 0
+    thu_id_2 = 0
+
+    fri_id_1 = 0
+    fri_id_2 = 0
+
+    sat_id_1 = 0
+    sat_id_2 = 0
+    
+
+    visitinghours = 'Not Set'
+    lunchbreak = 'Not Set'
+
+    if(ref_id > 0):
+        # need to get information from database and set the defauls
+        
+        
+        #todays date
+        today_date = datetime.date.today()   #yyyy-mm-dd
+        
+        #weeks start date
+        week_start = today_date - timedelta(days=today_date.weekday())
+        
+        #weeks end date
+        week_end = week_start + timedelta(days=6)
+        
+        #clinic details
+        cln = db((db.clinic.id == ref_id) & (db.clinic.is_active == True)).select()
+        clinicname = cln[0].name if(len(cln) > 0) else ""
+        
+        cts = db((db.ops_timing_ref.ref_code == 'CLN') & (db.ops_timing_ref.ref_id == ref_id) &\
+                 (db.ops_timing.calendar_date >= week_start) &\
+                 (db.ops_timing.calendar_date <= week_end) &\
+                 (db.ops_timing.day_of_week != 'Sun') & (db.ops_timing.is_active == True)).\
+            select(db.ops_timing.ALL, orderby=[db.ops_timing.day_of_week, db.ops_timing.open_time], left=db.ops_timing.on(db.ops_timing_ref.ops_timing_id == db.ops_timing.id))
+        
+        
+        for ct in cts:
+            if(ct.day_of_week == 'Mon'):
+                mon_day_chk = not common.getboolean(ct.is_holiday)
+                mon_lunch_chk = common.getboolean(ct.is_lunch)
+                mon_del_chk = False
+
+              
+                
+                
+                if((ct.open_time >= datetime.time(0,0,0)) & (ct.open_time <= datetime.time(14,0,0))):
+
+                    mon_starttime_1 = common.getstringfromtime(ct.open_time ,"%I:%M %p") 
+                    mon_endtime_1 = common.getstringfromtime(ct.close_time ,"%I:%M %p")
+                    mon_id_1 = ct.id
+                else:   
+                    mon_starttime_2 = common.getstringfromtime(ct.open_time ,"%I:%M %p") 
+                    mon_endtime_2 = common.getstringfromtime(ct.close_time ,"%I:%M %p")
+                    mon_id_2 = ct.id
+                    
+                mon_visitinghours = ""
+        
+            if(ct.day_of_week == 'Tue'):
+                tue_day_chk =not common.getboolean(ct.is_holiday)
+                tue_lunch_chk = common.getboolean(ct.is_lunch)
+                tue_del_chk = False
+
+              
+                
+                if((ct.open_time >= datetime.time(0,0,0)) & (ct.open_time <= datetime.time(14,0,0))):
+                    tue_starttime_1 = common.getstringfromtime(ct.open_time ,"%I:%M %p") 
+                    tue_endtime_1 = common.getstringfromtime(ct.close_time ,"%I:%M %p")
+                    tue_id_1 = ct.id
+                    
+                else:   
+                    tue_starttime_2 = common.getstringfromtime(ct.open_time ,"%I:%M %p") 
+                    tue_endtime_2 = common.getstringfromtime(ct.close_time ,"%I:%M %p")
+                    tue_id_2 = ct.id
+                    
+                tue_visitinghours = ""
+
+            if(ct.day_of_week == 'Wed'):
+                wed_day_chk = not common.getboolean(ct.is_holiday)
+                wed_lunch_chk = common.getboolean(ct.is_lunch)
+                wed_del_chk = False
+
+         
+                
+                if((ct.open_time >= datetime.time(0,0,0)) & (ct.open_time <= datetime.time(14,0,0))):
+                    wed_starttime_1 = common.getstringfromtime(ct.open_time ,"%I:%M %p") 
+                    wed_endtime_1 = common.getstringfromtime(ct.close_time ,"%I:%M %p")
+                    wed_id_1 = ct.id
+                else:   
+                    wed_starttime_2 = common.getstringfromtime(ct.open_time ,"%I:%M %p") 
+                    wed_endtime_2 = common.getstringfromtime(ct.close_time ,"%I:%M %p")
+                    wed_id_2 = ct.id
+                    
+                wed_visitinghours = ""
+
+            if(ct.day_of_week == 'Thu'):
+                thu_day_chk = not common.getboolean(ct.is_holiday)
+                thu_lunch_chk = common.getboolean(ct.is_lunch)
+                thu_del_chk = False
+
+            
+                if((ct.open_time >= datetime.time(0,0,0)) & (ct.open_time <= datetime.time(14,0,0))):
+                    thu_starttime_1 = common.getstringfromtime(ct.open_time ,"%I:%M %p") 
+                    thu_endtime_1 = common.getstringfromtime(ct.close_time ,"%I:%M %p")
+                    thu_id_1 = ct.id
+                    
+                else:   
+                    thu_starttime_2 = common.getstringfromtime(ct.open_time ,"%I:%M %p")
+                    thu_endtime_2 = common.getstringfromtime(ct.close_time ,"%I:%M %p")
+                    thu_id_2 = ct.id
+                    
+                thu_visitinghours = ""
+
+            if(ct.day_of_week == 'Fri'):
+                fri_day_chk = not common.getboolean(ct.is_holiday)
+                fri_lunch_chk = common.getboolean(ct.is_lunch)
+                fri_del_chk = False
+
+             
+                
+                if((ct.open_time >= datetime.time(0,0,0)) & (ct.open_time <= datetime.time(14,0,0))):
+                    fri_starttime_1 = common.getstringfromtime(ct.open_time ,"%I:%M %p")
+                    fri_endtime_1 = common.getstringfromtime(ct.close_time ,"%I:%M %p")
+                    fri_id_1 = ct.id
+                else:   
+                    fri_starttime_2 = common.getstringfromtime(ct.open_time ,"%I:%M %p") 
+                    fri_endtime_2 = common.getstringfromtime(ct.close_time ,"%I:%M %p")
+                    fri_id_2 = ct.id
+                    
+                fri_visitinghours = ""
+
+            if(ct.day_of_week == 'Sat'):
+                sat_day_chk = not common.getboolean(ct.is_holiday)
+                sat_lunch_chk = common.getboolean(ct.is_lunch)
+                sat_del_chk = False
+
+                
+                if((ct.open_time >= datetime.time(0,0,0)) & (ct.open_time <= datetime.time(14,0,0))):
+                    sat_starttime_1 = common.getstringfromtime(ct.open_time ,"%I:%M %p")
+                    sat_endtime_1 = common.getstringfromtime(ct.close_time ,"%I:%M %p")
+                    sat_id_1 = ct.id
+                else:   
+                    sat_starttime_2 = common.getstringfromtime(ct.open_time ,"%I:%M %p") 
+                    sat_endtime_2 = common.getstringfromtime(ct.close_time ,"%I:%M %p")
+                    sat_id_2 = ct.id
+                    
+                sat_visitinghours = ""
+
+
+
+
+    formA = SQLFORM.factory(
+        Field('mon_day_chk', 'boolean', default=mon_day_chk),        
+        Field('mon_lunch_chk', 'boolean', default=mon_lunch_chk),        
+        Field('mon_del_chk', 'boolean', default=mon_del_chk),        
+        Field('mon_starttime_1', 'string', default=mon_starttime_1,requires=IS_IN_SET(AMS)),
+        Field('mon_endtime_1', 'string', default=mon_endtime_1,requires=IS_IN_SET(AMS)),
+        Field('mon_starttime_2', 'string', default=mon_starttime_2,requires=IS_IN_SET(AMS)),
+        Field('mon_endtime_2', 'string', default=mon_endtime_2,requires=IS_IN_SET(AMS)),
+        Field('mon_visitinghours', 'string', default=mon_visitinghours),
+        Field('mon_id_1', 'integer', default=mon_id_1),
+        Field('mon_id_2', 'integer', default=mon_id_2),
+        
+
+        Field('tue_day_chk', 'boolean', default=tue_day_chk),        
+        Field('tue_lunch_chk', 'boolean', default=tue_lunch_chk),        
+        Field('tue_del_chk', 'boolean', default=tue_del_chk),        
+        Field('tue_starttime_1', 'string', default=tue_starttime_1,requires=IS_IN_SET(AMS)),
+        Field('tue_endtime_1', 'string', default=tue_endtime_1,requires=IS_IN_SET(AMS)),
+        Field('tue_starttime_2', 'string', default=tue_starttime_2,requires=IS_IN_SET(AMS)),
+        Field('tue_endtime_2', 'string', default=tue_endtime_2,requires=IS_IN_SET(AMS)),
+        Field('tue_visitinghours', 'string', default=tue_visitinghours),
+        Field('tue_id_1', 'integer', default=tue_id_1),
+        Field('tue_id_2', 'integer', default=tue_id_2),
+
+        Field('wed_day_chk', 'boolean', default=wed_day_chk),        
+        Field('wed_lunch_chk', 'boolean', default=wed_lunch_chk),        
+        Field('wed_del_chk', 'boolean', default=wed_del_chk),        
+        Field('wed_starttime_1', 'string', default=wed_starttime_1,requires=IS_IN_SET(AMS)),
+        Field('wed_endtime_1', 'string', default=wed_endtime_1,requires=IS_IN_SET(AMS)),
+        Field('wed_starttime_2', 'string', default=wed_starttime_2,requires=IS_IN_SET(AMS)),
+        Field('wed_endtime_2', 'string', default=wed_endtime_2,requires=IS_IN_SET(AMS)),
+        Field('wed_visitinghours', 'string', default=wed_visitinghours),
+        Field('wed_id_1', 'integer', default=wed_id_1),
+        Field('wed_id_2', 'integer', default=wed_id_2),
+
+        Field('thu_day_chk', 'boolean', default=thu_day_chk),        
+        Field('thu_lunch_chk', 'boolean', default=thu_lunch_chk),        
+        Field('thu_del_chk', 'boolean', default=thu_del_chk),        
+        Field('thu_starttime_1', 'string', default=thu_starttime_1,requires=IS_IN_SET(AMS)),
+        Field('thu_endtime_1', 'string', default=thu_endtime_1,requires=IS_IN_SET(AMS)),
+        Field('thu_starttime_2', 'string', default=thu_starttime_2,requires=IS_IN_SET(AMS)),
+        Field('thu_endtime_2', 'string', default=thu_endtime_2,requires=IS_IN_SET(AMS)),
+        Field('thu_visitinghours', 'string', default=thu_visitinghours),
+        Field('thu_id_1', 'integer', default=thu_id_1),
+        Field('thu_id_2', 'integer', default=thu_id_2),
+
+        Field('fri_day_chk', 'boolean', default=fri_day_chk),        
+        Field('fri_lunch_chk', 'boolean', default=fri_lunch_chk),        
+        Field('fri_del_chk', 'boolean', default=fri_del_chk),        
+        Field('fri_starttime_1', 'string', default=fri_starttime_1,requires=IS_IN_SET(AMS)),
+        Field('fri_endtime_1', 'string', default=fri_endtime_1,requires=IS_IN_SET(AMS)),
+        Field('fri_starttime_2', 'string', default=fri_starttime_2,requires=IS_IN_SET(AMS)),
+        Field('fri_endtime_2', 'string', default=fri_endtime_2,requires=IS_IN_SET(AMS)),
+        Field('fri_visitinghours', 'string', default=fri_visitinghours),
+        Field('fri_id_1', 'integer', default=fri_id_1),
+        Field('fri_id_2', 'integer', default=fri_id_2),
+
+        Field('sat_day_chk', 'boolean', default=sat_day_chk),        
+        Field('sat_lunch_chk', 'boolean', default=sat_lunch_chk),        
+        Field('sat_del_chk', 'boolean', default=sat_del_chk),        
+        Field('sat_starttime_1', 'string', default=sat_starttime_1,requires=IS_IN_SET(AMS)),
+        Field('sat_endtime_1', 'string', default=sat_endtime_1,requires=IS_IN_SET(AMS)),
+        Field('sat_starttime_2', 'string', default=sat_starttime_2,requires=IS_IN_SET(AMS)),
+        Field('sat_endtime_2', 'string', default=sat_endtime_2,requires=IS_IN_SET(AMS)),
+        Field('sat_visitinghours', 'string', default=sat_visitinghours),
+        Field('sat_id_1', 'integer', default=sat_id_1),
+        Field('sat_id_2', 'integer', default=sat_id_2),
+
+        #Field('sun_day_chk', 'boolean', default=sun_day_chk),        
+        #Field('sun_lunch_chk', 'boolean', default=sun_lunch_chk),        
+        #Field('sun_del_chk', 'boolean', default=sun_del_chk),        
+        #Field('sun_starttime_1', 'string', default=sun_starttime_1,requires=IS_IN_SET(AMS)),
+        #Field('sun_endtime_1', 'string', default=sun_endtime_1,requires=IS_IN_SET(AMS)),
+        #Field('sun_starttime_2', 'string', default=sun_starttime_2,requires=IS_IN_SET(AMS)),
+        #Field('sun_endtime_2', 'string', default=sun_endtime_2,requires=IS_IN_SET(AMS)),
+        #Field('sun_visitinghours', 'string', default=sun_visitinghours),
+
+        #Field('visitinghours', 'string', default=visitinghours),
+        #Field('lunchbreak', 'string', default=lunchbreak)
+
+
+    )
+
+    if formA.accepts(request,session,keepvalues=True):
+
+        visitinghours = ""
+        lunchbreaks = ""
+
+        ##Monday
+        t1 = common.gettimefromstring(formA.vars.mon_starttime_1,"%I:%M %p")
+        t2 = common.gettimefromstring(formA.vars.mon_endtime_1,"%I:%M %p")
+        dt1 = datetime.time(t1.tm_hour, t1.tm_min, t1.tm_sec)
+        dt2 = datetime.time(t2.tm_hour, t2.tm_min, t2.tm_sec)
+        
+        if(common.getboolean(formA.vars.mon_day_chk) == True):
+            db(db.ops_timing.id == mon_id_1).update(open_time =dt1, close_time = dt2, is_holiday = not common.getboolean(formA.vars.mon_day_chk))
+        else:
+            db(db.ops_timing.id == mon_id_1).update(is_holiday = not common.getboolean(formA.vars.mon_day_chk))
+
+        t1 = common.gettimefromstring(formA.vars.mon_starttime_2,"%I:%M %p")
+        t2 = common.gettimefromstring(formA.vars.mon_endtime_2,"%I:%M %p")
+        dt1 = datetime.time(t1.tm_hour, t1.tm_min, t1.tm_sec)
+        dt2 = datetime.time(t2.tm_hour, t2.tm_min, t2.tm_sec)
+
+        if(common.getboolean(formA.vars.mon_day_chk) == True):
+            db(db.ops_timing.id == mon_id_2).update(open_time =dt1, close_time = dt2, is_holiday = not common.getboolean(formA.vars.mon_day_chk))
+        else:
+            db(db.ops_timing.id == mon_id_2).update(is_holiday = not common.getboolean(formA.vars.mon_day_chk))
+
+
+        ##Tue
+        t1 = common.gettimefromstring(formA.vars.tue_starttime_1,"%I:%M %p")
+        t2 = common.gettimefromstring(formA.vars.tue_endtime_1,"%I:%M %p")
+        dt1 = datetime.time(t1.tm_hour, t1.tm_min, t1.tm_sec)
+        dt2 = datetime.time(t2.tm_hour, t2.tm_min, t2.tm_sec)
+        
+        if(common.getboolean(formA.vars.tue_day_chk) == True):
+            db(db.ops_timing.id == tue_id_1).update(open_time =dt1, close_time = dt2, is_holiday = not common.getboolean(formA.vars.tue_day_chk))
+        else:
+            db(db.ops_timing.id == tue_id_1).update(is_holiday = not common.getboolean(formA.vars.tue_day_chk))
+
+        t1 = common.gettimefromstring(formA.vars.tue_starttime_2,"%I:%M %p")
+        t2 = common.gettimefromstring(formA.vars.tue_endtime_2,"%I:%M %p")
+        dt1 = datetime.time(t1.tm_hour, t1.tm_min, t1.tm_sec)
+        dt2 = datetime.time(t2.tm_hour, t2.tm_min, t2.tm_sec)
+
+        if(common.getboolean(formA.vars.tue_day_chk) == True):
+            db(db.ops_timing.id == tue_id_2).update(open_time =dt1, close_time = dt2, is_holiday = not common.getboolean(formA.vars.tue_day_chk))
+        else:
+            db(db.ops_timing.id == tue_id_2).update(is_holiday = not common.getboolean(formA.vars.tue_day_chk))
+
+        ##Wed
+        t1 = common.gettimefromstring(formA.vars.wed_starttime_1,"%I:%M %p")
+        t2 = common.gettimefromstring(formA.vars.wed_endtime_1,"%I:%M %p")
+        dt1 = datetime.time(t1.tm_hour, t1.tm_min, t1.tm_sec)
+        dt2 = datetime.time(t2.tm_hour, t2.tm_min, t2.tm_sec)
+        
+        if(common.getboolean(formA.vars.wed_day_chk) == True):
+            db(db.ops_timing.id == wed_id_1).update(open_time =dt1, close_time = dt2, is_holiday = not common.getboolean(formA.vars.wed_day_chk))
+        else:
+            db(db.ops_timing.id == wed_id_1).update(is_holiday = not common.getboolean(formA.vars.wed_day_chk))
+
+        t1 = common.gettimefromstring(formA.vars.wed_starttime_2,"%I:%M %p")
+        t2 = common.gettimefromstring(formA.vars.wed_endtime_2,"%I:%M %p")
+        dt1 = datetime.time(t1.tm_hour, t1.tm_min, t1.tm_sec)
+        dt2 = datetime.time(t2.tm_hour, t2.tm_min, t2.tm_sec)
+
+        if(common.getboolean(formA.vars.wed_day_chk) == True):
+            db(db.ops_timing.id == wed_id_2).update(open_time =dt1, close_time = dt2, is_holiday = not common.getboolean(formA.vars.wed_day_chk))
+        else:
+            db(db.ops_timing.id == wed_id_2).update(is_holiday = not common.getboolean(formA.vars.wed_day_chk))
+
+
+        ##Thu
+        t1 = common.gettimefromstring(formA.vars.thu_starttime_1,"%I:%M %p")
+        t2 = common.gettimefromstring(formA.vars.thu_endtime_1,"%I:%M %p")
+        dt1 = datetime.time(t1.tm_hour, t1.tm_min, t1.tm_sec)
+        dt2 = datetime.time(t2.tm_hour, t2.tm_min, t2.tm_sec)
+        
+        if(common.getboolean(formA.vars.thu_day_chk) == True):
+            db(db.ops_timing.id == thu_id_1).update(open_time =dt1, close_time = dt2, is_holiday = not common.getboolean(formA.vars.thu_day_chk))
+        else:
+            db(db.ops_timing.id == thu_id_1).update(is_holiday = not common.getboolean(formA.vars.thu_day_chk))
+
+        t1 = common.gettimefromstring(formA.vars.thu_starttime_2,"%I:%M %p")
+        t2 = common.gettimefromstring(formA.vars.thu_endtime_2,"%I:%M %p")
+        dt1 = datetime.time(t1.tm_hour, t1.tm_min, t1.tm_sec)
+        dt2 = datetime.time(t2.tm_hour, t2.tm_min, t2.tm_sec)
+
+        if(common.getboolean(formA.vars.thu_day_chk) == True):
+            db(db.ops_timing.id == thu_id_2).update(open_time =dt1, close_time = dt2, is_holiday = not common.getboolean(formA.vars.thu_day_chk))
+        else:
+            db(db.ops_timing.id == thu_id_2).update(is_holiday = not common.getboolean(formA.vars.thu_day_chk))
+        
+        ##Fri
+        t1 = common.gettimefromstring(formA.vars.fri_starttime_1,"%I:%M %p")
+        t2 = common.gettimefromstring(formA.vars.fri_endtime_1,"%I:%M %p")
+        dt1 = datetime.time(t1.tm_hour, t1.tm_min, t1.tm_sec)
+        dt2 = datetime.time(t2.tm_hour, t2.tm_min, t2.tm_sec)
+        
+        if(common.getboolean(formA.vars.fri_day_chk) == True):
+            db(db.ops_timing.id == fri_id_1).update(open_time =dt1, close_time = dt2, is_holiday = not common.getboolean(formA.vars.fri_day_chk))
+        else:
+            db(db.ops_timing.id == fri_id_1).update(is_holiday = not common.getboolean(formA.vars.fri_day_chk))
+
+        t1 = common.gettimefromstring(formA.vars.fri_starttime_2,"%I:%M %p")
+        t2 = common.gettimefromstring(formA.vars.fri_endtime_2,"%I:%M %p")
+        dt1 = datetime.time(t1.tm_hour, t1.tm_min, t1.tm_sec)
+        dt2 = datetime.time(t2.tm_hour, t2.tm_min, t2.tm_sec)
+
+        if(common.getboolean(formA.vars.fri_day_chk) == True):
+            db(db.ops_timing.id == fri_id_2).update(open_time =dt1, close_time = dt2, is_holiday = not common.getboolean(formA.vars.fri_day_chk))
+        else:
+            db(db.ops_timing.id == fri_id_2).update(is_holiday = not common.getboolean(formA.vars.fri_day_chk))
+
+        ##Sat
+        t1 = common.gettimefromstring(formA.vars.sat_starttime_1,"%I:%M %p")
+        t2 = common.gettimefromstring(formA.vars.sat_endtime_1,"%I:%M %p")
+        dt1 = datetime.time(t1.tm_hour, t1.tm_min, t1.tm_sec) if(t1 != None) else datetime.time(0, 0, 0)
+        dt2 = datetime.time(t2.tm_hour, t2.tm_min, t2.tm_sec) if(t2 != None) else datetime.time(0, 0, 0)
+        
+        if(common.getboolean(formA.vars.sat_day_chk) == True):
+            db(db.ops_timing.id == sat_id_1).update(open_time =dt1, close_time = dt2, is_holiday = not common.getboolean(formA.vars.sat_day_chk))
+        else:
+            db(db.ops_timing.id == sat_id_1).update(is_holiday = not common.getboolean(formA.vars.sat_day_chk))
+
+        t1 = common.gettimefromstring(formA.vars.sat_starttime_2,"%I:%M %p")
+        t2 = common.gettimefromstring(formA.vars.sat_endtime_2,"%I:%M %p")
+        dt1 = datetime.time(t1.tm_hour, t1.tm_min, t1.tm_sec) if(t1 != None) else datetime.time(0, 0, 0)
+        dt2 = datetime.time(t2.tm_hour, t2.tm_min, t2.tm_sec) if(t2 != None) else datetime.time(0, 0, 0)
+
+        if(common.getboolean(formA.vars.sat_day_chk) == True):
+            db(db.ops_timing.id == sat_id_2).update(open_time =dt1, close_time = dt2, is_holiday = not common.getboolean(formA.vars.sat_day_chk))
+        else:
+            db(db.ops_timing.id == sat_id_2).update(is_holiday = not common.getboolean(formA.vars.sat_day_chk))
+
+
+        db.commit()
+        session.flash = 'Clinic timings added!'
+        redirect(returnurl)                                  
+
+    elif formA.errors:
+
+        session.flash = 'Error in updating Doctor timings! ' + str(formA.errors)
+
+
+    return dict(username=username,formheader=formheader,formA=formA, mon_day_chk=mon_day_chk,tue_day_chk=tue_day_chk,wed_day_chk=wed_day_chk,thu_day_chk=thu_day_chk,fri_day_chk=fri_day_chk,sat_day_chk=sat_day_chk,
+                returnurl=returnurl, page=page, providerid=providerid, providername=providername,clinicname=clinicname,doctorname=doctorname,
+                today_date = today_date, week_start=week_start, week_end=week_end 
+                )
+
 
 @auth.requires_membership('webadmin')
 @auth.requires_login()
@@ -991,6 +1960,7 @@ def list_prospect_clinics():
              lambda row: A('Bank Details',_href=URL("clinic","bank_clinic",vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,clinicid=row.clinic.id))),
              lambda row: A('Clinic Images',_href=URL("clinic","list_clinic_images",vars=dict(page=page,ref_code="CLN",ref_id=row.clinic.id,prev_ref_code=ref_code,prev_ref_id=ref_id))),
              lambda row: A('Clinic Logo',_href=URL("clinic","new_logo",vars=dict(page=page,ref_code="CLN",ref_id=row.clinic.id,prev_ref_code=ref_code,prev_ref_id=ref_id))),
+             lambda row: A('Clinic Timings',_href=URL("clinic","clinic_pst_timings",vars=dict(page=page,ref_code="CLN",ref_id=row.clinic.id,prev_ref_code=ref_code,prev_ref_id=ref_id))),
              lambda row: A('Delete',_href=URL("clinic","delete_clinic",vars=dict(page=page,ref_code=ref_code,ref_id=ref_id,clinicid=row.clinic.id)))
             ]
 
@@ -1466,5 +2436,69 @@ def bank_clinic():
 
     return dict(username=username,formA=formA,formheader=formheader,page=page,returnurl=returnurl,\
                 providerid=0,provider="",providername="",authuser=authuser)
+
+
+def default_all_clinic_timing():
+    
+    logger.loggerpms2.info("default_all_clinic_timing")
+
+    count = 0
+    try:
+        form = SQLFORM.factory(
+            Field('fromyear','string',label='From Year', requires= IS_NOT_EMPTY(),default=common.getstringfromdate(datetime.datetime.today(),"%Y")),
+            Field('toyear','string',label='To Year', requires= IS_NOT_EMPTY(),default=common.getstringfromdate(datetime.datetime.today(),"%Y")),
+            Field('time1','string',label='From Time', requires= IS_NOT_EMPTY()),
+            Field('time2','string',label='To Time', requires= IS_NOT_EMPTY())
+            )    
+    
+        submit = form.element('input',_type='submit')
+        submit['_value'] = 'Submit'    
+    
+        xfromyear = form.element('input',_id='no_table_fromyear')
+        xfromyear['_class'] =  'w3-input w3-border w3-small'    
+    
+        xtoyear = form.element('input',_id='no_table_toyear')
+        xtoyear['_class'] =  'w3-input w3-border w3-small'    
+        days = ['Mon','Tue','Wed','Thu','Fri','Sat']
+        
+        error = 0
+        if form.accepts(request,session,keepvalues=True):
+                error = 0
+                xfromyear = request.vars.fromyear
+                xtoyear = request.vars.toyear
+                timingObj = mdptimings.OPS_Timing(db)
+                avars={}
+                
+                clns = db(db.clinic.is_active == True).select()
+                
+                for cln in clns:
+                    avars = {}
+                    avars["action"] = "new_all_ops_timing"
+                    avars["ref_code"] = "CLN"
+                    avars["ref_id"] = cln.id
+                    avars["from_year"] = xfromyear
+                    avars["to_year"] = xfromyear
+                    daylst = []
+                    dayobj = {}
+                    dayobj["open_time"]=request.vars.time1
+                    dayobj["close_time"]=request.vars.time2
+                    daylst.append(dayobj)
+                    
+                    for day in days:
+                        avars[day] = daylst
+
+                    timinobj = mdptimings.OPS_Timing(db)
+                    respobj = timingObj.new_all_ops_timing(avars)
+                    db.commit()
+                    
+                        
+    except Exception as e:
+        logger.loggerpms2.info("default_all_clinic_timing Exception Error - " + str(e) + "\n" + str(e.message))
+        error = "default_all_clinic_timing Exception Error - " + str(e)    
+    
+    
+    
+    return dict(form = form, error = error)
+
 
 

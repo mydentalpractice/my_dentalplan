@@ -2729,6 +2729,7 @@ def add_webmember_provider():
 
 def medi_member_card():
 
+    
     #this method is called with url https://<server>/my_dentalplan/member/member_card 
     #vars = page, returnurl, pattype, memberid, patientid
     
@@ -2739,6 +2740,11 @@ def medi_member_card():
     memberid = int(common.getid(request.vars.memberid))
     patientid = int(common.getid(request.vars.patientid))
 
+    redirect(URL('member','member_card',vars=dict(page=page,returnurl=returnurl,memberid=memberid,patientid=patientid,pattype=pattype)))
+    
+    
+    link = URL('member', 'member_card', vars=dict(page=page,returnurl=returnurl,memberid=pats[i].primarypatientid,patientid=pats[i].patientid,pattype=pats[i].patienttype)) if(medibuddy == False) else URL('member', 'medi_member_card', vars=dict(page=page,returnurl=returnurl,memberid=pats[i].primarypatientid,patientid=pats[i].patientid,pattype=pats[i].patienttype))	    
+    
     pats = db((db.vw_memberpatientlist.primarypatientid == memberid) & (db.vw_memberpatientlist.patientid == patientid)).select()
 
     patientname = common.getstring(pats[0].fullname)
@@ -2786,6 +2792,70 @@ def medi_member_card():
 
 
 def member_card():
+
+    #this method is called with url https://<server>/my_dentalplan/member/member_card 
+    #vars = page, returnurl, pattype, memberid, patientid
+    
+    page      = common.getpage(request.vars.page)
+    returnurl = request.vars.returnurl if(request.vars.returnurl != "") else URL('default','index')
+    
+    pattype = request.vars.pattype if((request.vars.pattype != None) & (request.vars.pattype != "None") & (request.vars.pattype != "")) else "P"
+    memberid = int(common.getid(request.vars.memberid))
+    patientid = int(common.getid(request.vars.patientid))
+
+    pats = db((db.vw_memberpatientlist.primarypatientid == memberid) & (db.vw_memberpatientlist.patientid == patientid)).select()
+
+    patientname = common.getstring(pats[0].fullname)
+    patientphone = common.modify_cell(pats[0].cell)
+    
+    dob="00/00/0000"
+    if(pats[0].dob != None):
+	dob = pats[0].dob.strftime("%d/%m/%Y")
+    relation = common.getstring(pats[0].relation)
+    patientimage = common.getstring(pats[0].image)
+    
+    mems = db((db.vw_memberpatientlist.primarypatientid == memberid) & (db.vw_memberpatientlist.patientid == memberid)).select()
+    membername = common.getstring(mems[0].fullname)
+    patientmember = common.getstring(mems[0].patientmember)
+    
+    
+    comp = db(db.company.id == int(common.getid(mems[0].company))).select()
+    companyname = common.getstring(comp[0].name) if(len(comp)>0) else ""
+    companycode = common.getstring(comp[0].company) if(len(comp)>0) else ""
+    companylogo = common.getstring(comp[0].logo) if(len(comp)>0) else ""
+        
+    validfrom = mems[0].premstartdt.strftime("%d/%m/%Y") if(mems[0].premstartdt !=None) else "00/00/0000"
+    validtill = "Lifetime" if(companycode == 'RPIP99') else (mems[0].premenddt.strftime("%d/%m/%Y") if(mems[0].premenddt !=None) else "00/00/0000")
+
+
+    plans = db(db.hmoplan.id == int(common.getstring(mems[0].hmoplan))).select()
+    planname = common.getstring(plans[0].name) if(len(plans)>0) else ""
+    plancode = common.getstring(plans[0].hmoplancode) if(len(plans)>0) else ""
+    plandetails = plans[0].plan_details  if(len(plans)>0) else ""
+    plandetails = plandetails.split(';') if ((plandetails != None) & (plandetails != "")) else ""
+    
+    #for pland in plandetails:
+	#x = pland
+    providername = ""
+    practicename = ""
+    practiceaddress = ""
+    provs = db(db.provider.id == int(common.getstring(mems[0].providerid))).select()
+    if(len(provs)>0):
+	providername = common.getstring(provs[0].pa_providername)
+	practicename = common.getstring(provs[0].pa_practicename)
+	practiceaddress = common.getstring(provs[0].pa_practiceaddress)
+	practicephone = common.getstring(provs[0].telephone) if(common.getstring(provs[0].telephone) != "") else common.getstring(provs[0].cell)
+	practiceemail = common.getstring(provs[0].email)
+	
+    props = db(db.urlproperties.id>0).select()
+    httpserver = props[0].mydp_ipaddress  # this has to be populated 
+    return dict(page=page,returnurl=returnurl,patientname=patientname, patientmember=patientmember,relation=relation,dob=dob,\
+                membername=membername,companyname=companyname,planname=planname,validfrom=validfrom,validtill=validtill,patientphone=patientphone,\
+                patientimage=patientimage,providername=providername,plancode=plancode,plandetails=plandetails,companylogo=companylogo,\
+                practicename=practicename,practiceaddress=practiceaddress,\
+                practicephone=practicephone,practiceemail=practiceemail,httpserver=httpserver)
+
+def xmember_card():
 
     #this method is called with url https://<server>/my_dentalplan/member/member_card 
     #vars = page, returnurl, pattype, memberid, patientid
@@ -2928,13 +2998,16 @@ def member_card_links():
     links = []
     names = []
     
+    
+    #determine retail or corporate plans
+    
     medibuddy = False
     
-    if(len(pats)>0):
-	comp = db(db.company.id == int(pats[0].company)).select()
-	if(len(comp)>0):
-	    if(comp[0].company == "MEDI"):
-		medibuddy = True
+    #if(len(pats)>0):
+	#comp = db(db.company.id == int(pats[0].company)).select()
+	#if(len(comp)>0):
+	    #if(comp[0].company == "MEDI"):
+		#medibuddy = True
     
     
     if(len(pats)==1):

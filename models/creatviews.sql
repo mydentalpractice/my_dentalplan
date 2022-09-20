@@ -9098,13 +9098,13 @@ CREATE TABLE `kytc_track_log` (
 
 12/8/2021
 ==========
-x1. YYYYZZZAdd table 'price_rules'
+x1. XXXYYYYZZZAdd table 'price_rules'  - > rules table
 
-x2. YYYZZZModified procedurepriceplan definition in db.py
+x2. XXXYYYZZZModified procedurepriceplan definition in db.py
 
-x3. YYYZZZPopulated price_rules table with pricing rules for each procedure for a plan for a company
+x3. XXXYYYZZZPopulated price_rules table with pricing rules for each procedure for a plan for a company
 
-x4. YYYZZZZModify hmoplan with 4 fields voucher_code, discount_amount, wallet_amount, authorizationrequired
+x4. XXXXYYYZZZZModify hmoplan with 4 fields voucher_code, discount_amount, wallet_amount, authorizationrequired
 ALTER TABLE `mydp_prod`.`hmoplan` 
 ADD COLUMN `voucher_code` VARCHAR(45) NULL DEFAULT NULL AFTER `welcomeletter`,
 ADD COLUMN `discount_amount` DOUBLE NULL DEFAULT 0 AFTER `voucher_code`,
@@ -9112,33 +9112,33 @@ ADD COLUMN `walletamount` DOUBLE NULL DEFAULT 0 AFTER `discount_amount`,
 ADD COLUMN `authorizationrequired` CHAR(1) NULL DEFAULT 'F' AFTER `walletamount`;
 ADD COLUMN `company_code` VARCHAR(45) NULL DEFAULT NULL AFTER `authorizationrequired`;
 
-x5. YYYZZZZModify ProcedurPricePlan added 'authorizationrequired'
+x5. XXXYYYZZZZModify ProcedurPricePlan added 'authorizationrequired'
 
-x6. YYYZZZModified imporprocedurepriceplan
+x6. XXXYYYZZZModified imporprocedurepriceplan
 
-x7. YYYZZZ Modified importplan
+x7. XXXYYYZZZ Modified importplan
 
-x8. YYYZZZZ Modified hmoplan - added company code table
+x8. XXXXYYYZZZZ Modified hmoplan - added company code table
 ALTER TABLE `mydp_prod`.`hmoplan` 
 ADD COLUMN `company_code` VARCHAR(45) NULL DEFAULT NULL AFTER `authorizationrequired`;
 
-x9. YYYZZZModify ImportPlan
+x9. XXXYYYZZZModify ImportPlan
 ALTER TABLE `mydp_prod`.`importplan` 
 ADD COLUMN `company_code` VARCHAR(45) NULL DEFAULT NULL AFTER `authorizationrequired`;
 
-x10. YYYZZZModify pricing_rules table add 'rule_event'
+x10. XXXYYYZZZModify pricing_rules table add 'rule_event'
 
-x11. YYYYZZZRename pricing_rules table to rules table
+x11. XXXYYYYZZZRename pricing_rules table to rules table
     ALTER TABLE `mydp_prod`.`price_rules` 
 RENAME TO  `mydp_prod`.`rules` ;
 
-x12. YYYZZZ Modify importcustomers table - added P_D & relation fields
+x12. XXXYYYZZZ Modify importcustomers table - added P_D & relation fields
 
-x13. YYYZZZ Modify treatmentplan voucher_code is varchar
+x13. XXXYYYZZZ Modify treatmentplan voucher_code is varchar
 
-x14. YYYZZZZPopulate Rules table 
+x14. XXXYYYZZZZPopulate Rules table 
 
-x15. YYYZZZZPopulate CompanyCode in HMOPLAN table
+x15. XXXYYYZZZZPopulate CompanyCode in HMOPLAN table
 
 x16. ZZZprocedurefee=ucrfee in procedurepriceplan table
 
@@ -9148,11 +9148,11 @@ x18. YYYZZZZHMOPlan table modified for PCP002,PCP001
 
 19. YYYYZZZ Rules and PPP tables modified for MYDP company instead of MDP
 
-x20. YYYZZZ Modify treatment, treatmentplan to add new fields - promo_code, promo_amount
+x20. XXXYYYZZZ Modify treatment, treatmentplan to add new fields - promo_code, promo_amount
 
 x21. YYYZZZAlter vw_treatmentplansummary, vw_treatmentplansummarybypatient, vw_treatmentplansummarybytreatment
 
-x22. YYYZZZModify Treatment table added column WPBA_response
+x22. XXXYYYZZZModify Treatment table added column WPBA_response
 
 x23. YYYZZZZModify table provider_region_plan to add default values to is_active, created_on, created_by, modified_by, modified_on
 
@@ -9203,7 +9203,7 @@ CHANGE COLUMN `fp_otherinfo` `fp_otherinfo` VARCHAR(255) NULL DEFAULT NULL ;
 06/04/2021
 ===========
 
-1. YYZZModify Prospect, Provider, Clinic tables - added isMDP flag and logo_id, logo_file fields
+1. XXXYYZZModify Prospect, Provider, Clinic tables - added isMDP flag and logo_id, logo_file fields
 ALTER TABLE `mydp_prod`.`prospect` 
 ADD COLUMN `isMDP` CHAR(1) NULL DEFAULT 'T' AFTER `newcity`,
 ADD COLUMN `logo_id` INT(11) NULL COMMENT 'Ref to image id which holds the logo to be displayed' AFTER `isMDP`,
@@ -9220,7 +9220,7 @@ ADD COLUMN `logo_id` INT(11) NULL COMMENT 'ref to logo image' AFTER `isMDP`,
 ADD COLUMN `logo_file` VARCHAR(255) NULL COMMENT 'Logo file name' AFTER `logo_id`;
 
 
-2. Populate Group Region with Network
+2. XXXYYYZZZZPopulate Group Region with Network
 INSERT INTO `mydp_prod`.`groupregion`
 (`groupregion`,`region`,`is_active`,`created_on`,`created_by`,`modified_on`,`modified_by`)
 VALUES ('REG0','Pricing Region 0', 'T','2022-04-12',1,'2022-04-12',1);
@@ -9263,7 +9263,7 @@ VALUES ('REG9','Pricing Region 9', 'T','2022-04-12',1,'2022-04-12',1);
 
 4. Populate Provider logo_id & logo_file to point to correct logo for isMDP = True and isMDP = False
 
-5. YYYZZZModified urlproperties - added mdp_contact_cell and mdp_contact_email
+5. XXXYYYZZZModified urlproperties - added mdp_contact_cell and mdp_contact_email
 ALTER TABLE `mydp_prod`.`urlproperties` 
 ADD COLUMN `mdp_contact_cell` VARCHAR(45) NULL DEFAULT '18001027526' AFTER `vw_prod_url`,
 ADD COLUMN `mdp_contact_email` VARCHAR(45) NULL DEFAULT 'appointments@mydentalplan.in' AFTER `mdp_contact_cell`;
@@ -9283,7 +9283,7 @@ where prospect_ref.ref_code = 'AGN' and clinic_ref.ref_code = 'PST' and agent.is
 order by agent.name
 ;
 
-7. YYYZZZUpdate benefit_master_x_member add col patient_id
+7. XXXYYYZZZUpdate benefit_master_x_member add col patient_id
 ALTER TABLE `mydp_prod`.`benefit_master_x_member` 
 ADD COLUMN `patient_id` INT(11) NULL AFTER `member_id`;
 
@@ -9301,6 +9301,16 @@ Modified
 Added netcopay field
 
 
+20/08/2021
+==========
+
+1. XXXYYYZZZZModify vw_memberpatientlist_fast - added is_active flag
+2. XXXYYYZZZZ New View vw_mambepatientlist_min addedd
+
+20/09/2022
+==========
+1. ZZZAdd logo column in Company
+2. ZZZAdd tpapi_url in urlproperties 
 
 
 Script file to clear user for sign-up

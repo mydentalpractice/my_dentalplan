@@ -1,251 +1,161 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-  <title>MDP Id Card</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link href="https://fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="../static/css/member_card/style.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<title>For Corporate/TPA Customers</title>
 </head>
-  <script src="https://docraptor.com/docraptor-1.0.0.js"></script>
-  <script>
-    var downloadPDF = function() {
-      DocRaptor.createAndDownloadDoc("YOUR_API_KEY_HERE", {
-        test: true, // test documents are free, but watermarked
-        type: "pdf",
-        document_content: document.querySelector('html').innerHTML, // use this page's HTML
-        // document_content: "<h1>Hello world!</h1>",               // or supply HTML directly
-        // document_url: "http://example.com/your-page",            // or use a URL
-        // javascript: true,                                        // enable JavaScript processing
-        // prince_options: {
-        //   media: "screen",                                       // use screen styles instead of print styles
-        // }
-      })
-    }
-  </script>
-  <style>
-body{font-family: 'Poppins', sans-serif !important;}
-.np{    padding: 0px;}
-    .npl{padding-left: 0px;text-align: left;}
-    .npl p{    margin-bottom: 5px !important;    font-size: 12px;}
-    .npr{padding-right: 0px;text-align: right;}
-    .pb{padding-bottom: 5px;}
-        .bor{display: grid;
-    padding: 0px;    margin: 4px 37px;    float: left;}
-    .pt{padding-top: 30px;}
-    .bg{background:url(https://mydentalplan.in/bg_front.png) ;background-position: center;background-size: cover;padding: 10px 20px;}
-    .bg_blue{    background: #fff;padding: 0px 0px;}
-    .bg_blue1{    background: #fff;padding: 0px 0px;}
-    strong{font-weight: 600;}
-    td{font-size: 10px; padding: 3px 0px;}
-    td:first-child {font-weight: 500;    width: max-content;
-    float: left;}
-    .bt_text{    text-align: center;
-    font-size: 16px;
-    color: #fff;
-    margin-top: 8px;
-    font-weight: 600;}
-    ul {
-    list-style-image: url('https://mydentalplan.in/teeth_icon.png');
-}
-li{font-size:9px;}
-@media only screen and (max-width: 400px) and (min-width: 300px)  {
-
-    .bt_text{font-size: 12px !important;}
-ul{font-size: 11px !important;}
-  .npl p{ font-size:9px !important;}
-      .btm{font-size: 10px !important;}
-      .pt{padding-top:0px !important;}
-}
-@media only screen and (max-width: 400px) and (min-width: 300px)  {
-  .bt_text{font-size: 12px !important;}
-ul{font-size: 8px !important;}
-  .npl p{ font-size:13px !important;}
-     
-      .pt{padding-top:0px !important;}
-.pad{padding: 10px 10px !important;}
-.btm{text-align:left !important;}
-}
-
-
-</style>
-  <style>
-    @media print {
-      #pdf-button {
-        display: none;
-      }
-      .bg{background:url(https://mydentalplan.in/bg_front.png) ;background-position: center; background-size:100% 100%;}
-       .bor{    border-right: 1px solid #dad9d9;
-    border-left: 1px solid #dad9d9;
-    border-radius: 20px;display: grid;
-    padding: 0px;    margin: 10px;}
-
- /* All your print styles go here */
- #btnPrint{ display: none !important; } 
- .button{ display: none !important; } 
- a{display: none !important}
- p{font-size: 12px !important}
- li{list-style:circle;}
-}
-  </style>
-
 <body>
-  <div class="container">
-    <div class="col-sm-12">
- <!--Id Card Front part start-->
-<div class="col-sm-2"></div>
-          <div class="col-sm-6 bor">
-            <!--logo start-->
-             <div class="col-sm-12 bg_blue">
-               <div class="col-xs-12 np">
-                 <img src="https://mydentalplan.in/img/front-header.png" class="img_responsive center-block" alt="" style="width: 100%;">
-                </div>
-              
-            </div> 
-            <!--logo end-->
-            
-       <!--customer details start-->
-          <div class="col-sm-12 bg" style="background:url(https://mydentalplan.in/bg_front.png) ;background-position: center;background-size: cover;padding: 18px 20px;">
-               <div class="col-xs-9 npl">
-                <table>
-                  <tr>
-                    <td><strong>Beneficiary</strong></td>
-                    <td> <strong>&nbsp;:&nbsp;{{=patientname}}</strong> </td>
-                  </tr>
-                  <tr>
-                    <td><strong>MDP Member ID</strong></td>
-                    <td><strong>&nbsp;:&nbsp;{{=patientmember}}</strong></td>
-                  </tr>
-                  <tr>
-                    <td>Relation</td>
-                    <td>&nbsp;:&nbsp;{{=relation}}</td>
-                  </tr>
-                  <tr>
-                    <td>D.0.B</td>
-                    <td>&nbsp;:&nbsp;{{=dob}}</td>
-                  </tr>
-                  <tr>
-                    <td>Primary Member</td>
-                    <td>&nbsp;:&nbsp;{{=membername}}</td>
-                  </tr>
-                  <tr>
-                    <td>Company</td>
-                    <td>&nbsp;:&nbsp;{{=companyname}}</td>
-                  </tr>
-                  <tr>
-                    <td>Plan</td>
-                    <td>&nbsp;:&nbsp;{{=planname}}</td>
-                  </tr>
-                  <tr>
-                    <td>Validity From</td>
-                    <td>&nbsp;:&nbsp;{{=validfrom}}</td>
-                   </tr>
-                   <tr>
-                    <td>Validity Till</td>
-                    <td>&nbsp;:&nbsp;{{=validtill}}</td>
-                   </tr>
-                 </table>
-                
-                
-               </div>
-               <div class="col-xs-3 pt" style="display:block">
-		  {{if ((patientimage != "")  &  (patientimage != None)):  }}
-		      <img src="{{=httpserver}}{{=URL('my_dentalplan', 'member', 'download', args=patientimage )}}" class="img_responsive center-block" alt="" style="width: 90%;" />
-	   
-		  {{else:}}
-		      &nbsp;
-		  {{pass}}			
-       
-               </div>
-            </div>  
-       <!--customer details end-->
-       <!--customer details start-->
-          <div class="col-sm-12 bg_blue">
-               <div class="col-xs-12 np">
-                 <img src="https://mydentalplan.in/img/front-footer.png" class="img_responsive center-block" alt="" style="width: 100%;">
-                </div>
-              
-            </div>  
-       <!--customer details end-->
-      </div>
-      <div class="col-sm-2"></div>
-</div>
-<!--Id Card Front part End-->
+
+	<div class="top_section">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-6 col-md-12">	
+				<div class="sec_ctrl">		
+					<div class="header">
+					<div class="middle_line">						
+						<div class="row">
+							<div class="col-md-12">
+								<div class="top_head">
+								<div class="mdp_logo">
+									<img src="https://mydentalplan.in/frontassets/images/logo.png">
+								</div>
+
+								<div class="sbi_logo">
+									<img src={{=companylogo}}>
+								</div>								
+							</div>
+						</div>		
+								
+						  
+						</div>
+					</div>
+
+	<div class="name_details">
+			<div class="member_contant">
+					<div class="member_id">
+									<p>MyDentalPlan Member ID:- {{=patientmember}}</p>
+									<p>Valid From:-{{=validfrom}}Renewal Date:-{{=validtill}}</p>
+								</div>
+							</div>
+	
+						<div class="row">
+							<div class="col-2">
+								<img src="https://mydentalplan.in/frontassets/emailer/welcome_kit/female_icon.png">
+							</div>
+							<div class="col-5">
+								<table>
+									<tr><td><p>Name:- </p></td>
+										<td><p>{{=patientname}}</p></td></tr>
+
+									<tr><td><p>Relationship:- </p></td>
+									<td><p>{{=relation}}</p></td></tr>
+
+									<tr><td><p>D.O.B.:-</p></td>
+									<td><p>{{=dob}}</p></td></tr>
+
+									<tr><td><p>Phone number:-</p></td>
+									<td><p>{{=patientphone}}</p></td></tr>
+
+									
+								</table>
+							</div>
+							<div class="col-5">
+								<div class="dental_plan">
+									<ul>
+										<h2>Plan: {{=planname}} ({{=plancode}})</h2>
+										<h3>Inclusions:</h3>
+										{{for x in range(len(plandetails)):}}
+										<li><p>{{=plandetails[x]}}</p></li>
+										{{pass}}
+									</ul>
+								</div>
+							</div>
+
+						</div>
+					</div>
+					
+					<div class="footer_img">
+							<img src="https://mydentalplan.in/frontassets/emailer/welcome_kit/membership_card_footer.png">
+						</div>
+						<div class="footer_contant">
+							<h1>Your Dental Wellness Partner</h1>
+						</div>	
+					</div>
+				</div>
+				</div>
+
+
+				<div class="col-lg-6 col-md-12">					
+					<div class="header">
+					<div class="middle_line">						
+						<div class="row">
+							<div class="col-md-12">
+								<div class="contact_ctrl">
+								<div class="customer_contact">
+									<p> <a target="blank" href="tel:18001027526">1800 102 7526</a>
+										<br><a href="mailto:customersupport@mydentalplan.in?cc=leads@mydentalplan.in"><span>customersupport@mydentalplan.in</span></a></p>
+								</div>
+								<div class="for_enquiry">
+									<p>For Enquiry or <br> <span>Appointment</span></p>
+								</div>
+
+								<div class="whatsapp_hello">
+								    <a target="blank" href="https://api.whatsapp.com/send/?phone=919980837526&text=%2Fstart+wf15912w2922&type=phone_number&app_absent=0">
+								  <div class="whatsapp_logo">
+									<img src="https://mydentalplan.in/frontassets/emailer/welcome_letter/what'sapp_logo.png">
+								</div>
+
+								<div class="send_hello">
+									<p>send <b> Hello </b> <br> <span>99808 37526</span></p>
+								</div>
+							</a>
+						</div>
+
+							</div>
+						</div>
+						</div>
+					</div>
+
+	<div class="name_details">
+						<div class="row">
+							<div class="col-md-12">
+								<div class="for_appointment">
+									<ul class="Disclaimer_ul">
+										<h2>For Appointment <a target="blank" href="https://mydentalplan.in/book-appointment">Click here.</a></h2>
+										<h3>Disclaimer:</h3>
+										<li><p>*This card is not transferable and is valid in MyDentalPlan Healthcare empanelled dental clinics only.</p></li>
+										<li><p>*Use of the card is governed by MyDentalPlan Healthcare policy and terms and conditions.</p></li>
+										<li><p>*For any clarification, kindly call 
+											<a target="blank" href="tel:18001027526">1 800 102 7526</a> or write to us at 
+											<a href="mailto:customersupport@mydentalplan.in?cc=leads@mydentalplan.in">customersupport@mydentalplan.in</a></p></li>
+									</ul>
+								</div>
+							</div>
+
+						</div>
+					</div>
+					<div class="footer_img">
+							<img src="https://mydentalplan.in/frontassets/emailer/welcome_kit/membership_card_footer.png">
+					</div>
+
+					<div class="footer_contant">
+						<a target="blank" href="https://mydentalplan.in/">
+							<h1>mydentalplan.in</h1>
+						</a>
+						</div>	
+				</div>
+			</div>
+		</div>
+	</div>
 
 
 
- <!--Id Card back part start-->
- <div class="col-sm-12">
-
-<div class="col-sm-2"></div>
-          <div class="col-sm-6 bor">
-            <!--logo start-->
-              <div class="col-sm-12 bg_blue">
-               <div class="col-xs-12 np">
-                 <img src="https://mydentalplan.in/img/back-header.png" class="img_responsive center-block" alt="" style="width: 100%;">
-                </div>
-              
-            </div> 
-            <!--logo end-->
-            
-       <!--customer details start-->
-          <div class="col-sm-12 bg" style="background:url(https://mydentalplan.in/bg_front.png) ;background-position: center;background-size: cover;padding: 18px 20px;">
-               <div class="col-xs-12 npl">
-                <table>
-                  <tr>
-                    <td>My Dental Plan Provider </td>
-                    <td>&nbsp;:&nbsp;{{=providername}}</td>
-                  </tr>
-                  <tr>
-                    <td>My Dental Plan Clinic</td>
-                    <td>&nbsp;:&nbsp;{{=practicename}}</td>
-                  </tr>
-                  <tr>
-                    <td>Address </td>
-                    <td>&nbsp;:&nbsp;{{=practiceaddress}}</td>
-                  </tr>
-                  <tr>
-                    <td>Phone </td>
-                    <td>&nbsp;:&nbsp{{=practicephone}}</td>
-                  </tr>
-                  <tr>
-                    <td>Email </td>
-                    <td>&nbsp;:&nbsp;{{=practiceemail}}</td>
-                  </tr>
-              </table>
-                <h4 style="font-size:10px">Disclaimer :</h4>
-                <ul>
-                 <li>This card is not transferable and is valid in My Dental Plan empanelled Dental clinics only</li>
-                 <li>Use of the card is governed by My Dental Plan healthcare policy Terms and Conditions</li>
-                 <li>Valid up to end date of policy</li>
-               </ul>
-                
-                
-                
-               </div>
-               
-            </div>  
-       <!--customer details end-->
-       <!--customer details start-->
-           <div class="col-sm-12 bg_blue">
-               <div class="col-xs-12 np">
-                 <img src="https://mydentalplan.in/img/back-footer.png" class="img_responsive center-block" alt="" style="width: 100%;">
-                </div>
-              
-            </div>   
-       <!--customer details end-->
-      </div>
-      <div class="col-sm-2"></div>
-</div>
-<!--Id Card back part End-->
-
-
-
-
- <center><div class="col-sm-12"> <input id="pdf-button" type="button" value="Download PDF" onclick="downloadPDF()" /></div></center>
-   </div>
-
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </body>
+</html>

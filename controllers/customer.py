@@ -1134,6 +1134,7 @@ def import_customers():
             p_d  = ""
             relation = ""
             dependant_ref = ""
+            cutomers_to_enroll = []
             
             with open(xcsvfile, 'r') as csvfile:
                 reader = csv.reader(csvfile)
@@ -1323,47 +1324,54 @@ def import_customers():
                     
                     
                
-                for i in xrange(0,len(cutomers_to_enroll)):    
-                    c = db((db.customer.id == cutomers_to_enroll[i]) & (db.customer.is_active == True)).select()
-                    customer_ref = c[0].customer_ref if (len(c)==1) else ""
-                    customerid = c[0].id if(len(c)==1) else 0
-                    providerid = c[0].providerid if(len(c)==1) else 0
-                    clinicid = c[0].clinicid if(len(c)==1) else 0
-                    appointment_id = c[0].appointment_id if(len(c)==1) else ""                
-                    custobj = mdpcustomer.Customer(db)
-                    avars = {"customerid":customerid,"customer_ref":customer_ref}
-                    patobj  = json.loads(custobj.enroll_customer(avars))
-                    member = common.getkeyvalue(patobj, "fullname", "") 
 
-                    if(patobj["result"] == "success"):
-                        appPath = current.globalenv["request"].folder
-                        mdpappt = mdpappointment.Appointment(db, providerid)
-                        docs = db((db.doctor.providerid == providerid) & 
-                                  (db.doctor.practice_owner == True) & 
-                                  (db.doctor.is_active == True)).select()
+            logger.loggerpms2.info("Number of Customers to Enroll - " + str(len(cutomers_to_enroll)))
+            for i in xrange(0,len(cutomers_to_enroll)): 
+
+                c = db((db.customer.id == cutomers_to_enroll[i]) & (db.customer.is_active == True)).select()
+                customer_ref = c[0].customer_ref if (len(c)==1) else ""
+                customerid = c[0].id if(len(c)==1) else 0
+                providerid = c[0].providerid if(len(c)==1) else 0
+                clinicid = c[0].clinicid if(len(c)==1) else 0
+                appointment_id = c[0].appointment_id if(len(c)==1) else ""                
+                custobj = mdpcustomer.Customer(db)
+                avars = {"customer_no":i, "customerid":customerid,"customer_ref":customer_ref}
+                patobj  = json.loads(custobj.enroll_customer(avars))
+                logger.loggerpms2.info("After enroll_customer " + json.dumps(patobj))
+                member = common.getkeyvalue(patobj, "fullname", "") 
+
+                if(patobj["result"] == "success"):
+                    logger.loggerpms2.info("Import Customers - A")
+                    appPath = current.globalenv["request"].folder
+                    mdpappt = mdpappointment.Appointment(db, providerid)
+                    docs = db((db.doctor.providerid == providerid) & 
+                              (db.doctor.practice_owner == True) & 
+                              (db.doctor.is_active == True)).select()
+                    
+                    if(len(docs)>0):
+                        doctorid = docs[0].id
                         
-                        if(len(docs)>0):
-                            doctorid = docs[0].id
-                            
-                        else:
-                            doctorid = 0
+                    else:
+                        doctorid = 0
+                    
+                    db((db.customer.id == customerid) & (db.customer.is_active == True)).update(status = 'Enrolled')
+                    
+                    jsonreq = {}
+                    jsonreq["memberid"]=patobj["primarypatientid"]
+                    jsonreq["patientid"]=patobj["patientid"]
+                    jsonreq["doctorid"]=str(doctorid)
+                    jsonreq["clinicid"]=str(clinicid)
+                    jsonreq["startdt"]=common.getstringfromdate(c[0].appointment_datetime,"%d/%m/%Y %H:%M")
+                    jsonreq["duration"]=str(30)
+                    jsonreq["providernotes"]="Auto-Appointment created\nAppointment_ID: " + c[0].appointment_id + "\n" + c[0].notes, 
+                    jsonreq["appPath"]=appPath
+                    jsonreq["cell"]=c[0].cell                        
+                    
+                    apptobj = None
+                    if(appointment_id != ""):
+                        apptobj = json.loads(mdpappt.newappointment(jsonreq))
+                        logger.loggerpms2.info("Import Customers - After new appointment " + json.dumps(apptobj))
                         
-                        db((db.customer.id == customerid) & (db.customer.is_active == True)).update(status = 'Enrolled')
-                        
-                        jsonreq = {}
-                        jsonreq["memberid"]=patobj["primarypatientid"]
-                        jsonreq["patientid"]=patobj["patientid"]
-                        jsonreq["doctorid"]=str(doctorid)
-                        jsonreq["clinicid"]=str(clinicid)
-                        jsonreq["startdt"]=common.getstringfromdate(c[0].appointment_datetime,"%d/%m/%Y %H:%M")
-                        jsonreq["duration"]=str(30)
-                        jsonreq["providernotes"]="Auto-Appointment created\nAppointment_ID: " + c[0].appointment_id + "\n" + c[0].notes, 
-                        jsonreq["appPath"]=appPath
-                        jsonreq["cell"]=c[0].cell                        
-                        
-                        apptobj = None
-                        if(appointment_id != ""):
-                            apptobj = json.loads(mdpappt.newappointment(jsonreq))
                     else:
                         message += "ERROR enrolling Customer " + member + " in MDP"
         except Exception as e:

@@ -21,6 +21,7 @@ import urllib
 import os
 import datetime 
 import re
+import json
 
 #import sys
 #sys.path.append('modules')
@@ -1377,8 +1378,10 @@ def emailwelcomekit_0():
             providerid = int(rows[0].provider)
             membername = rows[0].fname + " " + rows[0].lname
 	    #logger.loggerpms2.info("Before mail.emailwelcomkit")
+	    
             ret = mail.emailWelcomeKit(db,request,memberid,providerid)
-	    #logger.loggerpms2.info("After mail.emailwelcomkit")
+	    
+	    #logger.loggerpms2.info("After mail.emailwelcomkit")	    
             if(ret == False):
                 raise HTTP(403,"Error in sending Welcome Kit by email")
 

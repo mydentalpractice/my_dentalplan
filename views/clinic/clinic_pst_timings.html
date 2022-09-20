@@ -1,0 +1,473 @@
+{{extend 'mdp_layoutw3.html'}}
+
+{{=formA.custom.begin}}
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <!-- BEGIN EXAMPLE TABLE PORTLET-->
+                                <div class="portlet light bordered">
+                                    <div class="portlet-title" style="padding:0px 20px  !important">
+                                        <div class="caption font-white" style="    width: 100%;">
+                                            <span class="caption-subject bold uppercase">Clinic Timings for {{=clinicname}}</span>
+                                        </div>                                    
+                                        <div class="caption font-white" style="    width: 100%;">
+                                            <span class="caption-subject bold uppercase">Today {{=today_date}}  Week({{=week_start}} - {{=week_end}})</span>
+                                        </div>                                    
+                                    
+                                       
+                                    </div>
+                                    <div class="col-md-offset-2 col-md-8 col-md-offset-2">
+                                    <!-- BEGIN Portlet PORTLET-->
+  <div id="menu2" class="tab-pane fade in active">
+
+  
+
+    <!--MON-->
+    <fieldset class="form-group row">
+      <div class="col-sm-12">
+        <div class="form-check ">
+          <label class="form-check-label">
+             <strong> Monday </strong>{{=formA.custom.widget.mon_day_chk}} 
+          </label>
+        </div>
+          <div class="form-check" style="display:none">
+          <label class="form-check-label">
+            {{=formA.custom.widget.mon_lunch_chk}} I take a break for lunch
+          </label>
+        </div>
+      </div>
+      {{if(mon_day_chk==True):}}
+      <div class="form-group">
+      <label for="email">Start Time</label>
+      {{=formA.custom.widget.mon_starttime_1}}
+      <label for="email">End Time</label>
+      {{=formA.custom.widget.mon_endtime_1}}
+      <div style="display:none">
+      {{=formA.custom.widget.mon_id_1}}
+      </div>
+      
+      </div>
+      <div class="form-group">
+      <label for="email">Start Time</label>
+      {{=formA.custom.widget.mon_starttime_2}}
+      <label for="email">End Time</label>
+      {{=formA.custom.widget.mon_endtime_2}}
+      <div style="display:none">
+      {{=formA.custom.widget.mon_id_2}}
+      </div>
+      </div>
+     {{else:}}
+      <div class="form-group" style="display:none">
+      <label for="email">Start Time</label>
+      {{=formA.custom.widget.mon_starttime_1}}
+      <label for="email">End Time</label>
+      {{=formA.custom.widget.mon_endtime_1}}
+      <div style="display:none">
+      {{=formA.custom.widget.mon_id_1}}
+      </div>
+      
+      </div>
+      <div class="form-group" style="display:none">
+      <label for="email">Start Time</label>
+      {{=formA.custom.widget.mon_starttime_2}}
+      <label for="email">End Time</label>
+      {{=formA.custom.widget.mon_endtime_2}}
+      <div style="display:none">
+      {{=formA.custom.widget.mon_id_2}}
+      </div>
+      </div>
+     
+     
+     {{pass}}
+     
+    </fieldset> 
+       
+        
+        
+
+ <!--TUE-->
+    <fieldset class="form-group row">
+      <div class="col-sm-12">
+        <div class="form-check ">
+          <label class="form-check-label">
+             <strong> Tuesday </strong>{{=formA.custom.widget.tue_day_chk}}
+          </label>
+        </div>
+          <div class="form-check" style="display:none">
+          <label class="form-check-label">
+            {{=formA.custom.widget.tue_lunch_chk}} I take a break for lunch
+          </label>
+        </div>
+      </div>
+      
+      {{if(tue_day_chk==True):}}
+      <div class="form-group">
+      <label for="email">Start Time</label>
+      {{=formA.custom.widget.tue_starttime_1}}
+      <label for="email">End Time</label>
+      {{=formA.custom.widget.tue_endtime_1}}
+      <div style="display:none">
+      {{=formA.custom.widget.tue_id_1}}
+      </div>
+
+      </div>      
+      <div class="form-group">
+      <label for="email">Start Time</label>
+      {{=formA.custom.widget.tue_starttime_2}}
+      <label for="email">End Time</label>
+      {{=formA.custom.widget.tue_endtime_2}}
+      <div style="display:none">
+      {{=formA.custom.widget.tue_id_2}}
+      </div>
+
+      </div>
+     {{else:}}
+      <div class="form-group" style="display:none">
+      <label for="email">Start Time</label>
+      {{=formA.custom.widget.tue_starttime_1}}
+      <label for="email">End Time</label>
+      {{=formA.custom.widget.tue_endtime_1}}
+      <div style="display:none">
+      {{=formA.custom.widget.tue_id_1}}
+      </div>
+
+      </div>      
+      <div class="form-group" style="display:none">
+      <label for="email">Start Time</label>
+      {{=formA.custom.widget.tue_starttime_2}}
+      <label for="email">End Time</label>
+      {{=formA.custom.widget.tue_endtime_2}}
+      <div style="display:none">
+      {{=formA.custom.widget.tue_id_2}}
+      </div>
+
+      </div>
+     
+     {{pass}}
+     
+    </fieldset> 
+
+    <!--WED-->
+    <fieldset class="form-group row">
+      <div class="col-sm-12">
+        <div class="form-check ">
+          <label class="form-check-label">
+             <strong> Wednesday </strong>{{=formA.custom.widget.wed_day_chk}} 
+          </label>
+        </div>
+          <div class="form-check" style="display:none">
+          <label class="form-check-label">
+            {{=formA.custom.widget.wed_lunch_chk}} I take a break for lunch
+          </label>
+        </div>
+      </div>
+      {{if(wed_day_chk==True):}}
+      <div class="form-group">
+      <label for="email">Start Time</label>
+      {{=formA.custom.widget.wed_starttime_1}}
+      <label for="email">End Time</label>
+      {{=formA.custom.widget.wed_endtime_1}}
+      <div style="display:none">
+      {{=formA.custom.widget.wed_id_1}}
+      </div>
+
+
+      </div>      
+      <div class="form-group"> 
+      <label for="email">Start Time</label>
+      {{=formA.custom.widget.wed_starttime_2}}
+      <label for="email">End Time</label>
+      {{=formA.custom.widget.wed_endtime_2}}
+      <div style="display:none">
+      {{=formA.custom.widget.wed_id_2}}
+      </div>
+
+      </div>
+     {{else:}}
+      <div class="form-group" style="display:none"> 
+      <label for="email">Start Time</label>
+      {{=formA.custom.widget.wed_starttime_1}}
+      <label for="email">End Time</label>
+      {{=formA.custom.widget.wed_endtime_1}}
+      <div style="display:none">
+      {{=formA.custom.widget.wed_id_1}}
+      </div>
+
+
+      </div>      
+      <div class="form-group" style="display:none"> 
+      <label for="email">Start Time</label>
+      {{=formA.custom.widget.wed_starttime_2}}
+      <label for="email">End Time</label>
+      {{=formA.custom.widget.wed_endtime_2}}
+      <div style="display:none">
+      {{=formA.custom.widget.wed_id_2}}
+      </div>
+
+      </div>
+     
+     {{pass}}
+    </fieldset> 
+    
+    <!--THU-->
+    <fieldset class="form-group row">
+      <div class="col-sm-12">
+        <div class="form-check ">
+          <label class="form-check-label">
+             <strong> Thursday </strong>{{=formA.custom.widget.thu_day_chk}}
+          </label>
+        </div>
+          <div class="form-check" style="display:none">
+          <label class="form-check-label">
+            {{=formA.custom.widget.thu_lunch_chk}} I take a break for lunch
+          </label>
+        </div>
+      </div>
+      
+      {{if(thu_day_chk==True):}}
+      <div class="form-group">
+      <label for="email">Start Time</label>
+      {{=formA.custom.widget.thu_starttime_1}}
+      <label for="email">End Time</label>
+      {{=formA.custom.widget.thu_endtime_1}}
+      <div style="display:none">
+      {{=formA.custom.widget.thu_id_1}}
+      </div>
+
+      
+      </div>      
+      <div class="form-group">
+      <label for="email">Start Time</label>
+      {{=formA.custom.widget.thu_starttime_2}}
+      <label for="email">End Time</label>
+      {{=formA.custom.widget.thu_endtime_2}}
+      <div style="display:none">
+      {{=formA.custom.widget.thu_id_2}}
+      </div>
+      
+      </div>
+     {{else:}}
+      <div class="form-group" style="display:none">
+      <label for="email">Start Time</label>
+      {{=formA.custom.widget.thu_starttime_1}}
+      <label for="email">End Time</label>
+      {{=formA.custom.widget.thu_endtime_1}}
+      <div style="display:none">
+      {{=formA.custom.widget.thu_id_1}}
+      </div>
+
+      
+      </div>      
+      <div class="form-group" style="display:none">
+      <label for="email">Start Time</label>
+      {{=formA.custom.widget.thu_starttime_2}}
+      <label for="email">End Time</label>
+      {{=formA.custom.widget.thu_endtime_2}}
+      <div style="display:none">
+      {{=formA.custom.widget.thu_id_2}}
+      </div>
+      
+      </div>
+     {{pass}}
+    </fieldset> 
+    
+    <!--FRI-->
+    <fieldset class="form-group row">
+      <div class="col-sm-12">
+        <div class="form-check ">
+          <label class="form-check-label">
+             <strong> Friday </strong>{{=formA.custom.widget.fri_day_chk}}
+          </label>
+        </div>
+          <div class="form-check" style="display:none">
+          <label class="form-check-label">
+            {{=formA.custom.widget.fri_lunch_chk}} I take a break for lunch
+          </label>
+        </div>
+      </div>
+      
+      {{if(fri_day_chk==True):}}
+      <div class="form-group">
+      <label for="email">Start Time</label>
+      {{=formA.custom.widget.fri_starttime_1}}
+      <label for="email">End Time</label>
+      {{=formA.custom.widget.fri_endtime_1}}
+      <div style="display:none">
+      {{=formA.custom.widget.fri_id_1}}
+      </div>
+
+      </div>      
+      <div class="form-group">
+      <label for="email">Start Time</label>
+      {{=formA.custom.widget.fri_starttime_2}}
+      <label for="email">End Time</label>
+      {{=formA.custom.widget.fri_endtime_2}}
+      <div style="display:none">
+      {{=formA.custom.widget.fri_id_2}}
+      </div>
+      </div>
+      {{else:}}
+      <div class="form-group" style="display:none">
+      <label for="email">Start Time</label>
+      {{=formA.custom.widget.fri_starttime_1}}
+      <label for="email">End Time</label>
+      {{=formA.custom.widget.fri_endtime_1}}
+      <div style="display:none">
+      {{=formA.custom.widget.fri_id_1}}
+      </div>
+
+      </div>      
+      <div class="form-group" style="display:none">
+      <label for="email">Start Time</label>
+      {{=formA.custom.widget.fri_starttime_2}}
+      <label for="email">End Time</label>
+      {{=formA.custom.widget.fri_endtime_2}}
+      <div style="display:none">
+      {{=formA.custom.widget.fri_id_2}}
+      </div>
+      </div>
+      {{pass}}      
+     
+    </fieldset> 
+    
+    <!--SAT-->
+    <fieldset class="form-group row">
+      <div class="col-sm-12">
+        <div class="form-check ">
+          <label class="form-check-label">
+             <strong> Saturday </strong>{{=formA.custom.widget.sat_day_chk}} 
+          </label>
+        </div>
+          <div class="form-check" style="display:none">
+          <label class="form-check-label">
+            {{=formA.custom.widget.sat_lunch_chk}} I take a break for lunch
+          </label>
+        </div>
+      </div>
+      
+      {{if(sat_day_chk==True):}}
+      <div class="form-group">
+      <label for="email">Start Time</label>
+      {{=formA.custom.widget.sat_starttime_1}}
+      <label for="email">End Time</label>
+      {{=formA.custom.widget.sat_endtime_1}}
+      
+      <div style="display:none">
+      {{=formA.custom.widget.sat_id_1}}
+      </div>
+      
+      </div>      
+      <div class="form-group">
+      <label for="email">Start Time</label>
+      {{=formA.custom.widget.sat_starttime_2}}
+      <label for="email">End Time</label>
+      {{=formA.custom.widget.sat_endtime_2}}
+      <div style="display:none">
+      {{=formA.custom.widget.sat_id_2}}
+      </div>
+      </div>
+      {{else:}}
+      <div class="form-group" style="display:none">
+      <label for="email">Start Time</label>
+      {{=formA.custom.widget.sat_starttime_1}}
+      <label for="email">End Time</label>
+      {{=formA.custom.widget.sat_endtime_1}}
+      
+      <div style="display:none">
+      {{=formA.custom.widget.sat_id_1}}
+      </div>
+      
+      </div>      
+      <div class="form-group" style="display:none">
+      <label for="email">Start Time</label>
+      {{=formA.custom.widget.sat_starttime_2}}
+      <label for="email">End Time</label>
+      {{=formA.custom.widget.sat_endtime_2}}
+      <div style="display:none">
+      {{=formA.custom.widget.sat_id_2}}
+      </div>
+      </div>      
+      {{pass}}      
+     
+    </fieldset> 
+    
+    <!--SUN-->
+    <fieldset class="form-group row" style="display:none">
+      <div class="col-sm-12" style="display:none">
+        <div class="form-check ">
+          <label class="form-check-label">
+             <strong> Sunday </strong>{{=formA.custom.widget.sun_day_chk}} 
+          </label>
+        </div>
+          <div class="form-check">
+          <label class="form-check-label" style="display:none" >
+            {{=formA.custom.widget.sun_lunch_chk}} I take a break for lunch
+          </label>
+        </div>
+      </div>
+      
+      <div class="form-group" style="display:none">
+      <label for="email">Start Time</label>
+      {{=formA.custom.widget.sun_starttime_1}}
+      <label for="email">End Time</label>
+      {{=formA.custom.widget.sun_endtime_1}}
+      </div>      
+      <div class="form-group" style="display:none">
+      <label for="email">Start Time</label>
+      {{=formA.custom.widget.sun_starttime_2}}
+      <label for="email">End Time</label>
+      {{=formA.custom.widget.sun_endtime_2}}
+      </div>
+    </fieldset> 
+   
+ 
+    <div class="col-md-12" style="margin-bottom:30px">
+      <button type="submit" class="btn green">Save </button>
+      <a href="{{=returnurl}}">Cancel </a>
+      
+   </div>
+
+<div style="display:none">
+{{=formA.custom.widget.mon_del_chk}}
+{{=formA.custom.widget.tue_del_chk}}
+{{=formA.custom.widget.wed_del_chk}}
+{{=formA.custom.widget.thu_del_chk}}
+{{=formA.custom.widget.fri_del_chk}}
+{{=formA.custom.widget.sat_del_chk}}
+{{=formA.custom.widget.sun_del_chk}}
+
+
+{{=formA.custom.widget.mon_visitinghours}}
+{{=formA.custom.widget.tue_visitinghours}}
+{{=formA.custom.widget.wed_visitinghours}}
+{{=formA.custom.widget.thu_visitinghours}}
+{{=formA.custom.widget.fri_visitinghours}}
+{{=formA.custom.widget.sat_visitinghours}}
+{{=formA.custom.widget.sun_visitinghours}}
+
+
+{{=formA.custom.widget.visitinghours}}
+
+</div>
+
+
+  
+</div>
+
+
+                                    <!-- END Portlet PORTLET-->
+                                  </div>
+
+                                </div>
+                                <!-- END EXAMPLE TABLE PORTLET-->
+                            </div>
+                        </div>
+
+
+
+{{=formA.custom.end}}
+
+
+
+
+
