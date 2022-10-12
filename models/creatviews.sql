@@ -9309,8 +9309,8 @@ Added netcopay field
 
 20/09/2022
 ==========
-1. ZZZAdd logo column in Company
-2. ZZZAdd tpapi_url in urlproperties 
+1. XXXYYYZZZAdd logo column in Company
+2. XXXYYYZZZAdd tpapi_url in urlproperties 
 
 
 Script file to clear user for sign-up
