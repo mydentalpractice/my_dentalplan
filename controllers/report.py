@@ -4176,3 +4176,131 @@ def appointmentreportcsv():
     
     
     return dict(formA=formA,username=username,formheader=formheader, returnurl=returnurl)
+
+def dashboardreportparams():
+
+    username = auth.user.first_name + ' ' + auth.user.last_name
+    formheader = "Appointment Report"
+        
+    form = SQLFORM.factory(
+        Field('fromdate',
+        'date',widget = lambda field, value:SQLFORM.widgets.date.widget(field, value, _style='height:30px'), label='From Date',default=request.now,length=20,requires = IS_DATE(format=T('%d/%m/%Y'),error_message='must be d/m/Y!')),        
+        Field('todate',
+        'date',widget = lambda field, value:SQLFORM.widgets.date.widget(field, value, _style='height:30px'), label='To Date',default=request.now,length=20,requires = IS_DATE(format=T('%d/%m/%Y'),error_message='must be d/m/Y!'))       
+    )
+   
+    
+    submit = form.element('input',_type='submit')
+    submit['_style'] = 'display:none;'
+    
+    returnurl=URL('default','index')
+    
+    if form.accepts(request,session,keepvalues=True):
+        providerid = 0 
+        fromdate = (form.vars.fromdate).strftime("%d/%m/%Y")
+        todate = (form.vars.todate).strftime("%d/%m/%Y")
+        
+        redirect(URL('report','dashboardreportcsv',\
+                     vars=dict(fromdate=fromdate, todate=todate)))
+        
+    elif form.errors:
+        response.flash = "Error - Appointment Report! " + str(form.errors)
+        redirect(returnurl)
+        
+    
+    return dict(username=username,returnurl=returnurl,form=form,formheader=formheader)
+
+
+
+def dashboardreportcsv():
+    logger.loggerpms2.info("Enter Dashboard Report CSV")
+    
+    db = current.globalenv['db']
+    
+    username = auth.user.first_name + ' ' + auth.user.last_name
+    formheader = "Appoints/Month Report"
+    returnurl=URL('default','main')
+   
+    fromdate = datetime.datetime.strptime(request.vars.fromdate,"%d/%m/%Y")
+    todate = datetime.datetime.strptime(request.vars.todate,"%d/%m/%Y")
+    
+    day = timedelta(days=1)
+    todate = todate + day
+    
+    fromdtstr = common.getstringfromdate(fromdate,"%Y-%m-%d")
+    todatestr  = common.getstringfromdate(todate,"%Y-%m-%d")
+
+    
+    
+    sqlqry = "SELECT MONTHNAME(f_start_time) AS month_name,company_code, count(company_code) AS apptcount from vw_dashboard where  "
+    sqlqry = sqlqry + " is_active = 'T' and f_start_time >= '" + fromdtstr + "' and f_start_time <= '" + todatestr + "' group by company_code "
+    rows = db.executesql(sqlqry)
+   
+    
+    i = db.executesql("TRUNCATE TABLE dashboard_appt_count")
+    
+    
+   
+    
+    for r in rows:
+        db.dashboard_appt_count.insert(month_name = r[0],company_code = r[1],apptcount=r[2] )
+        
+        
+    db.commit()
+    
+    orderby =  db.dashboard_appt_count.company_code
+    groupby =  None  
+
+    query= ((db.dashboard_appt_count.id >= 0))
+    links=None 
+
+    fields = [
+        db.dashboard_appt_count.month_name,
+        db.dashboard_appt_count.company_code,
+        db.dashboard_appt_count.apptcount
+    ]
+
+    headers={
+        'dashboard_appt_count.month_name':'Month',
+        'dashboard_appt_count.company_code':'Company Code',
+        'dashboard_appt_count.apptcount':'Count'
+
+    }
+
+
+    exportlist = dict( csv_with_hidden_cols=False, html=False,tsv_with_hidden_cols=False, tsv=False, json=False, xml=False)    
+
+
+    export_classes = dict(csv=(CSVExporter, 'CSV'), json=False, html=False,
+                          tsv=False, xml=False, csv_with_hidden_cols=False,
+                          tsv_with_hidden_cols=False)    
+
+
+
+
+
+    formA = SQLFORM.grid(query=query,
+                         headers=headers,
+                         fields=fields,
+                         paginate=10,
+                         maxtextlength = 20,
+                         csv=True,
+                         exportclasses=export_classes,
+                         orderby=orderby,
+                         groupby=groupby,
+                         links=links,
+                         links_in_grid=False,
+                         searchable=False,
+                         create=False,
+                         deletable=False,
+                         editable=False,
+                         details=False,
+                         user_signature=True
+                         )           
+
+
+
+
+    return dict(formA=formA,username=username,formheader=formheader, returnurl=returnurl)    
+    
+    
