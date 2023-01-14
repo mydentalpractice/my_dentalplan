@@ -38,6 +38,187 @@ from applications.my_pms2.modules  import mdpbenefits
 
 from applications.my_pms2.modules import logger
 
+
+def importappointments():
+    
+    logger.loggerpms2.info("Import Appointments")
+    
+   
+   
+      
+    
+    count = 0
+    apptcount = 0
+    form = SQLFORM.factory(
+                Field('csvfile','string',label='CSV File', requires= IS_NOT_EMPTY())
+                )    
+    
+    submit = form.element('input',_type='submit')
+    submit['_value'] = 'Import'    
+    
+    xcsvfile = form.element('input',_id='no_table_csvfile')
+    xcsvfile['_class'] =  'w3-input w3-border w3-small'    
+    
+
+    error = ""
+    count = 0
+    
+    if form.accepts(request,session,keepvalues=True):
+	try:
+	    logger.loggerpms2.info("Form Accepted")
+	    
+	    
+	    #----------- START : IMPORT EXCEL SHEET INTO IMPORTAPPOINT TABLE THIS IS DONE HENCE CODE IS COMMENTED---#
+	    #strsql = "Truncate table importappointment"
+	    #db.executesql(strsql)
+	    #db.commit() 	    
+
+	    #xcsvfile = request.vars.csvfile
+	    #code = ""
+	    #with open(xcsvfile, 'r') as csvfile:
+		#reader = csv.reader(csvfile)
+		#count = -1
+		#apptcount = 0
+		    
+                
+		#for row in reader:
+		    #count = count+1
+		    #if(count == 0):
+			#continue
+		    
+		 
+		   
+		    #strsql = "INSERT INTO importappointment"
+		    #strsql = strsql + "(customer_ref,cell,enrolldate,status,providercode,companycode,plan,"
+		    #strsql = strsql + "appointment_id,appointment_date,appointment_time"
+		    #strsql = strsql + ")VALUES("
+		    #strsql = strsql + "'" + row[0] + "'"
+		    #strsql = strsql + ",'" + row[1] + "'"
+		    #strsql = strsql + ",'" + row[2] + "'"
+		    #strsql = strsql + ",'" + row[3] + "'"
+		    #strsql = strsql + ",'" + row[4] + "'"
+		    #strsql = strsql + ",'" + row[5] + "'"
+		    #strsql = strsql + ",'" + row[6] + "'"
+		    #strsql = strsql + ",'" + row[7] + "'"
+		    #strsql = strsql + ",'" + row[8] + "'"
+		    #strsql = strsql + ",'" + row[9] + "'"
+		 
+		    #strsql = strsql + ")"                
+		    
+		    ##logger.loggerpms2.info("Import Appointment SQL \n" + strsql)
+
+		    #db.executesql(strsql)
+		    #db.commit()
+	    #----------- END : IMPORT EXCEL SHEET INTO IMPORTAPPOINT TABLE THIS IS DONE HENCE CODE IS COMMENTED---#
+	  
+	    #----------- START: Read ImportAppointment table and for each record, create an appointment in t_appointment tabl ----#
+	    #loop through import Appoint table for each import appointment,
+	    #if patient exists & no appointment is created, then create the appointment else skip
+	    
+	    #for all appointments in importappointment table which have not been converted to t_appointment 
+	    #is_active == FALSE means the appointment has not been converted
+	    strsql = "SELECT * from importappointment where is_active = 'F' "
+	    ds = db.executesql(strsql)
+	    
+	    memberid = 0
+	    patientid = 0
+	    patientmember = ""
+	    
+	    for i in xrange(0,len(ds)):
+		#logger.loggerpms2.info("Appointment member fullname = " + ds[i][1])
+		
+		#if the importappointment[customer_ref] != <patientmember[FN] [LN]> then skip
+		r = db((db.vw_memberpatientlist.fullname.like(ds[i][1]))).select()
+		logger.loggerpms2.info("Appointment member fullname = " + ds[i][1] + " " + str(len(r)))
+		if(len(r) == 0):
+		    continue;
+		
+		#getting member details from the patientmember table
+		memberid = int(common.getid(r[0].primarypatientid))
+		patientid = int(common.getid(r[0].patientid))
+		patientmember = common.getstring(r[0].patientmember)
+		
+		#get the appointment start and en date & time specified in importpatient table for that member. Duration is assumed 30 minutes
+		appointment_date = ds[i][9]   
+		appointment_time = ds[i][10]
+		appointment_startstr = appointment_date + " " + appointment_time
+		appointment_start = common.getdatefromstring(appointment_startstr, "%Y-%m-%d %H:%M")
+	        duration = timedelta(minutes = 30)
+		appointment_end = appointment_start + duration
+		
+		#get the importappointment[status] 
+		status = ds[i][4]
+		if(status.lower().find("cancelled") >= 0):
+		    status = "Cancelled"
+		else:
+		    status = "Confirmed" 
+
+	        #get importappointment[provider]
+		providercode = ds[i][5]
+		rows = db((db.provider.provider == providercode) & (db.provider.is_active == True)).select()
+		providerid = 0 if(len(rows)<=0) else rows[0].id
+		
+		#get clinic for the corresponding provider.  If there are more clinics, we will take the first one
+		clinics  = db((db.clinic_ref.ref_code == 'PRV') & (db.clinic_ref.ref_id == providerid)).select()
+		clinicid = 0 if(len(clinics) <= 0) else int(common.getid(clinics[0].id))
+		
+		#check whether the appointment to be imported from importappointment table for this member for this date & time exists
+		#in t_appointment table, then update importappointment table, apptid & is_active fieldds. This indicates the importappointment 
+		#record is already in the system and it maps to the apptid
+		t = db((db.t_appointment.patientmember == memberid) & (db.t_appointment.patient == patientid) &\
+		       (db.t_appointment.f_start_time == appointment_start)).select()
+		logger.loggerpms2.info("Appointment for " + ds[i][1] + " " + str(memberid) + " at " + 
+		                       appointment_startstr + " " + str(len(t)))
+		if(len(t) > 0):
+	            logger.loggerpms2.info("Previous Appointment " + str(t[0].id) + " for member " + t[0].f_patientname)
+		    strsql = "UPDATE importappointment set is_active = 'T', apptid = " + str(t[0].id) + " WHERE id = " + str(ds[i][0])
+		    db.executesql(strsql)
+		    continue;
+		
+		#if it is not there, then insert a new appointment
+                #logger.loggerpms2.info("Insert Appoint for " + ds[i][1])
+		apptid = db.t_appointment.insert(f_patientname = ds[i][1], 
+		                        f_start_time  = appointment_start,
+		                        f_end_time = appointment_end,
+		                        f_duration = 30,
+		                        f_status = status,
+		                        provider = providerid,
+		                        doctor = providerid,
+		                        patientmember = memberid,
+		                        patient = memberid,
+		                        cell = ds[i][2],
+		                        clinicid = clinicid,
+		                        sendsms = False,
+		                        sendrem = False,
+		                        smsaction = 'update'
+		                       
+		                      
+		                        )
+		
+		db.commit()
+		apptcount = apptcount+1
+		logger.loggerpms2.info("Inserted Appointment " + str(apptid) + " " + str(apptcount))		
+
+                #logging some information in importmember["DESCRIPTION"] field if it was XXX or keep as-is the current value of that field.
+		apptstr = "[Imported Appointment]:"
+		if((ds[i][8]=="") | (ds[i][8] == "XXX")):
+		    apptstr = apptstr+ str(apptid)
+		else:
+		    apptstr = apptstr + ds[i][8]
+		    
+		db(db.t_appointment.id == apptid).update(f_uniqueid = apptid,description=apptstr)
+		strsql = "UPDATE importappointment set is_active = 'T', apptid = " + str(apptid) + " WHERE id = " + str(ds[i][0])
+		db.executesql(strsql)
+		db.commit()
+		
+	except Exception as e:
+	    logger.loggerpms2.info("Import Appointment Exception Error - " + str(e) + "\n" + str(e.message))
+	    error = "Import Appointment Exception Error - " + str(e)
+        
+    return dict(form=form, count=count,apptcount = apptcount, error=error)
+
+
+
 #This method converts HMO Plan ID from region based to plan based
 #for CGI, there are three plans - CGI_PREM, CDI_SC, CGI_NDPC, CGI_PREM
 #All region based plans like 
