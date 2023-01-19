@@ -1943,6 +1943,93 @@ def importplans():
     return dict(form=form, count=count,error=error)
 
 
+def importcompanyprovidereligibility():
+    
+    logger.loggerpms2.info("Import importcompanyprovidereligibility")
+    
+    strsql = "Truncate table import_company_provider_eligible"
+    db.executesql(strsql)
+    db.commit()    
+    error  = ""
+    count = 0
+    form = SQLFORM.factory(
+                Field('csvfile','string',label='CSV File', requires= IS_NOT_EMPTY())
+                )    
+    
+    submit = form.element('input',_type='submit')
+    submit['_value'] = 'Import'    
+    
+    xcsvfile = form.element('input',_id='no_table_csvfile')
+    xcsvfile['_class'] =  'w3-input w3-border w3-small'    
+    
+
+    error = ""
+    count = 0
+    
+    if form.accepts(request,session,keepvalues=True):
+	try:
+	    xcsvfile = request.vars.csvfile
+	    code = ""
+	    with open(xcsvfile, 'r') as csvfile:
+		reader = csv.reader(csvfile)
+		count = 0
+		memberID = ""
+		
+		    
+    
+		for row in reader:
+		    count = count + 1
+		    if(count == 1):
+			continue		    
+		   
+		    strsql = "INSERT INTO import_company_provider_eligible"
+		    strsql = strsql + "(id,company_code,provider_code"
+		    strsql = strsql + ")VALUES("
+		    strsql = strsql + row[0] + " "
+		    strsql = strsql + ",'" + row[1] + "'"
+		    strsql = strsql + ",'" + row[2] + "'"
+		    strsql = strsql + ")"                
+		    
+		    logger.loggerpms2.info("import_company_provider_eligible SQL \n" + strsql)
+
+		    db.executesql(strsql)
+		    db.commit()
+	  
+	    
+	    #loop through import spat table
+	    #for each import spat, if it exists, then create a username/password
+	    #update the record, send email
+	    #if does not exist, insert the record, and send email	    
+	    #loop through import spat table and populate agent table
+	    strsql = "SELECT * from import_company_provider_eligible where id > 0;"
+	    ds = db.executesql(strsql)
+	    
+	    
+	    for i in xrange(0,len(ds)):
+		
+		company_code = ds[i][1]
+		provider_code = ds[i][2]
+		
+		c = db((db.company.company == company_code) & (db.company.is_active == True)).select()
+		companyid = 0 if(len(c) <= 0) else c[0].id
+
+		c = db((db.provider.provider == provider_code) & (db.provider.is_active == True)).select()
+		providerid = 0 if(len(c) <= 0) else c[0].id
+		
+		
+		
+		cpeid = db.company_provider_eligibility.insert(
+		    companyid = companyid,
+		    providerid = providerid,
+		    is_active = True, 
+		)      
+	    
+	except Exception as e:
+	    logger.loggerpms2.info("Import company_provider_eligibility Exception Error - " + str(e) + "\n" + str(e.message))
+	    error = "Import company_provider_eligibility Exception Error - " + str(e)
+
+    return dict(form=form, count=count, error=error)
+
 def importplanrates():
     
     strsql = "Truncate table importplanrates"

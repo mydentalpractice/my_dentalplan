@@ -9314,8 +9314,22 @@ Added netcopay field
 
 22/11/2022
 ==========
-1. modified vw_appointments
-2. New View vw_dashboard
+1. ZZZmodified vw_appointments
+2. ZZZNew view vw_dashboard
+3. ZZZNew view vw_dasboard_appt_count
+4. ZZZNew table dashboard_appt_count
+5. ZZZNew table importappointment
+6. ZMade chhanges in rules function
+7. ZMade changes in Appointment function controller
+8. ZMade changes in mdpappointment module
+9. ZMade changes in mdprules module
+
+17/01/2023
+==========
+1. Added company_provider_eligibility table
+2. import company_provider_eligibility table
+
+
 
 Script file to clear user for sign-up
 =====================================

@@ -5064,25 +5064,33 @@ db.define_table('vw_dashboard',
                 Field('clinic_name', 'string'),
                 Field('company_name', 'string'),
                 Field('company_code', 'string'),
-                
+
                 auth.signature
-    )
+                )
+
 
 db.define_table('vw_dashboard_appt_count',
-                Field('company_code','string'),
-                Field('apptcount','integer')
-                )
+                 Field('company_code','string'),
+                 Field('apptcount','integer')
+                 )
 db.vw_dashboard_appt_count._singular = "vw_dashboard_appt_count"
 db.vw_dashboard_appt_count._plural   = "vw_dashboard_appt_count" 
 
 db.define_table('dashboard_appt_count',
-                Field('month_name','string'),
-                Field('company_code','string'),
-                Field('apptcount','integer')
-                )
+                 Field('month_name','string'),
+                 Field('company_code','string'),
+                 Field('apptcount','integer')
+                 )
 db.dashboard_appt_count._singular = "dashboard_appt_count"
 db.dashboard_appt_count._plural   = "dashboard_appt_count"  
 
+db.define_table('company_provider_eligibility',
+                Field('companyid', 'integer'),
+                Field('providerid',  'integer'),
+                Field('is_active', 'boolean')
+                )
+db.company_provider_eligibility._singular = "company_provider_eligibility"
+db.company_provider_eligibility._plural   = "company_provider_eligibility"
 
 def geocode2(form):
     from gluon.tools import geocode
