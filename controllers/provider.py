@@ -20,6 +20,7 @@ from applications.my_pms2.modules  import mail
 from applications.my_pms2.modules  import states
 from applications.my_pms2.modules  import mdpbank
 from applications.my_pms2.modules  import mdpmedia
+from applications.my_pms2.modules  import mdpCRM
 from applications.my_pms2.modules  import logger
 
 
@@ -779,6 +780,8 @@ def create_provider():
     formheader = "New Provider"
     crud.settings.keepvalues = True
     crud.settings.showid = True
+    crud.settings.create_onaccept = acceptOnCreate
+    
 
     ## Add form -
     if((request.vars.sitekey == None)|(request.vars.sitekey == "")):
@@ -803,6 +806,7 @@ def create_provider():
         db.provider.taxid.writable = True
         db.provider.groupregion.default = 1
         db.provider.provider.default = getProviderCode()
+	db.provider.isMDP.default = True
 	
     db.provider.speciality.requires = IS_IN_DB(db((db.speciality_default.id>0)),db.speciality_default.id, '%(speciality)s')
     
@@ -824,9 +828,30 @@ def create_provider():
     isMDP = formA.vars.isMDP
     page=common.getgridpage(request.vars)
     returnurl = URL('provider','list_provider',vars=dict(isMDP=isMDP,page=1))
+    
         
     return dict(username=username, returnurl=returnurl,formA=formA, formheader=formheader,page=page)
 
+def acceptOnCreate(form):
+    
+    i = 0
+    #new CRM Provider
+    #{
+	#"provider_id":<3308>
+    #}          
+
+    u = db(db.urlproperties.id > 0).select()
+    crm = bool(common.getboolean(u[0].crm_integration)) if(len(u) >0) else False
+    
+    crm_avars = {}
+
+
+    if(crm==True):
+	crm_avars["provider_id"] = form.vars.id
+	crmobj = mdpCRM.CRM(db)
+	rsp = crmobj.mdp_crm_createprovider(crm_avars)
+	
+    return
 
 def acceptOnUpdate(form):
     
@@ -839,6 +864,24 @@ def acceptOnUpdate(form):
     
     db(db.provider.provider==form.vars.provider).update(pa_pan = pan, pa_regno = regno,isMDP=isMDP)
     
+    i = 0
+    #new CRM Provider
+    #{
+	#"provider_id":<3308>
+    #}          
+
+    u = db(db.urlproperties.id > 0).select()
+    crm = bool(common.getboolean(u[0].crm_integration)) if(len(u) >0) else False
+    
+    crm_avars = {}
+
+
+    if(crm==True):
+	crm_avars["provider_id"] = form.vars.id
+	crmobj = mdpCRM.CRM(db)
+	rsp = crmobj.mdp_crm_updateprovider(crm_avars)
+	
+
     return
 
 

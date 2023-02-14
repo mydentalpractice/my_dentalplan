@@ -22,6 +22,7 @@ from applications.my_pms2.modules  import mdpprovider
 from applications.my_pms2.modules  import mdpbank
 from applications.my_pms2.modules  import mdpmedia
 from applications.my_pms2.modules  import mdptimings
+from applications.my_pms2.modules  import mdpCRM
 from applications.my_pms2.modules  import logger
 
 
@@ -2272,7 +2273,16 @@ def update_clinic():
                         modified_by = 1
         )   
         db.commit()
+        u = db(db.urlproperties.id > 0).select()
+        crm = bool(common.getboolean(u[0].crm_integration)) if(len(u) >0) else False
         
+       
+        crm_avars = {}
+    
+        if(crm==True):
+            crm_avars["clinic_id"] = clinicid
+            crmobj = mdpCRM.CRM(db)
+            rsp = crmobj.mdp_crm_updateclinic(crm_avars)          
 
     elif formA.errors:
         i  =0
@@ -2292,6 +2302,22 @@ def acceptOnCreate(form):
     db.clinic_ref.insert(ref_code=ref_code,ref_id=ref_id,clinic_id=clinicid)
     redirect(URL('clinic','update_clinic',vars=dict(page=1,clinicid = clinicid,ref_code=ref_code,ref_id=ref_id)))
     
+    i = 0
+    #new CRM Provider
+    #{
+        #"provider_id":<3308>
+    #}          
+
+    u = db(db.urlproperties.id > 0).select()
+    crm = bool(common.getboolean(u[0].crm_integration)) if(len(u) >0) else False
+
+    crm_avars = {}
+
+
+    if(crm==True):
+        crm_avars["clinic_id"] = clinicid
+        crmobj = mdpCRM.CRM(db)
+        rsp = crmobj.mdp_crm_createclinic(crm_avars)
     
     return
 
