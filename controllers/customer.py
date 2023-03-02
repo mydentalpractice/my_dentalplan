@@ -1159,7 +1159,7 @@ def import_customers():
                         
                     strsql = "INSERT INTO importcustomers(id, customer,customer_ref,fname,mname,lname,\
                     address1,address2,address3,city,st,pin,gender,cell,email,telephone,dob,enrolldate,\
-                    status,providercode,companycode,regioncode,plancode,appointment_id, appointment_datetime,notes,P_D,relation)\
+                    status,providercode,companycode,regioncode,plancode,appointment_id, appointment_datetime,notes,P_D,relation,aptstatus)\
                     VALUES("\
                     
                     
@@ -1190,7 +1190,8 @@ def import_customers():
                         + "TRIM('" + row[24] + "'),"\
                         + "TRIM('" + row[25] + "'),"\
                         + "TRIM('" + row[26] + "'),"\
-                        + "TRIM('" + row[27] + "')"\
+                        + "TRIM('" + row[27] + "'),"\
+                        + "TRIM('" + row[28] + "')"\
                         +")"
                     #logger.loggerpms2.info("SQL\n" + strsql)
                     db.executesql(strsql)
@@ -1239,7 +1240,7 @@ def import_customers():
                         strsql = "INSERT INTO `customer`(\
                           `customer`,`customer_ref`,`fname`,`mname`,`lname`,`address1`,`address2`,`address3`,`city`,`st`,`pin`,\
                          `gender`,`telephone`,`cell`,`email`,`dob`,`status`,`providerid`,`companyid`,`regionid`,`planid`,`enrolldate`,`pin1`,`pin2`,`pin3`,\
-                         `appointment_id`,`appointment_datetime`,`notes`,`is_active`,`created_on`,`created_by`,`modified_on`,`modified_by`)"
+                         `appointment_id`,`appointment_datetime`,`appointment_status`,`notes`,`is_active`,`created_on`,`created_by`,`modified_on`,`modified_by`)"
                         
                 
                         strsql = strsql +" SELECT\
@@ -1270,6 +1271,7 @@ def import_customers():
                         `importcustomers`.`pin3`,\
                         `importcustomers`.`appointment_id`,\
                         `importcustomers`.`appointment_datetime`,\
+                        `importcustomers`.`aptstatus`,\
                         `importcustomers`.`notes`,\
                         'T',now(),1,now(),1\
                         FROM `importcustomers`  where id = " + cust_id
@@ -1329,6 +1331,8 @@ def import_customers():
             for i in xrange(0,len(cutomers_to_enroll)): 
 
                 c = db((db.customer.id == cutomers_to_enroll[i]) & (db.customer.is_active == True)).select()
+                logger.loggerpms2.info("Enter customer to enroll " + str(cutomers_to_enroll[i]) + " " + str(len(c)))
+                                                                                                           
                 customer_ref = c[0].customer_ref if (len(c)==1) else ""
                 customerid = c[0].id if(len(c)==1) else 0
                 providerid = c[0].providerid if(len(c)==1) else 0
@@ -1362,10 +1366,11 @@ def import_customers():
                     jsonreq["doctorid"]=str(doctorid)
                     jsonreq["clinicid"]=str(clinicid)
                     jsonreq["startdt"]=common.getstringfromdate(c[0].appointment_datetime,"%d/%m/%Y %H:%M")
+                    jsonreq["appointment_status"] = c[0].appointment_status if (len(c)==1) else "Open"
                     jsonreq["duration"]=str(30)
-                    jsonreq["providernotes"]="Auto-Appointment created\nAppointment_ID: " + c[0].appointment_id + "\n" + c[0].notes, 
+                    jsonreq["providernotes"]="Auto-Appointment created\nAppointment_ID: " + str(c[0].appointment_id)  if (len(c)==1) else "0" + "\n" + c[0].notes if (len(c)==1) else "" 
                     jsonreq["appPath"]=appPath
-                    jsonreq["cell"]=c[0].cell                        
+                    jsonreq["cell"]=c[0].cell if (len(c)==1) else "0000000000"
                     
                     apptobj = None
                     if(appointment_id != ""):
